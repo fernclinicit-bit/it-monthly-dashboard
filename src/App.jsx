@@ -18,7 +18,8 @@ import {
   X,
   Upload,
   Download,
-  FileSpreadsheet
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 
 // Initial blank data - use Excel import to load real data
@@ -5262,6 +5263,27 @@ export default function App() {
   const [consoleMonth, setConsoleMonth] = useState('2026-07');
   const [editingAssetSn, setEditingAssetSn] = useState(null);
   const [editingTicketSn, setEditingTicketSn] = useState(null);
+
+  // Lark Form states
+  const [larkFormType, setLarkFormType] = useState('ticket'); // 'ticket' | 'asset'
+  const [larkTicketComplainant, setLarkTicketComplainant] = useState('');
+  const [larkTicketEmail, setLarkTicketEmail] = useState('');
+  const [larkTicketAnydesk, setLarkTicketAnydesk] = useState('');
+  const [larkTicketIssue, setLarkTicketIssue] = useState('');
+  const [larkTicketCause, setLarkTicketCause] = useState('');
+  const [larkTicketDuration, setLarkTicketDuration] = useState('00:30');
+  const [larkTicketResponder, setLarkTicketResponder] = useState('');
+  const [larkTicketStatus, setLarkTicketStatus] = useState('เสร็จสิ้น');
+  const [larkTicketCost, setLarkTicketCost] = useState('0');
+
+  const [larkAssetUser, setLarkAssetUser] = useState('');
+  const [larkAssetPosition, setLarkAssetPosition] = useState('');
+  const [larkAssetItemType, setLarkAssetItemType] = useState('');
+  const [larkAssetSerial, setLarkAssetSerial] = useState('');
+  const [larkAssetStatus, setLarkAssetStatus] = useState('ใช้งาน');
+  const [larkAssetNotes, setLarkAssetNotes] = useState('');
+
+  const [larkSubmitted, setLarkSubmitted] = useState(false);
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -5806,6 +5828,75 @@ export default function App() {
       setEditingAssetSn(null);
       setEditingTicketSn(null);
       alert('รีเซ็ตข้อมูลกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว!');
+    }
+  };
+
+  const handleLarkSubmit = (e) => {
+    e.preventDefault();
+    if (larkFormType === 'ticket') {
+      if (!larkTicketIssue) {
+        alert('กรุณากรอกอาการเสีย/ปัญหา');
+        return;
+      }
+      const tickets = data[currentMonth]?.ticketsList || [];
+      const newTicket = {
+        sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
+        date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
+        complainant: larkTicketComplainant || 'ไม่ระบุชื่อ',
+        email: larkTicketEmail || '-',
+        anydesk: larkTicketAnydesk || '-',
+        issue: larkTicketIssue,
+        cause: larkTicketCause || '-',
+        duration: larkTicketDuration,
+        responder: larkTicketResponder || '-',
+        status: larkTicketStatus,
+        cost: Number(larkTicketCost) || 0
+      };
+
+      const updatedTickets = [...tickets, newTicket];
+      runRecalculation(currentMonth, updatedTickets, assetsList);
+      
+      // Clear inputs
+      setLarkTicketComplainant('');
+      setLarkTicketEmail('');
+      setLarkTicketAnydesk('');
+      setLarkTicketIssue('');
+      setLarkTicketCause('');
+      setLarkTicketDuration('00:30');
+      setLarkTicketResponder('');
+      setLarkTicketStatus('เสร็จสิ้น');
+      setLarkTicketCost('0');
+      setLarkSubmitted(true);
+    } else {
+      if (!larkAssetItemType) {
+        alert('กรุณากรอกประเภทอุปกรณ์หลัก');
+        return;
+      }
+      const newAsset = {
+        sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
+        date: new Date().toLocaleDateString('th-TH'),
+        user: larkAssetUser || 'ส่วนกลาง',
+        position: larkAssetPosition || '-',
+        itemType: larkAssetItemType,
+        deviceSerial: larkAssetSerial || '-',
+        status: larkAssetStatus,
+        notes: larkAssetNotes
+      };
+
+      setAssetsList(prev => {
+        const updated = [...prev, newAsset];
+        runRecalculation(currentMonth, data[currentMonth]?.ticketsList || [], updated);
+        return updated;
+      });
+
+      // Clear inputs
+      setLarkAssetUser('');
+      setLarkAssetPosition('');
+      setLarkAssetItemType('');
+      setLarkAssetSerial('');
+      setLarkAssetStatus('ใช้งาน');
+      setLarkAssetNotes('');
+      setLarkSubmitted(true);
     }
   };
 
@@ -6883,6 +6974,14 @@ export default function App() {
           }} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
             <Database size={16} />
             ปรับเปลี่ยนข้อมูลทั้งหมด
+          </button>
+          <button onClick={() => {
+            setLarkFormType('ticket');
+            setLarkSubmitted(false);
+            setActiveModal('larkForm');
+          }} className="sidebar-btn" style={{ marginTop: '6px', backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
+            <FileText size={16} />
+            กรอกฟอร์มบันทึกข้อมูล
           </button>
         </div>
 
@@ -8335,6 +8434,149 @@ export default function App() {
         </div>
       );
     })()}
+
+    {/* MODAL 8: LARK SUITE PUBLIC REGISTRATION FORM */}
+    {activeModal === 'larkForm' && (
+      <div className="modal-overlay active" style={{ backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)', zIndex: 1100 }}>
+        <div className="lark-form-container">
+          <header className="lark-form-header">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3>📝 ฟอร์มลงทะเบียนและแจ้งข้อมูลกลาง (Lark Form)</h3>
+                <p>บันทึกข้อมูลเข้าคลังและระบบประวัติงานซ่อมไอทีกลาง เพื่อใช้สรุปรายงานแดชบอร์ด</p>
+              </div>
+              <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer', padding: 0 }}><X size={24} /></button>
+            </div>
+          </header>
+
+          {larkSubmitted ? (
+            <div className="lark-success-screen">
+              <div className="lark-success-icon">
+                <CheckCircle size={36} />
+              </div>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#065f46', fontWeight: '700' }}>ส่งข้อมูลสำเร็จเรียบร้อยแล้ว!</h4>
+              <p style={{ margin: '0 0 24px 0', fontSize: '0.875rem', color: '#4b5563' }}>
+                ข้อมูลของคุณได้รับการบันทึกและระบบได้อัปเดตตัวเลขวิเคราะห์แดชบอร์ดให้โดยอัตโนมัติแล้ว
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button onClick={() => setLarkSubmitted(false)} className="lark-submit-btn" style={{ width: 'auto', padding: '10px 24px' }}>กรอกฟอร์มใหม่</button>
+                <button onClick={() => setActiveModal(null)} className="sidebar-btn" style={{ width: 'auto', padding: '10px 24px', margin: 0, backgroundColor: '#e5e7eb', color: '#374151', border: 'none' }}>ปิดหน้าต่าง</button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleLarkSubmit}>
+              <div className="lark-type-tabs">
+                <button type="button" onClick={() => setLarkFormType('ticket')} className={`lark-type-btn ${larkFormType === 'ticket' ? 'active' : ''}`}>🚨 แจ้งซ่อมบำรุง / ปัญหาไอที</button>
+                <button type="button" onClick={() => setLarkFormType('asset')} className={`lark-type-btn ${larkFormType === 'asset' ? 'active' : ''}`}>💻 ลงทะเบียนเครื่องเข้าคลัง</button>
+              </div>
+
+              {larkFormType === 'ticket' ? (
+                <div className="lark-card">
+                  <div style={{ borderBottom: '1px solid #f3f4f6', paddingBottom: '12px', marginBottom: '16px' }}>
+                    <h4 style={{ margin: 0, color: '#1e40af', fontSize: '1rem', fontWeight: '700' }}>แจ้งงานซ่อม / เหตุเสียสำหรับเดือนนี้ ({data[currentMonth]?.monthName})</h4>
+                  </div>
+                  
+                  <div className="lark-field-group">
+                    <label>ชื่อผู้แจ้ง / ผู้พบปัญหา <span>*</span></label>
+                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: สมเกียรติ ยิ่งดี" value={larkTicketComplainant} onChange={e => setLarkTicketComplainant(e.target.value)} required />
+                  </div>
+
+                  <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label>อีเมลผู้แจ้ง</label>
+                      <input type="email" className="lark-input" placeholder="user@domain.com" value={larkTicketEmail} onChange={e => setLarkTicketEmail(e.target.value)} />
+                    </div>
+                    <div>
+                      <label>AnyDesk ID</label>
+                      <input type="text" className="lark-input" placeholder="เช่น 1 234 567" value={larkTicketAnydesk} onChange={e => setLarkTicketAnydesk(e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>อาการที่แจ้งซ่อม / ปัญหาที่พบ <span>*</span></label>
+                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: หน้าจอไม่ติด, ปริ้นท์งานไม่ออก" value={larkTicketIssue} onChange={e => setLarkTicketIssue(e.target.value)} required />
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>สาเหตุการเสีย (ถ้าทราบ)</label>
+                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: สายเชื่อมต่อหลุด, ซอฟต์แวร์ไม่ทำงาน" value={larkTicketCause} onChange={e => setLarkTicketCause(e.target.value)} />
+                  </div>
+
+                  <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label>ผู้ดำเนินงาน (ช่าง IT)</label>
+                      <input type="text" className="lark-input" placeholder="เช่น ก้องภพ (IT)" value={larkTicketResponder} onChange={e => setLarkTicketResponder(e.target.value)} />
+                    </div>
+                    <div>
+                      <label>เวลาแก้เสร็จ (ชั่วโมง:นาที)</label>
+                      <input type="text" className="lark-input" placeholder="00:30" value={larkTicketDuration} onChange={e => setLarkTicketDuration(e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label>สถานะใบงาน</label>
+                      <select className="lark-input" value={larkTicketStatus} onChange={e => setLarkTicketStatus(e.target.value)}>
+                        <option value="เสร็จสิ้น">เสร็จสิ้น (Resolved)</option>
+                        <option value="กำลังดำเนินการ">กำลังดำเนินการ (Pending)</option>
+                        <option value="จ่ายเงินแล้ว">จ่ายเงินแล้ว (ซื้ออะไหล่)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>ค่าใช้จ่ายซ่อมแซม (บาท)</label>
+                      <input type="number" className="lark-input" value={larkTicketCost} onChange={e => setLarkTicketCost(e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="lark-card">
+                  <div style={{ borderBottom: '1px solid #f3f4f6', paddingBottom: '12px', marginBottom: '16px' }}>
+                    <h4 style={{ margin: 0, color: '#1e40af', fontSize: '1rem', fontWeight: '700' }}>ลงทะเบียนอุปกรณ์เครื่องใหม่เข้าทะเบียนกลาง</h4>
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>ชื่อผู้ครอบครองใช้งาน</label>
+                    <input type="text" className="lark-input" placeholder="เช่น อมร แก้วสด (หรือใส่ ส่วนกลาง)" value={larkAssetUser} onChange={e => setLarkAssetUser(e.target.value)} />
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>ตำแหน่ง / แผนก</label>
+                    <input type="text" className="lark-input" placeholder="เช่น Accounting, Marketing, HR" value={larkAssetPosition} onChange={e => setLarkAssetPosition(e.target.value)} />
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>ประเภทอุปกรณ์ไอที / รุ่นหลัก <span>*</span></label>
+                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: Notebook Lenovo, Computer (Pc)" value={larkAssetItemType} onChange={e => setLarkAssetItemType(e.target.value)} required />
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>ซีเรียลนัมเบอร์ / รหัสเครื่อง (Serial Number)</label>
+                    <input type="text" className="lark-input" placeholder="เช่น MC-054, LNV-987" value={larkAssetSerial} onChange={e => setLarkAssetSerial(e.target.value)} />
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>สถานะคลังเริ่มต้น</label>
+                    <select className="lark-input" value={larkAssetStatus} onChange={e => setLarkAssetStatus(e.target.value)}>
+                      <option value="ใช้งาน">ใช้งาน (Active)</option>
+                      <option value="ว่าง">ว่าง (Vacant)</option>
+                      <option value="รอซ่อม">รอซ่อม (Repairing)</option>
+                      <option value="สูญหาย">สูญหาย (Lost)</option>
+                    </select>
+                  </div>
+
+                  <div className="lark-field-group">
+                    <label>หมายเหตุ / รายละเอียดเพิ่มเติม</label>
+                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: รับเข้าจากโครงการเปลี่ยนเครื่องปี 2026" value={larkAssetNotes} onChange={e => setLarkAssetNotes(e.target.value)} />
+                  </div>
+                </div>
+              )}
+
+              <button type="submit" className="lark-submit-btn">ส่งบันทึกข้อมูล (Submit Record)</button>
+            </form>
+          )}
+        </div>
+      </div>
+    )}
   </>
 );
 }

@@ -1084,3 +1084,147 @@ body {
     color: white;
 }
 
+/* Lark Base Form Styling */
+.lark-form-container {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    border-radius: 12px;
+    padding: 32px 24px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    max-height: 85vh;
+    overflow-y: auto;
+    width: 650px;
+    max-width: 95%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.lark-form-header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    margin: -32px -24px 24px -24px;
+    padding: 24px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: white;
+    position: relative;
+}
+
+.lark-form-header h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.lark-form-header p {
+    margin: 6px 0 0 0;
+    font-size: 0.825rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.lark-type-tabs {
+    display: flex;
+    background-color: #e5e7eb;
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+.lark-type-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4b5563;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lark-type-btn.active {
+    background-color: white;
+    color: #1e40af;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.lark-card {
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.lark-field-group {
+    margin-bottom: 16px;
+}
+
+.lark-field-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.lark-field-group label span {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.lark-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background-color: #f9fafb;
+    color: #1f2937;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.lark-input:focus {
+    border-color: #3b82f6;
+    background-color: white;
+    outline: none;
+}
+
+.lark-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    transition: all 0.2s ease;
+}
+
+.lark-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3);
+}
+
+.lark-success-screen {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.lark-success-icon {
+    width: 64px;
+    height: 64px;
+    background-color: #ecfdf5;
+    color: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+}
+
