@@ -2,11 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
-  Laptop, 
+  BarChart3, 
+  TrendingUp, 
+  Layers, 
+  Cpu, 
+  ShieldAlert, 
+  Activity, 
+  Award, 
+  Search, 
   Ticket, 
-  FileCode, 
-  ShieldCheck, 
-  Wrench, 
   Lightbulb, 
   Edit3, 
   Printer, 
@@ -19,7 +23,9 @@ import {
   Upload,
   Download,
   FileSpreadsheet,
-  FileText
+  FileText,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 
 // Initial blank data - use Excel import to load real data
@@ -5286,6 +5292,11 @@ export default function App() {
   const [larkSubmitted, setLarkSubmitted] = useState(false);
   const [larkTicketRole, setLarkTicketRole] = useState('user'); // 'user' | 'it'
   const [selectedPendingTicketSn, setSelectedPendingTicketSn] = useState('');
+  const [sidebarExpanded, setSidebarExpanded] = useState({
+    mgmt: true,
+    excel: false,
+    export: false
+  });
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -7033,74 +7044,104 @@ export default function App() {
 
         {/* Data Customizer Trigger */}
         <div className="control-group">
-          <label className="control-label">การจัดการข้อมูล</label>
-          <button onClick={openEditModal} className="sidebar-btn">
-            <Edit3 size={16} />
-            แก้ไขตัวเลขเดือนนี้
-          </button>
-          <button onClick={() => {
-            setConsoleMonth(currentMonth);
-            setActiveModal('fullConsole');
-          }} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
-            <Database size={16} />
-            ปรับเปลี่ยนข้อมูลทั้งหมด
-          </button>
-          <button onClick={() => {
-            setLarkFormType('ticket');
-            setLarkSubmitted(false);
-            setActiveModal('larkForm');
-          }} className="sidebar-btn" style={{ marginTop: '6px', backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
-            <FileText size={16} />
-            กรอกฟอร์มบันทึกข้อมูล
-          </button>
+          <div 
+            onClick={() => setSidebarExpanded(prev => ({ ...prev, mgmt: !prev.mgmt }))}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
+          >
+            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>🛠️ การจัดการข้อมูล</label>
+            {sidebarExpanded.mgmt ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
+          </div>
+          {sidebarExpanded.mgmt && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <button onClick={openEditModal} className="sidebar-btn">
+                <Edit3 size={16} />
+                แก้ไขตัวเลขเดือนนี้
+              </button>
+              <button onClick={() => {
+                setConsoleMonth(currentMonth);
+                setActiveModal('fullConsole');
+              }} className="sidebar-btn secondary">
+                <Database size={16} />
+                ปรับเปลี่ยนข้อมูลทั้งหมด
+              </button>
+              <button onClick={() => {
+                setLarkFormType('ticket');
+                setLarkSubmitted(false);
+                setActiveModal('larkForm');
+              }} className="sidebar-btn" style={{ backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
+                <FileText size={16} />
+                กรอกฟอร์มบันทึกข้อมูล
+              </button>
+            </div>
+          )}
         </div>
 
         {/* XLSX Database Operations */}
         <div className="control-group">
-          <label className="control-label">ฐานข้อมูล Excel (.xlsx)</label>
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept=".xlsx,.xls"
-            style={{ display: 'none' }}
-            onChange={handleImportXlsx}
-          />
-          <button onClick={() => fileInputRef.current?.click()} className="sidebar-btn" style={{ backgroundColor: '#059669' }}>
-            <Upload size={16} />
-            นำเข้าข้อมูลจาก Excel
-          </button>
-          <button onClick={exportToXlsx} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
-            <Download size={16} />
-            ส่งออกข้อมูลเป็น Excel
-          </button>
-          <button onClick={downloadTemplate} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
-            <FileSpreadsheet size={16} />
-            ดาวน์โหลดเทมเพลต Excel
-          </button>
-          {importStatus && (
-            <div style={{
-              marginTop: '8px',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              fontSize: '0.78rem',
-              fontWeight: '500',
-              backgroundColor: importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-              color: importStatus.type === 'success' ? 'var(--success)' : 'var(--danger)',
-              border: `1px solid ${importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
-            }}>
-              {importStatus.type === 'success' ? <CheckCircle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> : <AlertTriangle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} />}
-              {importStatus.message}
+          <div 
+            onClick={() => setSidebarExpanded(prev => ({ ...prev, excel: !prev.excel }))}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
+          >
+            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>📊 ฐานข้อมูล Excel (.xlsx)</label>
+            {sidebarExpanded.excel ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
+          </div>
+          {sidebarExpanded.excel && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".xlsx,.xls"
+                style={{ display: 'none' }}
+                onChange={handleImportXlsx}
+              />
+              <button onClick={() => fileInputRef.current?.click()} className="sidebar-btn" style={{ backgroundColor: '#059669' }}>
+                <Upload size={16} />
+                นำเข้าข้อมูลจาก Excel
+              </button>
+              <button onClick={exportToXlsx} className="sidebar-btn secondary">
+                <Download size={16} />
+                ส่งออกข้อมูลเป็น Excel
+              </button>
+              <button onClick={downloadTemplate} className="sidebar-btn secondary">
+                <FileSpreadsheet size={16} />
+                ดาวน์โหลดเทมเพลต Excel
+              </button>
+              {importStatus && (
+                <div style={{
+                  marginTop: '4px',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.78rem',
+                  fontWeight: '500',
+                  backgroundColor: importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                  color: importStatus.type === 'success' ? 'var(--success)' : 'var(--danger)',
+                  border: `1px solid ${importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+                }}>
+                  {importStatus.type === 'success' ? <CheckCircle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> : <AlertTriangle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} />}
+                  {importStatus.message}
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {/* PDF Printing Trigger */}
         <div className="control-group" style={{ marginTop: '10px' }}>
-          <label className="control-label">ส่งออกเอกสาร</label>
-          <button onClick={() => window.print()} className="sidebar-btn secondary">
-            <Printer size={16} />
-            บันทึกเป็น PDF / พิมพ์
-          </button>
+          <div 
+            onClick={() => setSidebarExpanded(prev => ({ ...prev, export: !prev.export }))}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
+          >
+            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>📄 ส่งออกเอกสาร</label>
+            {sidebarExpanded.export ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
+          </div>
+          {sidebarExpanded.export && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <button onClick={() => window.print()} className="sidebar-btn secondary">
+                <Printer size={16} />
+                บันทึกเป็น PDF / พิมพ์
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="org-info">
