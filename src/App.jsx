@@ -5460,6 +5460,7 @@ export default function App() {
       assetValue: calculatedAssetValue,
       assetsBroken: brokenAssetsCount,
       assetsLost: lostAssetsCount,
+      assetsVacant: vacantAssetsCount,
       ticketsCount: tickets.length,
       slaPercent: calculatedSla,
       resolutionTime: resolutionTimeHours,
@@ -5536,6 +5537,7 @@ export default function App() {
         assetsExpiring: 0,
         assetsBroken: 0,
         assetsLost: 0,
+        assetsVacant: 0,
         ticketsCount: 0,
         slaPercent: 100,
         responseTime: 0,
@@ -6927,6 +6929,7 @@ export default function App() {
       assetsExpiring: activeData.assetsExpiring,
       assetsBroken: activeData.assetsBroken,
       assetsLost: activeData.assetsLost,
+      assetsVacant: activeData.assetsVacant || 0,
       // Support
       ticketsCount: activeData.ticketsCount,
       slaPercent: activeData.slaPercent,
@@ -6965,6 +6968,7 @@ export default function App() {
         assetsExpiring: Number(formInputs.assetsExpiring),
         assetsBroken: Number(formInputs.assetsBroken),
         assetsLost: Number(formInputs.assetsLost),
+        assetsVacant: Number(formInputs.assetsVacant || 0),
 
         ticketsCount: Number(formInputs.ticketsCount),
         slaPercent: Number(formInputs.slaPercent),
@@ -7248,10 +7252,14 @@ export default function App() {
                 <div className="metric-value highlight-warning">{activeData.assetsExpiring} เครื่อง</div>
               </div>
               <div className="metric-item">
+                <div className="metric-label">เครื่องว่าง (พร้อมใช้)</div>
+                <div className="metric-value highlight-success">{(activeData.assetsVacant || 0)} เครื่อง</div>
+              </div>
+              <div className="metric-item">
                 <div className="metric-label">ชำรุด</div>
                 <div className="metric-value highlight-danger">{activeData.assetsBroken} เครื่อง</div>
               </div>
-              <div className="metric-item full-width" style={{ marginTop: '-6px' }}>
+              <div className="metric-item">
                 <div className="metric-label">สูญหาย</div>
                 <div className="metric-value highlight-danger">{activeData.assetsLost} เครื่อง</div>
               </div>
@@ -7517,6 +7525,15 @@ export default function App() {
                         type="number" 
                         value={formInputs.assetsLost || ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, assetsLost: e.target.value }))}
+                        required 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>อุปกรณ์ว่าง/พร้อมใช้ (เครื่อง)</label>
+                      <input 
+                        type="number" 
+                        value={formInputs.assetsVacant || ''} 
+                        onChange={(e) => setFormInputs(p => ({ ...p, assetsVacant: e.target.value }))}
                         required 
                       />
                     </div>
@@ -8209,6 +8226,10 @@ export default function App() {
                           <div className="console-field">
                             <span className="console-label">สูญหาย (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.assetsLost || 0} onChange={e => handleKpiChange('assetsLost', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">เครื่องว่าง (เครื่อง)</span>
+                            <input type="number" value={consoleMonthData.assetsVacant || 0} onChange={e => handleKpiChange('assetsVacant', Number(e.target.value))} className="console-input" />
                           </div>
                         </div>
                       </div>
