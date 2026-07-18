@@ -402,26 +402,26 @@ export default function App() {
         const binaryStr = evt.target.result;
         const wb = XLSX.read(binaryStr, { type: 'binary' });
 
-        // --- Parse Sheet 1: Dashboard ---
+        // --- Parse Sheet 1: Dashboard (by column index) ---
         const dashSheet = wb.Sheets[wb.SheetNames[0]];
         if (!dashSheet) throw new Error('ไม่พบ Sheet แรก (Dashboard)');
-        const dashRows = XLSX.utils.sheet_to_json(dashSheet);
-        if (dashRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
+        const allRows = XLSX.utils.sheet_to_json(dashSheet, { header: 1 });
+        // Skip header row (index 0), data starts from row 1
+        const dataRows = allRows.slice(1).filter(r => r && r.length > 1);
+        if (dataRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
 
         const newData = {};
 
-        dashRows.forEach(row => {
-          // Find the month key column
-          const monthKeyCol = FIELD_MAP.find(f => f.key === 'monthKey');
-          const monthNameCol = FIELD_MAP.find(f => f.key === 'monthName');
-          const monthKey = String(row[monthKeyCol.header] || '').trim();
-          const monthName = String(row[monthNameCol.header] || '').trim();
+        // Column order matches FIELD_MAP: 
+        // 0=monthName, 1=monthKey, 2=totalAssets, 3=assetValue, ...
+        dataRows.forEach(cols => {
+          const monthName = String(cols[0] || '').trim();
+          const monthKey = String(cols[1] || '').trim();
 
-          if (!monthKey || !monthName) return; // Skip empty rows
+          if (!monthKey || !monthName) return;
 
-          // Build the month data object from the row
           const monthData = {
-            monthName: monthName,
+            monthName,
             topBrokenDevices: [],
             deptCosts: {},
             ongoingProjects: [],
@@ -430,9 +430,10 @@ export default function App() {
             assetsExpiringDetails: []
           };
 
-          FIELD_MAP.forEach(field => {
+          // Map remaining columns by index (starting from index 2)
+          FIELD_MAP.forEach((field, idx) => {
             if (field.key === 'monthKey' || field.key === 'monthName') return;
-            const rawVal = row[field.header];
+            const rawVal = cols[idx];
             monthData[field.key] = rawVal !== undefined && rawVal !== '' ? Number(rawVal) : 0;
           });
 
@@ -443,14 +444,14 @@ export default function App() {
         if (wb.SheetNames.length >= 2) {
           const repairSheet = wb.Sheets[wb.SheetNames[1]];
           if (repairSheet) {
-            const repairRows = XLSX.utils.sheet_to_json(repairSheet);
-            repairRows.forEach(row => {
-              const mk = String(Object.values(row)[0] || '').trim();
+            const rows = XLSX.utils.sheet_to_json(repairSheet, { header: 1 }).slice(1);
+            rows.forEach(cols => {
+              const mk = String(cols[0] || '').trim();
               if (mk && newData[mk]) {
                 newData[mk].topBrokenDevices.push({
-                  name: String(Object.values(row)[1] || ''),
-                  count: Number(Object.values(row)[2]) || 0,
-                  cost: Number(Object.values(row)[3]) || 0
+                  name: String(cols[1] || ''),
+                  count: Number(cols[2]) || 0,
+                  cost: Number(cols[3]) || 0
                 });
               }
             });
@@ -461,12 +462,12 @@ export default function App() {
         if (wb.SheetNames.length >= 3) {
           const deptSheet = wb.Sheets[wb.SheetNames[2]];
           if (deptSheet) {
-            const deptRows = XLSX.utils.sheet_to_json(deptSheet);
-            deptRows.forEach(row => {
-              const mk = String(Object.values(row)[0] || '').trim();
+            const rows = XLSX.utils.sheet_to_json(deptSheet, { header: 1 }).slice(1);
+            rows.forEach(cols => {
+              const mk = String(cols[0] || '').trim();
               if (mk && newData[mk]) {
-                const deptName = String(Object.values(row)[1] || '');
-                const deptCost = Number(Object.values(row)[2]) || 0;
+                const deptName = String(cols[1] || '');
+                const deptCost = Number(cols[2]) || 0;
                 if (deptName) newData[mk].deptCosts[deptName] = deptCost;
               }
             });
@@ -477,13 +478,13 @@ export default function App() {
         if (wb.SheetNames.length >= 4) {
           const projSheet = wb.Sheets[wb.SheetNames[3]];
           if (projSheet) {
-            const projRows = XLSX.utils.sheet_to_json(projSheet);
-            projRows.forEach(row => {
-              const mk = String(Object.values(row)[0] || '').trim();
+            const rows = XLSX.utils.sheet_to_json(projSheet, { header: 1 }).slice(1);
+            rows.forEach(cols => {
+              const mk = String(cols[0] || '').trim();
               if (mk && newData[mk]) {
                 newData[mk].ongoingProjects.push({
-                  title: String(Object.values(row)[1] || ''),
-                  desc: String(Object.values(row)[2] || '')
+                  title: String(cols[1] || ''),
+                  desc: String(cols[2] || '')
                 });
               }
             });
@@ -494,11 +495,11 @@ export default function App() {
         if (wb.SheetNames.length >= 5) {
           const recSheet = wb.Sheets[wb.SheetNames[4]];
           if (recSheet) {
-            const recRows = XLSX.utils.sheet_to_json(recSheet);
-            recRows.forEach(row => {
-              const mk = String(Object.values(row)[0] || '').trim();
+            const rows = XLSX.utils.sheet_to_json(recSheet, { header: 1 }).slice(1);
+            rows.forEach(cols => {
+              const mk = String(cols[0] || '').trim();
               if (mk && newData[mk]) {
-                const recText = String(Object.values(row)[1] || '');
+                const recText = String(cols[1] || '');
                 if (recText) newData[mk].recommendations.push(recText);
               }
             });
