@@ -941,3 +941,142 @@ body {
         margin: 8mm;
     }
 }
+
+/* Administrative Console Styles */
+.console-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: 100%;
+}
+
+.console-sidebar {
+    width: 250px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.console-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition);
+}
+
+.console-tab-btn:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: white;
+}
+
+.console-tab-btn.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.console-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.console-title {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 8px;
+}
+
+.console-form {
+    background-color: rgba(255, 255, 255, 0.02);
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.console-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.console-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.console-label {
+    font-size: 0.725rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.console-input {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backgroundColor: rgba(0, 0, 0, 0.25);
+    color: white;
+    font-size: 0.85rem;
+}
+
+.console-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.console-table-scroll {
+    overflow-x: auto;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+}
+
+.console-card {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.console-delete-btn {
+    padding: 4px 8px;
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgb(239, 68, 68);
+    color: rgb(239, 68, 68);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.console-delete-btn:hover {
+    background-color: rgb(239, 68, 68);
+    color: white;
+}
+

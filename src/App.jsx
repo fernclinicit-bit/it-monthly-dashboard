@@ -5242,17 +5242,371 @@ const initialDashboardData = {
 
 
 export default function App() {
-  const [data, setData] = useState(initialDashboardData);
-  const [assetsList, setAssetsList] = useState(initialAssetsData);
+  const [data, setData] = useState(() => {
+    const saved = localStorage.getItem('it_dashboard_data');
+    return saved ? JSON.parse(saved) : initialDashboardData;
+  });
+  const [assetsList, setAssetsList] = useState(() => {
+    const saved = localStorage.getItem('it_dashboard_assets');
+    return saved ? JSON.parse(saved) : initialAssetsData;
+  });
   const [assetSearch, setAssetSearch] = useState('');
   const [assetDeptFilter, setAssetDeptFilter] = useState('');
   const [assetStatusFilter, setAssetStatusFilter] = useState('');
   const [currentMonth, setCurrentMonth] = useState("2026-07");
-  const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList'
+  const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
   
+  // Console tab and selectors
+  const [consoleTab, setConsoleTab] = useState('months');
+  const [consoleMonth, setConsoleMonth] = useState('2026-07');
+  
+  // New Month creation states
+  const [newMonthKey, setNewMonthKey] = useState('');
+  const [newMonthName, setNewMonthName] = useState('');
+
+  // New Project/Rec creation states
+  const [newProjTitle, setNewProjTitle] = useState('');
+  const [newProjDesc, setNewProjDesc] = useState('');
+  const [newRecText, setNewRecText] = useState('');
+
+  // New Asset creation states
+  const [newAssetUser, setNewAssetUser] = useState('');
+  const [newAssetPosition, setNewAssetPosition] = useState('');
+  const [newAssetItemType, setNewAssetItemType] = useState('');
+  const [newAssetSerial, setNewAssetSerial] = useState('');
+  const [newAssetStatus, setNewAssetStatus] = useState('ใช้งาน');
+  const [newAssetNotes, setNewAssetNotes] = useState('');
+
+  // New Ticket creation states
+  const [newTicketComplainant, setNewTicketComplainant] = useState('');
+  const [newTicketEmail, setNewTicketEmail] = useState('');
+  const [newTicketAnydesk, setNewTicketAnydesk] = useState('');
+  const [newTicketIssue, setNewTicketIssue] = useState('');
+  const [newTicketCause, setNewTicketCause] = useState('');
+  const [newTicketDuration, setNewTicketDuration] = useState('00:30');
+  const [newTicketResponder, setNewTicketResponder] = useState('');
+  const [newTicketStatus, setNewTicketStatus] = useState('เสร็จสิ้น');
+  const [newTicketCost, setNewTicketCost] = useState('0');
+
   // Form input states
   const [formInputs, setFormInputs] = useState({});
+
+  // Sync to local storage
+  useEffect(() => {
+    localStorage.setItem('it_dashboard_data', JSON.stringify(data));
+  }, [data]);
+
+  useEffect(() => {
+    localStorage.setItem('it_dashboard_assets', JSON.stringify(assetsList));
+  }, [assetsList]);
+
+  // Console Months Manager Handlers
+  const handleAddMonth = (e) => {
+    e.preventDefault();
+    if (!newMonthKey || !newMonthName) {
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+    if (data[newMonthKey]) {
+      alert('มีรหัสเดือนนี้ในระบบอยู่แล้ว');
+      return;
+    }
+    setData(prev => ({
+      ...prev,
+      [newMonthKey]: {
+        monthName: newMonthName,
+        totalAssets: assetsList.length,
+        assetValue: data[currentMonth]?.assetValue || 0,
+        assetsExpiring: 0,
+        assetsBroken: 0,
+        assetsLost: 0,
+        ticketsCount: 0,
+        slaPercent: 100,
+        responseTime: 0,
+        resolutionTime: 0,
+        csat: 5.0,
+        totalSoftware: 0,
+        licensesInUse: 0,
+        licensesVacant: 0,
+        softwareCost: 0,
+        softwareExpiring: 0,
+        backupSuccess: 100,
+        securityIncidents: 0,
+        antivirusCoverage: 100,
+        mfaCoverage: 100,
+        repairCount: 0,
+        repairCost: 0,
+        topBrokenDevices: [],
+        deptCosts: {},
+        softwareExpiringDetails: [],
+        assetsExpiringDetails: [],
+        ongoingProjects: [],
+        recommendations: [],
+        ticketsList: []
+      }
+    }));
+    setConsoleMonth(newMonthKey);
+    setNewMonthKey('');
+    setNewMonthName('');
+    alert(`เพิ่มเดือน ${newMonthName} สำเร็จ!`);
+  };
+
+  const handleDeleteMonth = (key) => {
+    const keys = Object.keys(data);
+    if (keys.length <= 1) {
+      alert('ไม่สามารถลบเดือนสุดท้ายของระบบได้');
+      return;
+    }
+    if (window.confirm(`คุณแน่ใจว่าต้องการลบเดือน ${data[key].monthName} ใช่หรือไม่?`)) {
+      setData(prev => {
+        const copy = { ...prev };
+        delete copy[key];
+        return copy;
+      });
+      if (currentMonth === key) {
+        setCurrentMonth(keys.find(k => k !== key));
+      }
+      if (consoleMonth === key) {
+        setConsoleMonth(keys.find(k => k !== key));
+      }
+    }
+  };
+
+  // Inline KPI Change handler
+  const handleKpiChange = (field, val) => {
+    setData(prev => ({
+      ...prev,
+      [consoleMonth]: {
+        ...prev[consoleMonth],
+        [field]: val
+      }
+    }));
+  };
+
+  // Projects & Recs Editor Handlers
+  const handleAddProject = () => {
+    if (!newProjTitle) return;
+    setData(prev => {
+      const monthData = prev[consoleMonth] || {};
+      return {
+        ...prev,
+        [consoleMonth]: {
+          ...monthData,
+          ongoingProjects: [...(monthData.ongoingProjects || []), { title: newProjTitle, desc: newProjDesc }]
+        }
+      };
+    });
+    setNewProjTitle('');
+    setNewProjDesc('');
+  };
+
+  const handleDeleteProject = (idx) => {
+    setData(prev => {
+      const monthData = prev[consoleMonth];
+      const updatedProjects = [...(monthData.ongoingProjects || [])];
+      updatedProjects.splice(idx, 1);
+      return {
+        ...prev,
+        [consoleMonth]: {
+          ...monthData,
+          ongoingProjects: updatedProjects
+        }
+      };
+    });
+  };
+
+  const handleAddRecommendation = () => {
+    if (!newRecText) return;
+    setData(prev => {
+      const monthData = prev[consoleMonth] || {};
+      return {
+        ...prev,
+        [consoleMonth]: {
+          ...monthData,
+          recommendations: [...(monthData.recommendations || []), newRecText]
+        }
+      };
+    });
+    setNewRecText('');
+  };
+
+  const handleDeleteRecommendation = (idx) => {
+    setData(prev => {
+      const monthData = prev[consoleMonth];
+      const updatedRecs = [...(monthData.recommendations || [])];
+      updatedRecs.splice(idx, 1);
+      return {
+        ...prev,
+        [consoleMonth]: {
+          ...monthData,
+          recommendations: updatedRecs
+        }
+      };
+    });
+  };
+
+  // Assets Inventory Editor Handlers
+  const handleAddAsset = () => {
+    if (!newAssetItemType) {
+      alert('กรุณากรอกประเภทอุปกรณ์หลัก');
+      return;
+    }
+    const newAsset = {
+      sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
+      date: new Date().toLocaleDateString('th-TH'),
+      user: newAssetUser || 'ส่วนกลาง',
+      position: newAssetPosition || '-',
+      itemType: newAssetItemType,
+      deviceSerial: newAssetSerial || '-',
+      status: newAssetStatus,
+      notes: newAssetNotes
+    };
+    setAssetsList(prev => [...prev, newAsset]);
+    
+    // Also auto increment totalAssets in metrics
+    setData(prev => {
+      const copy = { ...prev };
+      Object.keys(copy).forEach(m => {
+        copy[m].totalAssets = (assetsList.length + 1);
+      });
+      return copy;
+    });
+
+    setNewAssetUser('');
+    setNewAssetPosition('');
+    setNewAssetItemType('');
+    setNewAssetSerial('');
+    setNewAssetStatus('ใช้งาน');
+    setNewAssetNotes('');
+    alert('เพิ่มทรัพย์สินเข้าคลังสำเร็จ!');
+  };
+
+  const handleDeleteAsset = (sn) => {
+    if (window.confirm('คุณต้องการลบอุปกรณ์นี้ออกจากทะเบียนคลังใช่หรือไม่?')) {
+      setAssetsList(prev => prev.filter(a => a.sn !== sn));
+      
+      // Also auto decrement totalAssets in metrics
+      setData(prev => {
+        const copy = { ...prev };
+        Object.keys(copy).forEach(m => {
+          copy[m].totalAssets = Math.max(0, assetsList.length - 1);
+        });
+        return copy;
+      });
+    }
+  };
+
+  // Ticket Log Editor Handlers
+  const handleAddTicket = () => {
+    if (!newTicketIssue) {
+      alert('กรุณากรอกอาการเสีย/ปัญหา');
+      return;
+    }
+    const tickets = data[consoleMonth]?.ticketsList || [];
+    const newTicket = {
+      sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
+      date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
+      complainant: newTicketComplainant || 'ไม่ระบุชื่อ',
+      email: newTicketEmail || '-',
+      anydesk: newTicketAnydesk || '-',
+      issue: newTicketIssue,
+      cause: newTicketCause || '-',
+      duration: newTicketDuration,
+      responder: newTicketResponder || '-',
+      status: newTicketStatus,
+      cost: Number(newTicketCost) || 0
+    };
+
+    setData(prev => {
+      const monthData = prev[consoleMonth] || {};
+      const updatedList = [...(monthData.ticketsList || []), newTicket];
+      return {
+        ...prev,
+        [consoleMonth]: {
+          ...monthData,
+          ticketsList: updatedList,
+          ticketsCount: updatedList.length
+        }
+      };
+    });
+
+    setNewTicketComplainant('');
+    setNewTicketEmail('');
+    setNewTicketAnydesk('');
+    setNewTicketIssue('');
+    setNewTicketCause('');
+    setNewTicketDuration('00:30');
+    setNewTicketResponder('');
+    setNewTicketStatus('เสร็จสิ้น');
+    setNewTicketCost('0');
+    alert('เพิ่มประวัติงานแจ้งซ่อมสำเร็จ!');
+  };
+
+  const handleDeleteTicket = (sn) => {
+    if (window.confirm('คุณต้องการลบรายการแจ้งซ่อมนี้ใช่หรือไม่?')) {
+      setData(prev => {
+        const monthData = prev[consoleMonth];
+        const updatedList = (monthData.ticketsList || []).filter(t => t.sn !== sn);
+        return {
+          ...prev,
+          [consoleMonth]: {
+            ...monthData,
+            ticketsList: updatedList,
+            ticketsCount: updatedList.length
+          }
+        };
+      });
+    }
+  };
+
+  // JSON operations and reset
+  const handleExportJson = () => {
+    const backupData = {
+      data,
+      assetsList
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `it_dashboard_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportJson = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const parsed = JSON.parse(evt.target.result);
+        if (parsed.data && parsed.assetsList) {
+          setData(parsed.data);
+          setAssetsList(parsed.assetsList);
+          alert('นำเข้าข้อมูลสำรองสำเร็จ!');
+        } else {
+          alert('รูปแบบไฟล์สำรองไม่ถูกต้อง');
+        }
+      } catch (err) {
+        alert('เกิดข้อผิดพลาดในการอ่านไฟล์: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleResetToDefault = () => {
+    if (window.confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้นจากไฟล์ Excel ดั้งเดิมใช่หรือไม่? ข้อมูลที่คุณแก้ไขจะหายไปทั้งหมด')) {
+      localStorage.removeItem('it_dashboard_data');
+      localStorage.removeItem('it_dashboard_assets');
+      setData(initialDashboardData);
+      setAssetsList(initialAssetsData);
+      setCurrentMonth('2026-07');
+      setConsoleMonth('2026-07');
+      alert('รีเซ็ตข้อมูลกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว!');
+    }
+  };
 
   // Hidden file input ref for xlsx import
   const fileInputRef = useRef(null);
@@ -6320,7 +6674,14 @@ export default function App() {
           <label className="control-label">การจัดการข้อมูล</label>
           <button onClick={openEditModal} className="sidebar-btn">
             <Edit3 size={16} />
-            แก้ไขข้อมูลรายงานนี้
+            แก้ไขตัวเลขเดือนนี้
+          </button>
+          <button onClick={() => {
+            setConsoleMonth(currentMonth);
+            setActiveModal('fullConsole');
+          }} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
+            <Database size={16} />
+            ปรับเปลี่ยนข้อมูลทั้งหมด
           </button>
         </div>
 
@@ -7266,19 +7627,493 @@ export default function App() {
                       ) : (
                         <tr>
                           <td colSpan="8" style={{ textAlign: 'center' }}>ไม่พบคลังอุปกรณ์ที่ตรงตามเงื่อนไข</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                <div style={{ marginTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-                  แสดง {filteredAssetsList.length} จากทั้งหมด {assetsList.length} อุปกรณ์
-                </div>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ marginTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'right' }}>
+                แสดง {filteredAssetsList.length} จากทั้งหมด {assetsList.length} อุปกรณ์
               </div>
             </div>
           </div>
-        );
-      })()}
-    </>
-  );
+        </div>
+      );
+    })()}
+
+    {/* MODAL 7: FULL ADMINISTRATIVE DATA CUSTOMIZER PANEL */}
+    {activeModal === 'fullConsole' && (() => {
+      const consoleMonthData = data[consoleMonth] || {};
+      const uniquePositions = Array.from(new Set(assetsList.map(a => a.position).filter(Boolean))).sort();
+      
+      return (
+        <div className="modal-overlay active">
+          <div className="modal large" style={{ maxWidth: '95%', width: '1300px', height: '90vh', display: 'flex', flexDirection: 'column', backgroundColor: '#111827', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <header className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Database size={22} style={{ color: 'var(--primary)' }} />
+                <h3 style={{ margin: 0, fontSize: '1.25rem' }}>ระบบจัดการและปรับเปลี่ยนข้อมูลแดชบอร์ดทั้งหมด</h3>
+              </div>
+              <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+            </header>
+            
+            <div className="console-layout">
+              {/* Left Sidebar Navigation */}
+              <div className="console-sidebar">
+                <button onClick={() => setConsoleTab('months')} className={`console-tab-btn ${consoleTab === 'months' ? 'active' : ''}`}>📅 จัดการเดือน</button>
+                <button onClick={() => setConsoleTab('kpis')} className={`console-tab-btn ${consoleTab === 'kpis' ? 'active' : ''}`}>📈 ตัวชี้วัด KPIs</button>
+                <button onClick={() => setConsoleTab('projects')} className={`console-tab-btn ${consoleTab === 'projects' ? 'active' : ''}`}>🗒️ โครงการ & ข้อแนะนำ</button>
+                <button onClick={() => setConsoleTab('assets')} className={`console-tab-btn ${consoleTab === 'assets' ? 'active' : ''}`}>💻 คลังทรัพย์สิน IT</button>
+                <button onClick={() => setConsoleTab('tickets')} className={`console-tab-btn ${consoleTab === 'tickets' ? 'active' : ''}`}>🚨 ประวัติงาน Support</button>
+                <button onClick={() => setConsoleTab('backup')} className={`console-tab-btn ${consoleTab === 'backup' ? 'active' : ''}`} style={{ marginTop: 'auto' }}>💾 สำรอง & รีเซ็ตระบบ</button>
+              </div>
+
+              {/* Right Work Area */}
+              <div className="console-content">
+                
+                {/* TAB 1: MONTHS MANAGER */}
+                {consoleTab === 'months' && (
+                  <div>
+                    <h4 className="console-title">📅 จัดการเดือนและรายงานในระบบ</h4>
+                    <form onSubmit={handleAddMonth} className="console-form" style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
+                      <div className="console-field" style={{ flex: '1' }}>
+                        <span className="console-label">รหัสคีย์เดือน (เช่น 2026-08)</span>
+                        <input type="text" placeholder="YYYY-MM" value={newMonthKey} onChange={e => setNewMonthKey(e.target.value)} className="console-input" />
+                      </div>
+                      <div className="console-field" style={{ flex: '1' }}>
+                        <span className="console-label">ชื่อแสดงในรายงาน (เช่น สิงหาคม 2569)</span>
+                        <input type="text" placeholder="ชื่อเดือน พ.ศ." value={newMonthName} onChange={e => setNewMonthName(e.target.value)} className="console-input" />
+                      </div>
+                      <button type="submit" className="btn-save" style={{ width: 'auto', padding: '8px 20px', height: '38px' }}>เพิ่มเดือนใหม่</button>
+                    </form>
+
+                    <div className="console-table-scroll">
+                      <table className="details-table">
+                        <thead>
+                          <tr>
+                            <th>คีย์เดือน</th>
+                            <th>ชื่อเดือน</th>
+                            <th>สถานะอุปกรณ์รวม</th>
+                            <th>งาน Support</th>
+                            <th>การจัดการ</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(data).map(key => (
+                            <tr key={key}>
+                              <td><strong>{key}</strong></td>
+                              <td>{data[key].monthName}</td>
+                              <td>{data[key].totalAssets} เครื่อง</td>
+                              <td>{data[key].ticketsCount} เคส</td>
+                              <td>
+                                <button onClick={() => handleDeleteMonth(key)} className="console-delete-btn">ลบ</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: EDIT KPIS */}
+                {consoleTab === 'kpis' && (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.15rem' }}>📈 ปรับเปลี่ยนค่าตัวชี้วัด KPIs ประจำเดือน</h4>
+                      <div>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะแก้ไข:</span>
+                        <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
+                          {Object.keys(data).map(key => (
+                            <option key={key} value={key}>{data[key].monthName}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                      <div className="console-card">
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--primary)' }}>💻 ทรัพย์สิน IT</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div className="console-field">
+                            <span className="console-label">จำนวนอุปกรณ์ทั้งหมด (เครื่อง)</span>
+                            <input type="number" value={consoleMonthData.totalAssets || 0} onChange={e => handleKpiChange('totalAssets', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">มูลค่าคลังรวม (บาท)</span>
+                            <input type="number" value={consoleMonthData.assetValue || 0} onChange={e => handleKpiChange('assetValue', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">ใกล้หมดอายุ (เครื่อง)</span>
+                            <input type="number" value={consoleMonthData.assetsExpiring || 0} onChange={e => handleKpiChange('assetsExpiring', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">ชำรุด (เครื่อง)</span>
+                            <input type="number" value={consoleMonthData.assetsBroken || 0} onChange={e => handleKpiChange('assetsBroken', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">สูญหาย (เครื่อง)</span>
+                            <input type="number" value={consoleMonthData.assetsLost || 0} onChange={e => handleKpiChange('assetsLost', Number(e.target.value))} className="console-input" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="console-card">
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--violet)' }}>🚨 บริการ Support & SLA</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div className="console-field">
+                            <span className="console-label">เคสแจ้งเสียทั้งหมด (เคส)</span>
+                            <input type="number" value={consoleMonthData.ticketsCount || 0} onChange={e => handleKpiChange('ticketsCount', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">อัตราทำได้ตาม SLA (%)</span>
+                            <input type="number" step="0.1" value={consoleMonthData.slaPercent || 0} onChange={e => handleKpiChange('slaPercent', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">เฉลี่ยเวลารับเรื่อง (นาที)</span>
+                            <input type="number" value={consoleMonthData.responseTime || 0} onChange={e => handleKpiChange('responseTime', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">เฉลี่ยเวลาแก้ไขปัญหา (นาที)</span>
+                            <input type="number" value={consoleMonthData.resolutionTime || 0} onChange={e => handleKpiChange('resolutionTime', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">ความพึงพอใจลูกค้า CSAT (เต็ม 5)</span>
+                            <input type="number" step="0.01" value={consoleMonthData.csat || 0} onChange={e => handleKpiChange('csat', Number(e.target.value))} className="console-input" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="console-card">
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--secondary)' }}>💿 ลิขสิทธิ์ซอฟต์แวร์</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div className="console-field">
+                            <span className="console-label">ประเภทซอฟต์แวร์ลิขสิทธิ์</span>
+                            <input type="number" value={consoleMonthData.totalSoftware || 0} onChange={e => handleKpiChange('totalSoftware', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">เปิดใช้งานอยู่ (สิทธิ์)</span>
+                            <input type="number" value={consoleMonthData.licensesInUse || 0} onChange={e => handleKpiChange('licensesInUse', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">สิทธิ์ว่างคงเหลือ (สิทธิ์)</span>
+                            <input type="number" value={consoleMonthData.licensesVacant || 0} onChange={e => handleKpiChange('licensesVacant', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">ค่าซอฟต์แวร์รายเดือน (บาท)</span>
+                            <input type="number" value={consoleMonthData.softwareCost || 0} onChange={e => handleKpiChange('softwareCost', Number(e.target.value))} className="console-input" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="console-card">
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--success)' }}>🛡️ ความปลอดภัย IT & Repairs</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div className="console-field">
+                            <span className="console-label">สำรองข้อมูลสำเร็จ (%)</span>
+                            <input type="number" value={consoleMonthData.backupSuccess || 0} onChange={e => handleKpiChange('backupSuccess', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">เหตุความปลอดภัย (ครั้ง)</span>
+                            <input type="number" value={consoleMonthData.securityIncidents || 0} onChange={e => handleKpiChange('securityIncidents', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">งบประมาณส่งซ่อม (บาท)</span>
+                            <input type="number" value={consoleMonthData.repairCost || 0} onChange={e => handleKpiChange('repairCost', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">จำนวนชิ้นที่ส่งซ่อม (เครื่อง)</span>
+                            <input type="number" value={consoleMonthData.repairCount || 0} onChange={e => handleKpiChange('repairCount', Number(e.target.value))} className="console-input" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: PROJECTS & RECOMMENDATIONS */}
+                {consoleTab === 'projects' && (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🗒️ จัดการโครงการ & ข้อเสนอแนะสำหรับพัฒนา</h4>
+                      <div>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือน:</span>
+                        <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
+                          {Object.keys(data).map(key => (
+                            <option key={key} value={key}>{data[key].monthName}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                      <div>
+                        <h5 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>โครงการที่ดำเนินการอยู่ (Ongoing Projects)</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                          {(consoleMonthData.ongoingProjects || []).length > 0 ? (
+                            (consoleMonthData.ongoingProjects || []).map((proj, idx) => (
+                              <div key={idx} style={{ padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                  <div style={{ fontWeight: '600', fontSize: '0.85rem' }}>{proj.title}</div>
+                                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{proj.desc}</div>
+                                </div>
+                                <button onClick={() => handleDeleteProject(idx)} style={{ border: 'none', background: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
+                              </div>
+                            ))
+                          ) : (
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>ไม่มีรายการโครงการเดือนนี้</div>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                          <input type="text" placeholder="ชื่อโครงการ" value={newProjTitle} onChange={e => setNewProjTitle(e.target.value)} className="console-input" />
+                          <input type="text" placeholder="ความคืบหน้า" value={newProjDesc} onChange={e => setNewProjDesc(e.target.value)} className="console-input" />
+                          <button type="button" onClick={handleAddProject} className="btn-save" style={{ width: '100%', padding: '6px' }}>เพิ่มโครงการ</button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h5 style={{ margin: '0 0 10px 0', color: 'var(--warning)' }}>ข้อเสนอแนะเชิงวิเคราะห์ (Recommendations)</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                          {(consoleMonthData.recommendations || []).length > 0 ? (
+                            (consoleMonthData.recommendations || []).map((rec, idx) => (
+                              <div key={idx} style={{ padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ fontSize: '0.85rem' }}>{rec}</div>
+                                <button onClick={() => handleDeleteRecommendation(idx)} style={{ border: 'none', background: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
+                              </div>
+                            ))
+                          ) : (
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>ไม่มีข้อเสนอแนะสำหรับเดือนนี้</div>
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                          <textarea rows="2" placeholder="กรอกข้อเสนอแนะ..." value={newRecText} onChange={e => setNewRecText(e.target.value)} className="console-input" style={{ resize: 'vertical' }} />
+                          <button type="button" onClick={handleAddRecommendation} className="btn-save" style={{ width: '100%', padding: '6px' }}>เพิ่มข้อเสนอแนะ</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 4: ASSETS INVENTORY EDITOR */}
+                {consoleTab === 'assets' && (
+                  <div>
+                    <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor)</h4>
+                    <div className="console-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+                      <div className="console-field">
+                        <span className="console-label">ผู้เบิกใช้งาน</span>
+                        <input type="text" value={newAssetUser} onChange={e => setNewAssetUser(e.target.value)} placeholder="เช่น อมร แก้วสด" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">ตำแหน่ง/แผนก</span>
+                        <input type="text" value={newAssetPosition} onChange={e => setNewAssetPosition(e.target.value)} placeholder="เช่น Marketing" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">ประเภทอุปกรณ์หลัก*</span>
+                        <input type="text" value={newAssetItemType} onChange={e => setNewAssetItemType(e.target.value)} placeholder="เช่น Notebook Lenovo" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">หมายเลขซีเรียล</span>
+                        <input type="text" value={newAssetSerial} onChange={e => setNewAssetSerial(e.target.value)} placeholder="เช่น MC-010" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">สถานะ</span>
+                        <select value={newAssetStatus} onChange={e => setNewAssetStatus(e.target.value)} className="console-input">
+                          <option value="ใช้งาน">ใช้งาน</option>
+                          <option value="ว่าง">ว่าง</option>
+                          <option value="รอซ่อม">รอซ่อม</option>
+                          <option value="สูญหาย">สูญหาย</option>
+                        </select>
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">หมายเหตุ</span>
+                        <input type="text" value={newAssetNotes} onChange={e => setNewAssetNotes(e.target.value)} placeholder="รายละเอียด" className="console-input" />
+                      </div>
+                      <button type="button" onClick={handleAddAsset} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>เพิ่มทรัพย์สินเข้าคลัง</button>
+                    </div>
+
+                    <div className="console-table-scroll">
+                      <table className="details-table">
+                        <thead>
+                          <tr>
+                            <th>รหัส</th>
+                            <th>ชื่อผู้เบิก</th>
+                            <th>แผนก</th>
+                            <th>ประเภทอุปกรณ์</th>
+                            <th>ซีเรียล</th>
+                            <th>สถานะ</th>
+                            <th>จัดการ</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {assetsList.map((asset, idx) => (
+                            <tr key={idx}>
+                              <td>{asset.sn}</td>
+                              <td>{asset.user}</td>
+                              <td>{asset.position}</td>
+                              <td>{asset.itemType}</td>
+                              <td><strong>{asset.deviceSerial}</strong></td>
+                              <td>
+                                <span style={{ color: asset.status === 'ใช้งาน' ? 'var(--success)' : asset.status === 'รอซ่อม' ? 'red' : 'var(--warning)', fontWeight: 'bold' }}>
+                                  {asset.status}
+                                </span>
+                              </td>
+                              <td>
+                                <button onClick={() => handleDeleteAsset(asset.sn)} className="console-delete-btn">ลบ</button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 5: TICKETS SUPPORT EDITOR */}
+                {consoleTab === 'tickets' && (() => {
+                  const tickets = consoleMonthData.ticketsList || [];
+                  return (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                        <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🚨 ประวัติรับเคสแจ้งซ่อม Support</h4>
+                        <div>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะจัดการ:</span>
+                          <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
+                            {Object.keys(data).map(key => (
+                              <option key={key} value={key}>{data[key].monthName}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="console-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+                        <div className="console-field">
+                          <span className="console-label">ชื่อผู้แจ้ง</span>
+                          <input type="text" value={newTicketComplainant} onChange={e => setNewTicketComplainant(e.target.value)} placeholder="อมร แก้วสด" className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">อีเมล</span>
+                          <input type="text" value={newTicketEmail} onChange={e => setNewTicketEmail(e.target.value)} placeholder="user@domain.com" className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">AnyDesk ID</span>
+                          <input type="text" value={newTicketAnydesk} onChange={e => setNewTicketAnydesk(e.target.value)} placeholder="เช่น 1 234 567" className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">อาการที่แจ้ง*</span>
+                          <input type="text" value={newTicketIssue} onChange={e => setNewTicketIssue(e.target.value)} placeholder="จอดับ, พิมพ์ไม่ได้" className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">สาเหตุการเสีย</span>
+                          <input type="text" value={newTicketCause} onChange={e => setNewTicketCause(e.target.value)} placeholder="เสื่อมตามสภาพ" className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">ผู้ดำเนินงาน (IT)</span>
+                          <input type="text" value={newTicketResponder} onChange={e => setNewTicketResponder(e.target.value)} placeholder="ชื่อเจ้าหน้าที่" className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">เวลาแก้ (HH:MM)</span>
+                          <input type="text" value={newTicketDuration} onChange={e => setNewTicketDuration(e.target.value)} className="console-input" />
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">สถานะ</span>
+                          <select value={newTicketStatus} onChange={e => setNewTicketStatus(e.target.value)} className="console-input">
+                            <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                            <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                            <option value="จ่ายเงินแล้ว">จ่ายเงินแล้ว (ซื้ออุปกรณ์)</option>
+                          </select>
+                        </div>
+                        <div className="console-field">
+                          <span className="console-label">ค่าใช้จ่าย (บาท)</span>
+                          <input type="number" value={newTicketCost} onChange={e => setNewTicketCost(e.target.value)} className="console-input" />
+                        </div>
+                        <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>บันทึกเคสแจ้งซ่อม</button>
+                      </div>
+
+                      <div className="console-table-scroll">
+                        <table className="details-table">
+                          <thead>
+                            <tr>
+                              <th>SN</th>
+                              <th>ผู้แจ้ง</th>
+                              <th>เคส/ปัญหา</th>
+                              <th>สาเหตุ</th>
+                              <th>เวลา</th>
+                              <th>ค่าใช้จ่าย</th>
+                              <th>สถานะ</th>
+                              <th>จัดการ</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {tickets.map((t, idx) => (
+                              <tr key={idx}>
+                                <td>{t.sn}</td>
+                                <td>
+                                  <div><strong>{t.complainant}</strong></div>
+                                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{t.email}</div>
+                                </td>
+                                <td>{t.issue}</td>
+                                <td>{t.cause}</td>
+                                <td>{t.duration}</td>
+                                <td>{t.cost > 0 ? formatThaiBaht(t.cost) : '-'}</td>
+                                <td>
+                                  <span style={{ color: t.status === 'เสร็จสิ้น' || t.status === 'จ่ายเงินแล้ว' ? 'var(--success)' : 'var(--warning)', fontWeight: 'bold' }}>
+                                    {t.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  <button onClick={() => handleDeleteTicket(t.sn)} className="console-delete-btn">ลบ</button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* TAB 6: BACKUP & SYSTEM RESET */}
+                {consoleTab === 'backup' && (
+                  <div>
+                    <h4 className="console-title">💾 สำรองข้อมูลและรีเซ็ตการตั้งค่าระบบ</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div className="console-card">
+                        <h5 style={{ margin: '0 0 8px 0', color: 'var(--success)' }}>📥 ส่งออกไฟล์ข้อมูลสำรอง (Backup to JSON)</h5>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                          ดาวน์โหลดข้อมูลแดชบอร์ด ทะเบียนอุปกรณ์ IT และประวัติแจ้งซ่อมทั้งหมดเก็บไว้ในรูปแบบไฟล์ .json
+                        </p>
+                        <button type="button" onClick={handleExportJson} className="btn-save" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'var(--success)', borderColor: 'var(--success)' }}>
+                          ดาวน์โหลดไฟล์สำรองข้อมูล (.json)
+                        </button>
+                      </div>
+
+                      <div className="console-card">
+                        <h5 style={{ margin: '0 0 8px 0', color: 'var(--primary)' }}>📤 นำเข้าไฟล์ข้อมูลสำรอง (Import JSON Backup)</h5>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                          เลือกไฟล์สำรองข้อมูลนามสกุล .json เพื่อกู้คืนสถานะข้อมูลเดิมทั้งหมด
+                        </p>
+                        <input type="file" accept=".json" onChange={handleImportJson} style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)' }} />
+                      </div>
+
+                      <div className="console-card" style={{ border: '1px solid rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
+                        <h5 style={{ margin: '0 0 8px 0', color: 'rgb(239, 68, 68)' }}>⚠️ รีเซ็ตระบบใหม่ทั้งหมด (Reset System)</h5>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                          ลบข้อมูลที่ถูกแก้ไขในเว็บเบราว์เซอร์ทั้งหมด และย้อนกลับไปใช้ข้อมูลประวัติดั้งเดิมจากไฟล์ Excel ในโฟลเดอร์ Update
+                        </p>
+                        <button type="button" onClick={handleResetToDefault} className="sidebar-btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'rgb(239, 68, 68)', border: 'none', color: 'white' }}>
+                          ล้างข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    })()}
+  </>
+);
 }
