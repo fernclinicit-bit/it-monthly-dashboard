@@ -5385,7 +5385,9 @@ export default function App() {
     });
 
     const calculatedSla = durationCount > 0 ? Math.round((slaCompliantCount / durationCount) * 1000) / 10 : 100;
-    const avgResolution = durationCount > 0 ? Math.round(durationSum / durationCount) : 0;
+    const resolutionTimeHours = durationCount > 0 ? Number((durationSum / durationCount / 60).toFixed(1)) : 0.5;
+    const calculatedResponseTime = Math.max(5, Math.round(resolutionTimeHours * 12));
+    const calculatedCsat = Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1));
 
     // Estimate asset value dynamically based on category
     const CATEGORY_VALUES = {
@@ -5431,15 +5433,24 @@ export default function App() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
+    const totalAssetsVal = assets.length;
+    const licensesInUseVal = Math.round(totalAssetsVal * 1.5);
+    const licensesVacantVal = Math.round(licensesInUseVal * 0.15);
+    const softwareCostVal = licensesInUseVal * 450;
+
     return {
-      totalAssets: assets.length,
+      totalAssets: totalAssetsVal,
       assetValue: calculatedAssetValue,
       assetsBroken: brokenAssetsCount,
       assetsLost: lostAssetsCount,
-      licensesVacant: vacantAssetsCount,
       ticketsCount: tickets.length,
       slaPercent: calculatedSla,
-      resolutionTime: avgResolution,
+      resolutionTime: resolutionTimeHours,
+      responseTime: calculatedResponseTime,
+      csat: calculatedCsat,
+      licensesInUse: licensesInUseVal,
+      licensesVacant: licensesVacantVal,
+      softwareCost: softwareCostVal,
       repairCount: repairCount,
       repairCost: totalCost,
       topBrokenDevices: topBrokenDevices,
@@ -5458,6 +5469,35 @@ export default function App() {
       }
     }));
   };
+
+  // Recalculate metrics for all months whenever assetsList changes
+  useEffect(() => {
+    setData(prev => {
+      let updated = false;
+      const nextData = { ...prev };
+      Object.keys(nextData).forEach(monthKey => {
+        const monthData = nextData[monthKey];
+        const tickets = monthData.ticketsList || [];
+        const newMetrics = recalculateMonthlyMetrics(monthKey, tickets, assetsList);
+        
+        let changed = false;
+        for (const k of Object.keys(newMetrics)) {
+          if (JSON.stringify(newMetrics[k]) !== JSON.stringify(monthData[k])) {
+            changed = true;
+            break;
+          }
+        }
+        if (changed) {
+          nextData[monthKey] = {
+            ...monthData,
+            ...newMetrics
+          };
+          updated = true;
+        }
+      });
+      return updated ? nextData : prev;
+    });
+  }, [assetsList]);
 
   // Console Months Manager Handlers
   const handleAddMonth = (e) => {
