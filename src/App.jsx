@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
+import * as XLSX from 'xlsx';
 import { 
   Laptop, 
   Ticket, 
@@ -14,7 +15,10 @@ import {
   AlertTriangle,
   Clock,
   ThumbsUp,
-  X
+  X,
+  Upload,
+  Download,
+  FileSpreadsheet
 } from 'lucide-react';
 
 // Initial Mock Data (Google DeepMind Research IT Operations)
@@ -163,9 +167,13 @@ export default function App() {
   const [data, setData] = useState(initialDashboardData);
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices'
+  const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
   
   // Form input states
   const [formInputs, setFormInputs] = useState({});
+
+  // Hidden file input ref for xlsx import
+  const fileInputRef = useRef(null);
 
   // Chart canvas refs
   const assetCanvasRef = useRef(null);
@@ -332,6 +340,288 @@ export default function App() {
     };
   }, [currentMonth, data]);
 
+  // ========================================
+  // XLSX IMPORT / EXPORT / TEMPLATE FUNCTIONS
+  // ========================================
+
+  // Define the field mapping for the main "Dashboard" sheet
+  const FIELD_MAP = [
+    { key: 'monthName', header: 'เดือน (Month Name)', example: 'กรกฎาคม 2026' },
+    { key: 'monthKey', header: 'รหัสเดือน (Month Key, เช่น 2026-07)', example: '2026-07' },
+    // Asset
+    { key: 'totalAssets', header: 'จำนวนอุปกรณ์ทั้งหมด', example: 1450 },
+    { key: 'assetValue', header: 'มูลค่าทรัพย์สิน IT (บาท)', example: 85200000 },
+    { key: 'assetsExpiring', header: 'อุปกรณ์ใกล้หมดอายุ', example: 38 },
+    { key: 'assetsBroken', header: 'อุปกรณ์ชำรุด', example: 8 },
+    { key: 'assetsLost', header: 'อุปกรณ์สูญหาย', example: 1 },
+    // Support
+    { key: 'ticketsCount', header: 'จำนวน Ticket', example: 280 },
+    { key: 'slaPercent', header: 'SLA Compliance (%)', example: 98.8 },
+    { key: 'responseTime', header: 'Response Time เฉลี่ย (นาที)', example: 8 },
+    { key: 'resolutionTime', header: 'Resolution Time เฉลี่ย (ชม.)', example: 1.8 },
+    { key: 'csat', header: 'CSAT คะแนนความพึงพอใจ (จาก 5)', example: 4.9 },
+    // Software
+    { key: 'totalSoftware', header: 'โปรแกรมทั้งหมด', example: 45 },
+    { key: 'licensesInUse', header: 'License ใช้งาน', example: 2450 },
+    { key: 'licensesVacant', header: 'License ว่าง', example: 350 },
+    { key: 'softwareCost', header: 'ค่าใช้จ่าย Software (บาท/เดือน)', example: 1280000 },
+    { key: 'softwareExpiring', header: 'โปรแกรมใกล้หมดอายุ', example: 3 },
+    // Security
+    { key: 'backupSuccess', header: 'Backup สำเร็จ (%)', example: 99.98 },
+    { key: 'securityIncidents', header: 'Security Incident (ครั้ง)', example: 0 },
+    { key: 'antivirusCoverage', header: 'Antivirus Coverage (%)', example: 100 },
+    { key: 'mfaCoverage', header: 'MFA Coverage (%)', example: 100 },
+    // Repair
+    { key: 'repairCount', header: 'จำนวนการซ่อม', example: 12 },
+    { key: 'repairCost', header: 'ค่าใช้จ่ายการซ่อม (บาท)', example: 145000 },
+    // Improvement
+    { key: 'automationsDone', header: 'Automation ที่ทำเสร็จ', example: 5 },
+    { key: 'aiApps', header: 'AI ที่นำมาใช้', example: 4 },
+    { key: 'hoursSaved', header: 'ชั่วโมงที่ลดลงจาก Automation', example: 320 },
+  ];
+
+  // Download a blank .xlsx template
+  const downloadTemplate = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1: Dashboard Data (main metrics)
+    const dashHeaders = FIELD_MAP.map(f => f.header);
+    const dashExamples = FIELD_MAP.map(f => f.example);
+    const dashWs = XLSX.utils.aoa_to_sheet([dashHeaders, dashExamples]);
+    // Set column widths
+    dashWs['!cols'] = dashHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
+    XLSX.utils.book_append_sheet(wb, dashWs, 'Dashboard');
+
+    // Sheet 2: Top 10 อุปกรณ์เสียบ่อย
+    const repairHeaders = ['รหัสเดือน (Month Key)', 'ชื่ออุปกรณ์', 'จำนวนครั้งที่เสีย', 'ค่าใช้จ่ายซ่อม (บาท)'];
+    const repairExample = ['2026-07', 'Google TPU v5e Node', 4, 80000];
+    const repairWs = XLSX.utils.aoa_to_sheet([repairHeaders, repairExample]);
+    repairWs['!cols'] = repairHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
+    XLSX.utils.book_append_sheet(wb, repairWs, 'Top10 อุปกรณ์เสียบ่อย');
+
+    // Sheet 3: ค่าใช้จ่ายต่อแผนก
+    const deptHeaders = ['รหัสเดือน (Month Key)', 'ชื่อแผนก', 'ค่าใช้จ่ายซ่อม (บาท)'];
+    const deptExample = ['2026-07', 'AI Research', 85000];
+    const deptWs = XLSX.utils.aoa_to_sheet([deptHeaders, deptExample]);
+    deptWs['!cols'] = deptHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
+    XLSX.utils.book_append_sheet(wb, deptWs, 'ค่าใช้จ่ายต่อแผนก');
+
+    // Sheet 4: โครงการที่กำลังดำเนินการ
+    const projHeaders = ['รหัสเดือน (Month Key)', 'ชื่อโครงการ', 'รายละเอียดความคืบหน้า'];
+    const projExample = ['2026-07', 'Gemini Auto-IT Agent', 'นำโมเดล Gemini มาช่วยตอบและแก้ปัญหาไอที คืบหน้า 85%'];
+    const projWs = XLSX.utils.aoa_to_sheet([projHeaders, projExample]);
+    projWs['!cols'] = projHeaders.map(h => ({ wch: Math.max(h.length + 4, 25) }));
+    XLSX.utils.book_append_sheet(wb, projWs, 'โครงการดำเนินการ');
+
+    // Sheet 5: Recommendation
+    const recHeaders = ['รหัสเดือน (Month Key)', 'ข้อเสนอแนะ'];
+    const recExample = ['2026-07', 'แนะนำจัดทำแผนงบประมาณเพื่อเปลี่ยนผ่านจาก TPU v4 Nodes'];
+    const recWs = XLSX.utils.aoa_to_sheet([recHeaders, recExample]);
+    recWs['!cols'] = recHeaders.map(h => ({ wch: Math.max(h.length + 4, 40) }));
+    XLSX.utils.book_append_sheet(wb, recWs, 'Recommendation');
+
+    XLSX.writeFile(wb, 'IT_Dashboard_Template.xlsx');
+  };
+
+  // Export current data to .xlsx
+  const exportToXlsx = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1: Dashboard metrics (one row per month)
+    const dashHeaders = FIELD_MAP.map(f => f.header);
+    const rows = Object.entries(data).map(([monthKey, d]) => {
+      return FIELD_MAP.map(f => {
+        if (f.key === 'monthKey') return monthKey;
+        return d[f.key] ?? '';
+      });
+    });
+    const dashWs = XLSX.utils.aoa_to_sheet([dashHeaders, ...rows]);
+    dashWs['!cols'] = dashHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
+    XLSX.utils.book_append_sheet(wb, dashWs, 'Dashboard');
+
+    // Sheet 2: Top 10 broken devices (all months)
+    const repairHeaders = ['รหัสเดือน', 'ชื่ออุปกรณ์', 'จำนวนครั้งที่เสีย', 'ค่าใช้จ่ายซ่อม (บาท)'];
+    const repairRows = [];
+    Object.entries(data).forEach(([monthKey, d]) => {
+      (d.topBrokenDevices || []).forEach(dev => {
+        repairRows.push([monthKey, dev.name, dev.count, dev.cost]);
+      });
+    });
+    const repairWs = XLSX.utils.aoa_to_sheet([repairHeaders, ...repairRows]);
+    repairWs['!cols'] = repairHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
+    XLSX.utils.book_append_sheet(wb, repairWs, 'Top10 อุปกรณ์เสียบ่อย');
+
+    // Sheet 3: Department costs (all months)
+    const deptHeaders = ['รหัสเดือน', 'ชื่อแผนก', 'ค่าใช้จ่ายซ่อม (บาท)'];
+    const deptRows = [];
+    Object.entries(data).forEach(([monthKey, d]) => {
+      Object.entries(d.deptCosts || {}).forEach(([dept, cost]) => {
+        deptRows.push([monthKey, dept, cost]);
+      });
+    });
+    const deptWs = XLSX.utils.aoa_to_sheet([deptHeaders, ...deptRows]);
+    deptWs['!cols'] = deptHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
+    XLSX.utils.book_append_sheet(wb, deptWs, 'ค่าใช้จ่ายต่อแผนก');
+
+    // Sheet 4: Ongoing projects (all months)
+    const projHeaders = ['รหัสเดือน', 'ชื่อโครงการ', 'รายละเอียดความคืบหน้า'];
+    const projRows = [];
+    Object.entries(data).forEach(([monthKey, d]) => {
+      (d.ongoingProjects || []).forEach(proj => {
+        projRows.push([monthKey, proj.title, proj.desc]);
+      });
+    });
+    const projWs = XLSX.utils.aoa_to_sheet([projHeaders, ...projRows]);
+    projWs['!cols'] = projHeaders.map(h => ({ wch: Math.max(h.length + 4, 25) }));
+    XLSX.utils.book_append_sheet(wb, projWs, 'โครงการดำเนินการ');
+
+    // Sheet 5: Recommendations (all months)
+    const recHeaders = ['รหัสเดือน', 'ข้อเสนอแนะ'];
+    const recRows = [];
+    Object.entries(data).forEach(([monthKey, d]) => {
+      (d.recommendations || []).forEach(rec => {
+        recRows.push([monthKey, rec]);
+      });
+    });
+    const recWs = XLSX.utils.aoa_to_sheet([recHeaders, ...recRows]);
+    recWs['!cols'] = recHeaders.map(h => ({ wch: Math.max(h.length + 4, 40) }));
+    XLSX.utils.book_append_sheet(wb, recWs, 'Recommendation');
+
+    XLSX.writeFile(wb, `IT_Dashboard_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
+  };
+
+  // Import data from uploaded .xlsx file
+  const handleImportXlsx = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const binaryStr = evt.target.result;
+        const wb = XLSX.read(binaryStr, { type: 'binary' });
+
+        // --- Parse Sheet 1: Dashboard ---
+        const dashSheet = wb.Sheets[wb.SheetNames[0]];
+        if (!dashSheet) throw new Error('ไม่พบ Sheet แรก (Dashboard)');
+        const dashRows = XLSX.utils.sheet_to_json(dashSheet);
+        if (dashRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
+
+        const newData = {};
+
+        dashRows.forEach(row => {
+          // Find the month key column
+          const monthKeyCol = FIELD_MAP.find(f => f.key === 'monthKey');
+          const monthNameCol = FIELD_MAP.find(f => f.key === 'monthName');
+          const monthKey = String(row[monthKeyCol.header] || '').trim();
+          const monthName = String(row[monthNameCol.header] || '').trim();
+
+          if (!monthKey || !monthName) return; // Skip empty rows
+
+          // Build the month data object from the row
+          const monthData = {
+            monthName: monthName,
+            topBrokenDevices: [],
+            deptCosts: {},
+            ongoingProjects: [],
+            recommendations: [],
+            softwareExpiringDetails: [],
+            assetsExpiringDetails: []
+          };
+
+          FIELD_MAP.forEach(field => {
+            if (field.key === 'monthKey' || field.key === 'monthName') return;
+            const rawVal = row[field.header];
+            monthData[field.key] = rawVal !== undefined && rawVal !== '' ? Number(rawVal) : 0;
+          });
+
+          newData[monthKey] = monthData;
+        });
+
+        // --- Parse Sheet 2: Top 10 Broken Devices (optional) ---
+        if (wb.SheetNames.length >= 2) {
+          const repairSheet = wb.Sheets[wb.SheetNames[1]];
+          if (repairSheet) {
+            const repairRows = XLSX.utils.sheet_to_json(repairSheet);
+            repairRows.forEach(row => {
+              const mk = String(Object.values(row)[0] || '').trim();
+              if (mk && newData[mk]) {
+                newData[mk].topBrokenDevices.push({
+                  name: String(Object.values(row)[1] || ''),
+                  count: Number(Object.values(row)[2]) || 0,
+                  cost: Number(Object.values(row)[3]) || 0
+                });
+              }
+            });
+          }
+        }
+
+        // --- Parse Sheet 3: Department Costs (optional) ---
+        if (wb.SheetNames.length >= 3) {
+          const deptSheet = wb.Sheets[wb.SheetNames[2]];
+          if (deptSheet) {
+            const deptRows = XLSX.utils.sheet_to_json(deptSheet);
+            deptRows.forEach(row => {
+              const mk = String(Object.values(row)[0] || '').trim();
+              if (mk && newData[mk]) {
+                const deptName = String(Object.values(row)[1] || '');
+                const deptCost = Number(Object.values(row)[2]) || 0;
+                if (deptName) newData[mk].deptCosts[deptName] = deptCost;
+              }
+            });
+          }
+        }
+
+        // --- Parse Sheet 4: Ongoing Projects (optional) ---
+        if (wb.SheetNames.length >= 4) {
+          const projSheet = wb.Sheets[wb.SheetNames[3]];
+          if (projSheet) {
+            const projRows = XLSX.utils.sheet_to_json(projSheet);
+            projRows.forEach(row => {
+              const mk = String(Object.values(row)[0] || '').trim();
+              if (mk && newData[mk]) {
+                newData[mk].ongoingProjects.push({
+                  title: String(Object.values(row)[1] || ''),
+                  desc: String(Object.values(row)[2] || '')
+                });
+              }
+            });
+          }
+        }
+
+        // --- Parse Sheet 5: Recommendations (optional) ---
+        if (wb.SheetNames.length >= 5) {
+          const recSheet = wb.Sheets[wb.SheetNames[4]];
+          if (recSheet) {
+            const recRows = XLSX.utils.sheet_to_json(recSheet);
+            recRows.forEach(row => {
+              const mk = String(Object.values(row)[0] || '').trim();
+              if (mk && newData[mk]) {
+                const recText = String(Object.values(row)[1] || '');
+                if (recText) newData[mk].recommendations.push(recText);
+              }
+            });
+          }
+        }
+
+        // Update state
+        const monthKeys = Object.keys(newData);
+        if (monthKeys.length === 0) throw new Error('ไม่พบข้อมูลเดือนที่สามารถนำเข้าได้');
+
+        setData(newData);
+        setCurrentMonth(monthKeys[0]);
+        setImportStatus({ type: 'success', message: `นำเข้าสำเร็จ! พบข้อมูล ${monthKeys.length} เดือน` });
+        setTimeout(() => setImportStatus(null), 4000);
+      } catch (err) {
+        setImportStatus({ type: 'error', message: `นำเข้าล้มเหลว: ${err.message}` });
+        setTimeout(() => setImportStatus(null), 5000);
+      }
+    };
+    reader.readAsBinaryString(file);
+    // Reset the file input so re-uploading the same file triggers onChange
+    e.target.value = '';
+  };
+
   // Sync state data with form inputs when opening the edit modal
   const openEditModal = () => {
     setFormInputs({
@@ -469,6 +759,45 @@ export default function App() {
             <Edit3 size={16} />
             แก้ไขข้อมูลรายงานนี้
           </button>
+        </div>
+
+        {/* XLSX Database Operations */}
+        <div className="control-group">
+          <label className="control-label">ฐานข้อมูล Excel (.xlsx)</label>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".xlsx,.xls"
+            style={{ display: 'none' }}
+            onChange={handleImportXlsx}
+          />
+          <button onClick={() => fileInputRef.current?.click()} className="sidebar-btn" style={{ backgroundColor: '#059669' }}>
+            <Upload size={16} />
+            นำเข้าข้อมูลจาก Excel
+          </button>
+          <button onClick={exportToXlsx} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
+            <Download size={16} />
+            ส่งออกข้อมูลเป็น Excel
+          </button>
+          <button onClick={downloadTemplate} className="sidebar-btn secondary" style={{ marginTop: '6px' }}>
+            <FileSpreadsheet size={16} />
+            ดาวน์โหลดเทมเพลต Excel
+          </button>
+          {importStatus && (
+            <div style={{
+              marginTop: '8px',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '0.78rem',
+              fontWeight: '500',
+              backgroundColor: importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+              color: importStatus.type === 'success' ? 'var(--success)' : 'var(--danger)',
+              border: `1px solid ${importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+            }}>
+              {importStatus.type === 'success' ? <CheckCircle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> : <AlertTriangle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} />}
+              {importStatus.message}
+            </div>
+          )}
         </div>
 
         {/* PDF Printing Trigger */}
