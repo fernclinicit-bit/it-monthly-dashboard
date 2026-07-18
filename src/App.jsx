@@ -321,6 +321,20 @@ export default function App() {
     recWs['!cols'] = recHeaders.map(h => ({ wch: Math.max(h.length + 4, 40) }));
     XLSX.utils.book_append_sheet(wb, recWs, 'Recommendation');
 
+    // Sheet 6: อุปกรณ์ใกล้หมดอายุ (Expiring Assets Details)
+    const expAssetHeaders = ['รหัสเดือน (Month Key)', 'รหัสทรัพย์สิน', 'ประเภท', 'รุ่น/โมเดล', 'แผนก', 'วันที่หมดอายุ'];
+    const expAssetExample = ['2026-07', 'AST-TPU-042', 'Server Node', 'Google TPU v4 Node', 'AI Research', '10 ส.ค. 2026'];
+    const expAssetWs = XLSX.utils.aoa_to_sheet([expAssetHeaders, expAssetExample]);
+    expAssetWs['!cols'] = expAssetHeaders.map(h => ({ wch: Math.max(h.length + 4, 20) }));
+    XLSX.utils.book_append_sheet(wb, expAssetWs, 'อุปกรณ์ใกล้หมดอายุ');
+
+    // Sheet 7: โปรแกรมใกล้หมดอายุ (Expiring Software Details)
+    const expSwHeaders = ['รหัสเดือน (Month Key)', 'ชื่อซอฟต์แวร์', 'จำนวน Licenses', 'วันหมดสัญญา', 'สถานะ'];
+    const expSwExample = ['2026-07', 'Google Cloud Platform', 500, '15 ส.ค. 2026', 'ใกล้หมดอายุ'];
+    const expSwWs = XLSX.utils.aoa_to_sheet([expSwHeaders, expSwExample]);
+    expSwWs['!cols'] = expSwHeaders.map(h => ({ wch: Math.max(h.length + 4, 22) }));
+    XLSX.utils.book_append_sheet(wb, expSwWs, 'โปรแกรมใกล้หมดอายุ');
+
     XLSX.writeFile(wb, 'IT_Dashboard_Template.xlsx');
   };
 
@@ -387,6 +401,30 @@ export default function App() {
     const recWs = XLSX.utils.aoa_to_sheet([recHeaders, ...recRows]);
     recWs['!cols'] = recHeaders.map(h => ({ wch: Math.max(h.length + 4, 40) }));
     XLSX.utils.book_append_sheet(wb, recWs, 'Recommendation');
+
+    // Sheet 6: Expiring assets details (all months)
+    const expAssetHeaders = ['รหัสเดือน', 'รหัสทรัพย์สิน', 'ประเภท', 'รุ่น/โมเดล', 'แผนก', 'วันที่หมดอายุ'];
+    const expAssetRows = [];
+    Object.entries(data).forEach(([monthKey, d]) => {
+      (d.assetsExpiringDetails || []).forEach(a => {
+        expAssetRows.push([monthKey, a.id, a.type, a.model, a.dept, a.expDate]);
+      });
+    });
+    const expAssetWs = XLSX.utils.aoa_to_sheet([expAssetHeaders, ...expAssetRows]);
+    expAssetWs['!cols'] = expAssetHeaders.map(h => ({ wch: Math.max(h.length + 4, 20) }));
+    XLSX.utils.book_append_sheet(wb, expAssetWs, 'อุปกรณ์ใกล้หมดอายุ');
+
+    // Sheet 7: Expiring software details (all months)
+    const expSwHeaders = ['รหัสเดือน', 'ชื่อซอฟต์แวร์', 'จำนวน Licenses', 'วันหมดสัญญา', 'สถานะ'];
+    const expSwRows = [];
+    Object.entries(data).forEach(([monthKey, d]) => {
+      (d.softwareExpiringDetails || []).forEach(s => {
+        expSwRows.push([monthKey, s.name, s.licenses, s.expiringDate, s.status]);
+      });
+    });
+    const expSwWs = XLSX.utils.aoa_to_sheet([expSwHeaders, ...expSwRows]);
+    expSwWs['!cols'] = expSwHeaders.map(h => ({ wch: Math.max(h.length + 4, 22) }));
+    XLSX.utils.book_append_sheet(wb, expSwWs, 'โปรแกรมใกล้หมดอายุ');
 
     XLSX.writeFile(wb, `IT_Dashboard_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
   };
@@ -501,6 +539,45 @@ export default function App() {
               if (mk && newData[mk]) {
                 const recText = String(cols[1] || '');
                 if (recText) newData[mk].recommendations.push(recText);
+              }
+            });
+          }
+        }
+
+        // --- Parse Sheet 6: Expiring Assets Details (optional) ---
+        if (wb.SheetNames.length >= 6) {
+          const expAssetSheet = wb.Sheets[wb.SheetNames[5]];
+          if (expAssetSheet) {
+            const rows = XLSX.utils.sheet_to_json(expAssetSheet, { header: 1 }).slice(1);
+            rows.forEach(cols => {
+              const mk = String(cols[0] || '').trim();
+              if (mk && newData[mk]) {
+                newData[mk].assetsExpiringDetails.push({
+                  id: String(cols[1] || ''),
+                  type: String(cols[2] || ''),
+                  model: String(cols[3] || ''),
+                  dept: String(cols[4] || ''),
+                  expDate: String(cols[5] || '')
+                });
+              }
+            });
+          }
+        }
+
+        // --- Parse Sheet 7: Expiring Software Details (optional) ---
+        if (wb.SheetNames.length >= 7) {
+          const expSwSheet = wb.Sheets[wb.SheetNames[6]];
+          if (expSwSheet) {
+            const rows = XLSX.utils.sheet_to_json(expSwSheet, { header: 1 }).slice(1);
+            rows.forEach(cols => {
+              const mk = String(cols[0] || '').trim();
+              if (mk && newData[mk]) {
+                newData[mk].softwareExpiringDetails.push({
+                  name: String(cols[1] || ''),
+                  licenses: Number(cols[2]) || 0,
+                  expiringDate: String(cols[3] || ''),
+                  status: String(cols[4] || '')
+                });
               }
             });
           }
