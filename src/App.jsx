@@ -23,8 +23,8 @@ import {
 
 // Initial blank data - use Excel import to load real data
 const initialDashboardData = {
-  "2026-07": {
-    monthName: "กรกฎาคม 2026",
+  "blank": {
+    monthName: "รอนำเข้าข้อมูล",
     // Asset
     totalAssets: 0,
     assetValue: 0,
@@ -66,7 +66,7 @@ const initialDashboardData = {
 
 export default function App() {
   const [data, setData] = useState(initialDashboardData);
-  const [currentMonth, setCurrentMonth] = useState("2026-07");
+  const [currentMonth, setCurrentMonth] = useState("blank");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
   
