@@ -8547,41 +8547,60 @@ export default function App() {
 
                       return (
                         <div>
-                          <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
-                            <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>รายการปิดเคสใบงานซ่อมแซม (IT Close Work)</h4>
-                          </div>
-
-                          <div className="lark-field-group">
-                            <label>เลือกใบงานที่ยังไม่ได้ปิด (กำลังดำเนินการ) <span>*</span></label>
-                            {pendingTickets.length > 0 ? (
-                              <select value={selectedPendingTicketSn} onChange={e => {
-                                setSelectedPendingTicketSn(e.target.value);
-                                setLarkTicketStatus('เสร็จสิ้น');
-                              }} className="lark-input" required={larkTicketRole === 'it'}>
-                                <option value="">-- กรุณาเลือกใบงานที่ต้องการปิด --</option>
-                                {pendingTickets.map(t => (
-                                  <option key={t.sn} value={t.sn}>
-                                    [SN:{t.sn}] {t.complainant} - {t.issue}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <div style={{ padding: '12px', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold', textAlign: 'center' }}>
-                                🎉 ยินดีด้วย! ไม่มีใบงานซ่อมที่ค้างคาอยู่ในเดือนนี้
-                              </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: '12px', marginBottom: '16px' }}>
+                            <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>
+                              {selectedTicket ? `🔧 ปิดใบงานซ่อมแซม [SN: ${selectedTicket.sn}]` : '📋 รายการงานซ่อมที่ยังไม่ได้ปิด (กำลังดำเนินการ)'}
+                            </h4>
+                            {selectedTicket && (
+                              <button type="button" onClick={() => setSelectedPendingTicketSn('')} style={{ padding: '4px 10px', fontSize: '0.75rem', backgroundColor: '#e5e7eb', color: '#475569', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                ย้อนกลับไปรายการงาน
+                              </button>
                             )}
                           </div>
 
-                          {selectedTicket && (
-                            <div style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', marginBottom: '16px', fontSize: '0.8rem' }}>
-                              <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>รายละเอียดการแจ้งเรื่อง:</div>
-                              <div>👤 <strong>ผู้แจ้ง:</strong> {selectedTicket.complainant} (เมล: {selectedTicket.email} / AnyDesk: {selectedTicket.anydesk})</div>
-                              <div style={{ marginTop: '3px' }}>⚠️ <strong>ปัญหา:</strong> {selectedTicket.issue}</div>
-                            </div>
-                          )}
+                          {!selectedTicket ? (
+                            /* View 1: List of pending tickets */
+                            pendingTickets.length > 0 ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '350px', overflowY: 'auto', paddingRight: '4px' }}>
+                                {pendingTickets.map(t => (
+                                  <div key={t.sn} style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ flex: '1', paddingRight: '12px' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                        <span style={{ backgroundColor: '#fee2e2', color: '#ef4444', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold' }}>รหัส #{t.sn}</span>
+                                        <strong style={{ fontSize: '0.85rem', color: '#1f2937' }}>{t.complainant}</strong>
+                                        <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>({t.date})</span>
+                                      </div>
+                                      <div style={{ fontSize: '0.8rem', color: '#4b5563' }}>
+                                        <strong>อาการเสีย:</strong> {t.issue}
+                                      </div>
+                                    </div>
+                                    <button type="button" onClick={() => {
+                                      setSelectedPendingTicketSn(String(t.sn));
+                                      setLarkTicketResponder('');
+                                      setLarkTicketDuration('00:30');
+                                      setLarkTicketCause('');
+                                      setLarkTicketCost('0');
+                                      setLarkTicketStatus('เสร็จสิ้น');
+                                    }} style={{ padding: '6px 12px', fontSize: '0.75rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                                      เลือกและปิดงาน
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div style={{ padding: '24px 12px', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold', textAlign: 'center' }}>
+                                🎉 ไม่มีงานซ่อมที่ค้างคาอยู่ในขณะนี้ ทุกใบงานได้รับการแก้ไขเรียบร้อยแล้ว
+                              </div>
+                            )
+                          ) : (
+                            /* View 2: Form to close the selected ticket */
+                            <div>
+                              <div style={{ padding: '12px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', marginBottom: '16px', fontSize: '0.8rem' }}>
+                                <div style={{ fontWeight: 'bold', color: '#1e40af', marginBottom: '4px' }}>ข้อมูลผู้แจ้ง:</div>
+                                <div>👤 <strong>ผู้แจ้ง:</strong> {selectedTicket.complainant} (เมล: {selectedTicket.email} / AnyDesk: {selectedTicket.anydesk})</div>
+                                <div>⚠️ <strong>ปัญหาที่พบ:</strong> {selectedTicket.issue}</div>
+                              </div>
 
-                          {selectedTicket && (
-                            <>
                               <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
                                   <label>ผู้ดำเนินงาน (ช่าง IT) <span>*</span></label>
@@ -8611,7 +8630,7 @@ export default function App() {
                                   <input type="number" className="lark-input" value={larkTicketCost} onChange={e => setLarkTicketCost(e.target.value)} />
                                 </div>
                               </div>
-                            </>
+                            </div>
                           )}
                         </div>
                       );
@@ -8660,7 +8679,9 @@ export default function App() {
                   </div>
                 )}
 
-                <button type="submit" className="lark-submit-btn">ส่งบันทึกข้อมูล (Submit Record)</button>
+                {(!larkSubmitted && (larkFormType !== 'ticket' || larkTicketRole !== 'it' || selectedPendingTicketSn !== '')) && (
+                  <button type="submit" className="lark-submit-btn">ส่งบันทึกข้อมูล (Submit Record)</button>
+                )}
               </form>
             )}
           </div>
