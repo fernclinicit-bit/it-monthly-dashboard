@@ -25,7 +25,11 @@ import {
   FileSpreadsheet,
   FileText,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Laptop,
+  FileCode,
+  ShieldCheck,
+  Wrench
 } from 'lucide-react';
 
 // Initial blank data - use Excel import to load real data
