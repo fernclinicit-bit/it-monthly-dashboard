@@ -5284,6 +5284,8 @@ export default function App() {
   const [larkAssetNotes, setLarkAssetNotes] = useState('');
 
   const [larkSubmitted, setLarkSubmitted] = useState(false);
+  const [larkTicketRole, setLarkTicketRole] = useState('user'); // 'user' | 'it'
+  const [selectedPendingTicketSn, setSelectedPendingTicketSn] = useState('');
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -5834,39 +5836,66 @@ export default function App() {
   const handleLarkSubmit = (e) => {
     e.preventDefault();
     if (larkFormType === 'ticket') {
-      if (!larkTicketIssue) {
-        alert('กรุณากรอกอาการเสีย/ปัญหา');
-        return;
-      }
       const tickets = data[currentMonth]?.ticketsList || [];
-      const newTicket = {
-        sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
-        date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
-        complainant: larkTicketComplainant || 'ไม่ระบุชื่อ',
-        email: larkTicketEmail || '-',
-        anydesk: larkTicketAnydesk || '-',
-        issue: larkTicketIssue,
-        cause: larkTicketCause || '-',
-        duration: larkTicketDuration,
-        responder: larkTicketResponder || '-',
-        status: larkTicketStatus,
-        cost: Number(larkTicketCost) || 0
-      };
 
-      const updatedTickets = [...tickets, newTicket];
-      runRecalculation(currentMonth, updatedTickets, assetsList);
-      
-      // Clear inputs
-      setLarkTicketComplainant('');
-      setLarkTicketEmail('');
-      setLarkTicketAnydesk('');
-      setLarkTicketIssue('');
-      setLarkTicketCause('');
-      setLarkTicketDuration('00:30');
-      setLarkTicketResponder('');
-      setLarkTicketStatus('เสร็จสิ้น');
-      setLarkTicketCost('0');
-      setLarkSubmitted(true);
+      if (larkTicketRole === 'it') {
+        if (!selectedPendingTicketSn) {
+          alert('กรุณาเลือกใบงานที่ต้องการปิดงาน');
+          return;
+        }
+        if (!larkTicketResponder) {
+          alert('กรุณากรอกชื่อผู้ดำเนินงาน (ช่าง IT)');
+          return;
+        }
+        
+        // IT Close work mode
+        const updatedTickets = tickets.map(t => t.sn === Number(selectedPendingTicketSn) ? {
+          ...t,
+          responder: larkTicketResponder,
+          duration: larkTicketDuration || '00:30',
+          cause: larkTicketCause || '-',
+          cost: Number(larkTicketCost) || 0,
+          status: larkTicketStatus
+        } : t);
+
+        runRecalculation(currentMonth, updatedTickets, assetsList);
+        setSelectedPendingTicketSn('');
+        setLarkTicketResponder('');
+        setLarkTicketDuration('00:30');
+        setLarkTicketCause('');
+        setLarkTicketCost('0');
+        setLarkTicketStatus('เสร็จสิ้น');
+        setLarkSubmitted(true);
+      } else {
+        // User Submit Mode
+        if (!larkTicketIssue) {
+          alert('กรุณากรอกอาการเสีย/ปัญหา');
+          return;
+        }
+        const newTicket = {
+          sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
+          date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
+          complainant: larkTicketComplainant || 'ไม่ระบุชื่อ',
+          email: larkTicketEmail || '-',
+          anydesk: larkTicketAnydesk || '-',
+          issue: larkTicketIssue,
+          cause: '-',
+          duration: '-',
+          responder: '-',
+          status: 'กำลังดำเนินการ',
+          cost: 0
+        };
+
+        const updatedTickets = [...tickets, newTicket];
+        runRecalculation(currentMonth, updatedTickets, assetsList);
+        
+        // Clear inputs
+        setLarkTicketComplainant('');
+        setLarkTicketEmail('');
+        setLarkTicketAnydesk('');
+        setLarkTicketIssue('');
+        setLarkSubmitted(true);
+      }
     } else {
       if (!larkAssetItemType) {
         alert('กรุณากรอกประเภทอุปกรณ์หลัก');
@@ -8472,61 +8501,118 @@ export default function App() {
 
               {larkFormType === 'ticket' ? (
                 <div className="lark-card">
-                  <div style={{ borderBottom: '1px solid #f3f4f6', paddingBottom: '12px', marginBottom: '16px' }}>
-                    <h4 style={{ margin: 0, color: '#1e40af', fontSize: '1rem', fontWeight: '700' }}>แจ้งงานซ่อม / เหตุเสียสำหรับเดือนนี้ ({data[currentMonth]?.monthName})</h4>
-                  </div>
-                  
-                  <div className="lark-field-group">
-                    <label>ชื่อผู้แจ้ง / ผู้พบปัญหา <span>*</span></label>
-                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: สมเกียรติ ยิ่งดี" value={larkTicketComplainant} onChange={e => setLarkTicketComplainant(e.target.value)} required />
-                  </div>
-
-                  <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label>อีเมลผู้แจ้ง</label>
-                      <input type="email" className="lark-input" placeholder="user@domain.com" value={larkTicketEmail} onChange={e => setLarkTicketEmail(e.target.value)} />
-                    </div>
-                    <div>
-                      <label>AnyDesk ID</label>
-                      <input type="text" className="lark-input" placeholder="เช่น 1 234 567" value={larkTicketAnydesk} onChange={e => setLarkTicketAnydesk(e.target.value)} />
-                    </div>
+                  {/* Role Selector sub-tabs */}
+                  <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e5e7eb', paddingBottom: '10px', marginBottom: '16px' }}>
+                    <button type="button" onClick={() => setLarkTicketRole('user')} style={{ flex: '1', padding: '6px', fontSize: '0.8rem', fontWeight: 'bold', border: '1px solid ' + (larkTicketRole === 'user' ? '#3b82f6' : '#d1d5db'), backgroundColor: larkTicketRole === 'user' ? '#eff6ff' : 'white', color: larkTicketRole === 'user' ? '#1d4ed8' : '#4b5563', borderRadius: '4px', cursor: 'pointer' }}>
+                      👤 พนักงานแจ้งปัญหา
+                    </button>
+                    <button type="button" onClick={() => setLarkTicketRole('it')} style={{ flex: '1', padding: '6px', fontSize: '0.8rem', fontWeight: 'bold', border: '1px solid ' + (larkTicketRole === 'it' ? '#3b82f6' : '#d1d5db'), backgroundColor: larkTicketRole === 'it' ? '#eff6ff' : 'white', color: larkTicketRole === 'it' ? '#1d4ed8' : '#4b5563', borderRadius: '4px', cursor: 'pointer' }}>
+                      🔧 ช่างไอทีปิดงาน (IT Resolve)
+                    </button>
                   </div>
 
-                  <div className="lark-field-group">
-                    <label>อาการที่แจ้งซ่อม / ปัญหาที่พบ <span>*</span></label>
-                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: หน้าจอไม่ติด, ปริ้นท์งานไม่ออก" value={larkTicketIssue} onChange={e => setLarkTicketIssue(e.target.value)} required />
-                  </div>
+                  {larkTicketRole === 'user' ? (
+                    <div>
+                      <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
+                        <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>ส่งแจ้งเรื่องซ่อมแซม / ปัญหาที่พบบนแดชบอร์ด ({data[currentMonth]?.monthName})</h4>
+                      </div>
+                      
+                      <div className="lark-field-group">
+                        <label>ชื่อผู้แจ้ง / ผู้พบปัญหา <span>*</span></label>
+                        <input type="text" className="lark-input" placeholder="ตัวอย่าง: สมเกียรติ ยิ่งดี" value={larkTicketComplainant} onChange={e => setLarkTicketComplainant(e.target.value)} required={larkTicketRole === 'user'} />
+                      </div>
 
-                  <div className="lark-field-group">
-                    <label>สาเหตุการเสีย (ถ้าทราบ)</label>
-                    <input type="text" className="lark-input" placeholder="ตัวอย่าง: สายเชื่อมต่อหลุด, ซอฟต์แวร์ไม่ทำงาน" value={larkTicketCause} onChange={e => setLarkTicketCause(e.target.value)} />
-                  </div>
+                      <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                          <label>อีเมลผู้แจ้ง</label>
+                          <input type="email" className="lark-input" placeholder="user@domain.com" value={larkTicketEmail} onChange={e => setLarkTicketEmail(e.target.value)} />
+                        </div>
+                        <div>
+                          <label>AnyDesk ID</label>
+                          <input type="text" className="lark-input" placeholder="เช่น 1 234 567" value={larkTicketAnydesk} onChange={e => setLarkTicketAnydesk(e.target.value)} />
+                        </div>
+                      </div>
 
-                  <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label>ผู้ดำเนินงาน (ช่าง IT)</label>
-                      <input type="text" className="lark-input" placeholder="เช่น ก้องภพ (IT)" value={larkTicketResponder} onChange={e => setLarkTicketResponder(e.target.value)} />
+                      <div className="lark-field-group">
+                        <label>อาการที่แจ้งซ่อม / ปัญหาที่พบ <span>*</span></label>
+                        <input type="text" className="lark-input" placeholder="ตัวอย่าง: หน้าจอไม่ติด, ปริ้นท์งานไม่ออก" value={larkTicketIssue} onChange={e => setLarkTicketIssue(e.target.value)} required={larkTicketRole === 'user'} />
+                      </div>
                     </div>
-                    <div>
-                      <label>เวลาแก้เสร็จ (ชั่วโมง:นาที)</label>
-                      <input type="text" className="lark-input" placeholder="00:30" value={larkTicketDuration} onChange={e => setLarkTicketDuration(e.target.value)} />
-                    </div>
-                  </div>
+                  ) : (() => {
+                    const pendingTickets = tickets.filter(t => t.status === 'กำลังดำเนินการ');
+                    const selectedTicket = pendingTickets.find(t => t.sn === Number(selectedPendingTicketSn));
 
-                  <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label>สถานะใบงาน</label>
-                      <select className="lark-input" value={larkTicketStatus} onChange={e => setLarkTicketStatus(e.target.value)}>
-                        <option value="เสร็จสิ้น">เสร็จสิ้น (Resolved)</option>
-                        <option value="กำลังดำเนินการ">กำลังดำเนินการ (Pending)</option>
-                        <option value="จ่ายเงินแล้ว">จ่ายเงินแล้ว (ซื้ออะไหล่)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label>ค่าใช้จ่ายซ่อมแซม (บาท)</label>
-                      <input type="number" className="lark-input" value={larkTicketCost} onChange={e => setLarkTicketCost(e.target.value)} />
-                    </div>
-                  </div>
+                    return (
+                      <div>
+                        <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
+                          <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>รายการปิดเคสใบงานซ่อมแซม (IT Close Work)</h4>
+                        </div>
+
+                        <div className="lark-field-group">
+                          <label>เลือกใบงานที่ยังไม่ได้ปิด (กำลังดำเนินการ) <span>*</span></label>
+                          {pendingTickets.length > 0 ? (
+                            <select value={selectedPendingTicketSn} onChange={e => {
+                              setSelectedPendingTicketSn(e.target.value);
+                              setLarkTicketStatus('เสร็จสิ้น');
+                            }} className="lark-input" required={larkTicketRole === 'it'}>
+                              <option value="">-- กรุณาเลือกใบงานที่ต้องการปิด --</option>
+                              {pendingTickets.map(t => (
+                                <option key={t.sn} value={t.sn}>
+                                  [SN:{t.sn}] {t.complainant} - {t.issue}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <div style={{ padding: '12px', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold', textAlign: 'center' }}>
+                              🎉 ยินดีด้วย! ไม่มีใบงานซ่อมที่ค้างคาอยู่ในเดือนนี้
+                            </div>
+                          )}
+                        </div>
+
+                        {selectedTicket && (
+                          <div style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px', marginBottom: '16px', fontSize: '0.8rem' }}>
+                            <div style={{ fontWeight: 'bold', color: '#111827', marginBottom: '4px' }}>รายละเอียดการแจ้งเรื่อง:</div>
+                            <div>👤 <strong>ผู้แจ้ง:</strong> {selectedTicket.complainant} (เมล: {selectedTicket.email} / AnyDesk: {selectedTicket.anydesk})</div>
+                            <div style={{ marginTop: '3px' }}>⚠️ <strong>ปัญหา:</strong> {selectedTicket.issue}</div>
+                          </div>
+                        )}
+
+                        {selectedTicket && (
+                          <>
+                            <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                              <div>
+                                <label>ผู้ดำเนินงาน (ช่าง IT) <span>*</span></label>
+                                <input type="text" className="lark-input" placeholder="เช่น ช่างก้องภพ (IT)" value={larkTicketResponder} onChange={e => setLarkTicketResponder(e.target.value)} required={larkTicketRole === 'it'} />
+                              </div>
+                              <div>
+                                <label>เวลาแก้เสร็จ (ชั่วโมง:นาที)</label>
+                                <input type="text" className="lark-input" placeholder="เช่น 00:45" value={larkTicketDuration} onChange={e => setLarkTicketDuration(e.target.value)} />
+                              </div>
+                            </div>
+
+                            <div className="lark-field-group">
+                              <label>สาเหตุการเสีย / วิธีแก้ไข</label>
+                              <input type="text" className="lark-input" placeholder="ตัวอย่าง: เปลี่ยนสาย LAN ใหม่, รีสตาร์ทการตั้งค่าเครือข่าย" value={larkTicketCause} onChange={e => setLarkTicketCause(e.target.value)} />
+                            </div>
+
+                            <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                              <div>
+                                <label>อัพเดตสถานะใบงาน</label>
+                                <select className="lark-input" value={larkTicketStatus} onChange={e => setLarkTicketStatus(e.target.value)}>
+                                  <option value="เสร็จสิ้น">เสร็จสิ้น (Resolved)</option>
+                                  <option value="จ่ายเงินแล้ว">จ่ายเงินแล้ว (ซื้ออะไหล่เสริม)</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label>ค่าใช้จ่ายซ่อมแซม (บาท)</label>
+                                <input type="number" className="lark-input" value={larkTicketCost} onChange={e => setLarkTicketCost(e.target.value)} />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               ) : (
                 <div className="lark-card">
