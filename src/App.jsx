@@ -5453,7 +5453,8 @@ export default function App() {
       ...prev,
       [monthKey]: {
         ...prev[monthKey],
-        ...newMetrics
+        ...newMetrics,
+        ticketsList: currentTickets
       }
     }));
   };
