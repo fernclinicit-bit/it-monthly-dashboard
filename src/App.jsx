@@ -7081,11 +7081,22 @@ export default function App() {
               </button>
               <button onClick={() => {
                 setLarkFormType('ticket');
+                setLarkTicketRole('user');
                 setLarkSubmitted(false);
                 setActiveModal('larkForm');
               }} className="sidebar-btn" style={{ backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
                 <FileText size={16} />
                 กรอกฟอร์มบันทึกข้อมูล
+              </button>
+              <button onClick={() => {
+                setLarkFormType('ticket');
+                setLarkTicketRole('it');
+                setLarkSubmitted(false);
+                setSelectedPendingTicketSn('');
+                setActiveModal('larkForm');
+              }} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
+                <Wrench size={16} />
+                เมนูปิดงาน (IT Close)
               </button>
             </div>
           )}
@@ -8578,10 +8589,17 @@ export default function App() {
           <div className="lark-form-container">
             <header className="lark-form-header">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <h3>📝 ฟอร์มลงทะเบียนและแจ้งข้อมูลกลาง (Lark Form)</h3>
-                  <p>บันทึกข้อมูลเข้าคลังและระบบประวัติงานซ่อมไอทีกลาง เพื่อใช้สรุปรายงานแดชบอร์ด</p>
-                </div>
+                {larkTicketRole === 'it' ? (
+                  <div>
+                    <h3>🔧 เมนูปิดงานสำหรับช่างไอที (IT Close Work)</h3>
+                    <p>เลือกใบงานที่ค้างคาเพื่ออัปเดตรายละเอียดการแก้ไขและปิดงาน ประจำเดือน {data[currentMonth]?.monthName}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <h3>📝 ฟอร์มลงทะเบียนและแจ้งข้อมูลกลาง (Lark Form)</h3>
+                    <p>บันทึกข้อมูลเข้าคลังและระบบประวัติงานซ่อมไอทีกลาง เพื่อใช้สรุปรายงานแดชบอร์ด</p>
+                  </div>
+                )}
                 <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer', padding: 0 }}><X size={24} /></button>
               </div>
             </header>
@@ -8602,22 +8620,15 @@ export default function App() {
               </div>
             ) : (
               <form onSubmit={handleLarkSubmit}>
-                <div className="lark-type-tabs">
-                  <button type="button" onClick={() => setLarkFormType('ticket')} className={`lark-type-btn ${larkFormType === 'ticket' ? 'active' : ''}`}>🚨 แจ้งซ่อมบำรุง / ปัญหาไอที</button>
-                  <button type="button" onClick={() => setLarkFormType('asset')} className={`lark-type-btn ${larkFormType === 'asset' ? 'active' : ''}`}>💻 ลงทะเบียนเครื่องเข้าคลัง</button>
-                </div>
+                {larkTicketRole === 'user' && (
+                  <div className="lark-type-tabs">
+                    <button type="button" onClick={() => setLarkFormType('ticket')} className={`lark-type-btn ${larkFormType === 'ticket' ? 'active' : ''}`}>🚨 แจ้งซ่อมบำรุง / ปัญหาไอที</button>
+                    <button type="button" onClick={() => setLarkFormType('asset')} className={`lark-type-btn ${larkFormType === 'asset' ? 'active' : ''}`}>💻 ลงทะเบียนเครื่องเข้าคลัง</button>
+                  </div>
+                )}
 
                 {larkFormType === 'ticket' ? (
                   <div className="lark-card">
-                    {/* Role Selector sub-tabs */}
-                    <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e5e7eb', paddingBottom: '10px', marginBottom: '16px' }}>
-                      <button type="button" onClick={() => setLarkTicketRole('user')} style={{ flex: '1', padding: '6px', fontSize: '0.8rem', fontWeight: 'bold', border: '1px solid ' + (larkTicketRole === 'user' ? '#3b82f6' : '#d1d5db'), backgroundColor: larkTicketRole === 'user' ? '#eff6ff' : 'white', color: larkTicketRole === 'user' ? '#1d4ed8' : '#4b5563', borderRadius: '4px', cursor: 'pointer' }}>
-                        👤 พนักงานแจ้งปัญหา
-                      </button>
-                      <button type="button" onClick={() => setLarkTicketRole('it')} style={{ flex: '1', padding: '6px', fontSize: '0.8rem', fontWeight: 'bold', border: '1px solid ' + (larkTicketRole === 'it' ? '#3b82f6' : '#d1d5db'), backgroundColor: larkTicketRole === 'it' ? '#eff6ff' : 'white', color: larkTicketRole === 'it' ? '#1d4ed8' : '#4b5563', borderRadius: '4px', cursor: 'pointer' }}>
-                        🔧 ช่างไอทีปิดงาน (IT Resolve)
-                      </button>
-                    </div>
 
                     {larkTicketRole === 'user' ? (
                       <div>
