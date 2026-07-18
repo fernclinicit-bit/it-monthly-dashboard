@@ -7086,7 +7086,16 @@ export default function App() {
                 setActiveModal('larkForm');
               }} className="sidebar-btn" style={{ backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
                 <FileText size={16} />
-                กรอกฟอร์มบันทึกข้อมูล
+                แจ้งซ่อมบำรุง / ปัญหาไอที
+              </button>
+              <button onClick={() => {
+                setLarkFormType('asset');
+                setLarkTicketRole('user');
+                setLarkSubmitted(false);
+                setActiveModal('larkForm');
+              }} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'white' }}>
+                <Laptop size={16} />
+                ลงทะเบียนเครื่องเข้าคลัง
               </button>
               <button onClick={() => {
                 setLarkFormType('ticket');
@@ -8594,10 +8603,15 @@ export default function App() {
                     <h3>🔧 เมนูปิดงานสำหรับช่างไอที (IT Close Work)</h3>
                     <p>เลือกใบงานที่ค้างคาเพื่ออัปเดตรายละเอียดการแก้ไขและปิดงาน ประจำเดือน {data[currentMonth]?.monthName}</p>
                   </div>
+                ) : larkFormType === 'asset' ? (
+                  <div>
+                    <h3>💻 ลงทะเบียนเครื่องเข้าคลัง (IT Asset Registration)</h3>
+                    <p>บันทึกประวัติการเบิกใช้อุปกรณ์ไอทีเครื่องใหม่เข้าสู่คลังทะเบียนกลาง</p>
+                  </div>
                 ) : (
                   <div>
-                    <h3>📝 ฟอร์มลงทะเบียนและแจ้งข้อมูลกลาง (Lark Form)</h3>
-                    <p>บันทึกข้อมูลเข้าคลังและระบบประวัติงานซ่อมไอทีกลาง เพื่อใช้สรุปรายงานแดชบอร์ด</p>
+                    <h3>🚨 แจ้งซ่อมบำรุง / ปัญหาไอที (Report Repair / IT Issue)</h3>
+                    <p>แจ้งปัญหาขัดข้องของอุปกรณ์หรือระบบไอทีเพื่อประสานช่างเข้าแก้ไข ประจำเดือน {data[currentMonth]?.monthName}</p>
                   </div>
                 )}
                 <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer', padding: 0 }}><X size={24} /></button>
@@ -8620,12 +8634,6 @@ export default function App() {
               </div>
             ) : (
               <form onSubmit={handleLarkSubmit}>
-                {larkTicketRole === 'user' && (
-                  <div className="lark-type-tabs">
-                    <button type="button" onClick={() => setLarkFormType('ticket')} className={`lark-type-btn ${larkFormType === 'ticket' ? 'active' : ''}`}>🚨 แจ้งซ่อมบำรุง / ปัญหาไอที</button>
-                    <button type="button" onClick={() => setLarkFormType('asset')} className={`lark-type-btn ${larkFormType === 'asset' ? 'active' : ''}`}>💻 ลงทะเบียนเครื่องเข้าคลัง</button>
-                  </div>
-                )}
 
                 {larkFormType === 'ticket' ? (
                   <div className="lark-card">
