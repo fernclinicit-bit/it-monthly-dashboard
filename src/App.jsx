@@ -5257,9 +5257,11 @@ export default function App() {
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
   
-  // Console tab and selectors
+  // Console tab, month selectors, and editing state trackers
   const [consoleTab, setConsoleTab] = useState('months');
   const [consoleMonth, setConsoleMonth] = useState('2026-07');
+  const [editingAssetSn, setEditingAssetSn] = useState(null);
+  const [editingTicketSn, setEditingTicketSn] = useState(null);
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -5300,6 +5302,137 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('it_dashboard_assets', JSON.stringify(assetsList));
   }, [assetsList]);
+
+  // Upgraded Dynamic Recalculation Engine
+  const recalculateMonthlyMetrics = (monthKey, tickets, assets) => {
+    let durationSum = 0;
+    let durationCount = 0;
+    let slaCompliantCount = 0;
+    let totalCost = 0;
+    let repairCount = 0;
+    const deviceCounts = {};
+    const deptCosts = {};
+
+    tickets.forEach(ticket => {
+      const duration = ticket.duration || '-';
+      if (duration && duration !== '-') {
+        const parts = duration.split(':');
+        if (parts.length === 2) {
+          const mins = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+          if (!isNaN(mins)) {
+            durationSum += mins;
+            durationCount++;
+            if (mins <= 60) {
+              slaCompliantCount++;
+            }
+          }
+        }
+      }
+      
+      const cost = Number(ticket.cost) || 0;
+      totalCost += cost;
+      if (cost > 0 || ticket.status === 'จ่ายเงินแล้ว') {
+        repairCount++;
+      }
+
+      // Track broken devices by category
+      const issue = String(ticket.issue).toLowerCase();
+      let matchedDevice = 'อื่น ๆ';
+      if (issue.includes('notebook') || issue.includes('lenovo') || issue.includes('asus') || issue.includes('hp')) matchedDevice = 'Notebook';
+      else if (issue.includes('computer') || issue.includes('pc')) matchedDevice = 'PC';
+      else if (issue.includes('ipad')) matchedDevice = 'iPad';
+      else if (issue.includes('iphone')) matchedDevice = 'iPhone';
+      else if (issue.includes('printer') || issue.includes('ปริ้นเตอร์')) matchedDevice = 'Printer';
+      else if (issue.includes('mornitor') || issue.includes('จอ')) matchedDevice = 'Monitor';
+      else if (issue.includes('imac')) matchedDevice = 'iMac';
+      else if (issue.includes('macbook')) matchedDevice = 'MacBook';
+      else if (issue.includes('network') || issue.includes('lan') || issue.includes('wifi') || issue.includes('เน็ต')) matchedDevice = 'Network';
+
+      if (ticket.status !== 'เสร็จสิ้น' || cost > 0) {
+        deviceCounts[matchedDevice] = (deviceCounts[matchedDevice] || 0) + 1;
+      }
+
+      // Department costs mapping
+      const borrowerAsset = assets.find(a => String(a.user).trim() === String(ticket.complainant).trim());
+      const dept = borrowerAsset ? borrowerAsset.position : 'ส่วนกลาง';
+      if (cost > 0) {
+        deptCosts[dept] = (deptCosts[dept] || 0) + cost;
+      }
+    });
+
+    const calculatedSla = durationCount > 0 ? Math.round((slaCompliantCount / durationCount) * 1000) / 10 : 100;
+    const avgResolution = durationCount > 0 ? Math.round(durationSum / durationCount) : 0;
+
+    // Estimate asset value dynamically based on category
+    const CATEGORY_VALUES = {
+      "Computer (Pc)": 15000,
+      "Ipad": 18000,
+      "Mornitor": 5000,
+      "Notebook Lenovo": 25000,
+      "External HDD": 1500,
+      "Cable HDMI": 500,
+      "Mouse": 1000,
+      "Keyboard": 1500,
+      "Screwdriver": 1200,
+      "Notebook Asus": 20000,
+      "Printer": 7500,
+      "IPhone": 25000,
+      "Apple Pancill": 3900,
+      "Macbook": 45000,
+      "Hub USB-TypeC": 1200,
+      "IMac": 40000,
+      "Hub Lan": 2500,
+      "Notebook Acer, Iphone": 35000,
+      "Adapter Apple": 1200,
+      "Cable Apple": 790,
+      "Notebook HP": 22000,
+      "Samsung": 15000,
+      "Capture Card": 3500,
+      "Reez Live": 15000,
+      "Iphone": 25000
+    };
+
+    let calculatedAssetValue = 0;
+    assets.forEach(asset => {
+      const cat = String(asset.itemType || '').trim();
+      calculatedAssetValue += CATEGORY_VALUES[cat] || 1500;
+    });
+
+    const brokenAssetsCount = assets.filter(a => a.status === 'รอซ่อม').length;
+    const lostAssetsCount = assets.filter(a => a.status === 'สูญหาย').length;
+    const vacantAssetsCount = assets.filter(a => a.status === 'ว่าง').length;
+
+    const topBrokenDevices = Object.entries(deviceCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    return {
+      totalAssets: assets.length,
+      assetValue: calculatedAssetValue,
+      assetsBroken: brokenAssetsCount,
+      assetsLost: lostAssetsCount,
+      licensesVacant: vacantAssetsCount,
+      ticketsCount: tickets.length,
+      slaPercent: calculatedSla,
+      resolutionTime: avgResolution,
+      repairCount: repairCount,
+      repairCost: totalCost,
+      topBrokenDevices: topBrokenDevices,
+      deptCosts: deptCosts
+    };
+  };
+
+  const runRecalculation = (monthKey, currentTickets, currentAssets) => {
+    const newMetrics = recalculateMonthlyMetrics(monthKey, currentTickets, currentAssets);
+    setData(prev => ({
+      ...prev,
+      [monthKey]: {
+        ...prev[monthKey],
+        ...newMetrics
+      }
+    }));
+  };
 
   // Console Months Manager Handlers
   const handleAddMonth = (e) => {
@@ -5446,32 +5579,49 @@ export default function App() {
     });
   };
 
-  // Assets Inventory Editor Handlers
+  // Assets Inventory Editor (Dual-Mode: Create / Update)
   const handleAddAsset = () => {
     if (!newAssetItemType) {
       alert('กรุณากรอกประเภทอุปกรณ์หลัก');
       return;
     }
-    const newAsset = {
-      sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
-      date: new Date().toLocaleDateString('th-TH'),
-      user: newAssetUser || 'ส่วนกลาง',
-      position: newAssetPosition || '-',
-      itemType: newAssetItemType,
-      deviceSerial: newAssetSerial || '-',
-      status: newAssetStatus,
-      notes: newAssetNotes
-    };
-    setAssetsList(prev => [...prev, newAsset]);
-    
-    // Also auto increment totalAssets in metrics
-    setData(prev => {
-      const copy = { ...prev };
-      Object.keys(copy).forEach(m => {
-        copy[m].totalAssets = (assetsList.length + 1);
+
+    if (editingAssetSn !== null) {
+      // Edit mode
+      setAssetsList(prev => {
+        const updated = prev.map(a => a.sn === editingAssetSn ? {
+          ...a,
+          user: newAssetUser || 'ส่วนกลาง',
+          position: newAssetPosition || '-',
+          itemType: newAssetItemType,
+          deviceSerial: newAssetSerial || '-',
+          status: newAssetStatus,
+          notes: newAssetNotes
+        } : a);
+        runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
+        return updated;
       });
-      return copy;
-    });
+      setEditingAssetSn(null);
+      alert('แก้ไขข้อมูลทรัพย์สินสำเร็จ!');
+    } else {
+      // Create mode
+      const newAsset = {
+        sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
+        date: new Date().toLocaleDateString('th-TH'),
+        user: newAssetUser || 'ส่วนกลาง',
+        position: newAssetPosition || '-',
+        itemType: newAssetItemType,
+        deviceSerial: newAssetSerial || '-',
+        status: newAssetStatus,
+        notes: newAssetNotes
+      };
+      setAssetsList(prev => {
+        const updated = [...prev, newAsset];
+        runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
+        return updated;
+      });
+      alert('เพิ่มทรัพย์สินเข้าคลังสำเร็จ!');
+    }
 
     setNewAssetUser('');
     setNewAssetPosition('');
@@ -5479,57 +5629,88 @@ export default function App() {
     setNewAssetSerial('');
     setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
-    alert('เพิ่มทรัพย์สินเข้าคลังสำเร็จ!');
+  };
+
+  const handleLoadEditAsset = (asset) => {
+    setEditingAssetSn(asset.sn);
+    setNewAssetUser(asset.user);
+    setNewAssetPosition(asset.position);
+    setNewAssetItemType(asset.itemType);
+    setNewAssetSerial(asset.deviceSerial);
+    setNewAssetStatus(asset.status);
+    setNewAssetNotes(asset.notes || '');
+  };
+
+  const handleCancelEditAsset = () => {
+    setEditingAssetSn(null);
+    setNewAssetUser('');
+    setNewAssetPosition('');
+    setNewAssetItemType('');
+    setNewAssetSerial('');
+    setNewAssetStatus('ใช้งาน');
+    setNewAssetNotes('');
   };
 
   const handleDeleteAsset = (sn) => {
     if (window.confirm('คุณต้องการลบอุปกรณ์นี้ออกจากทะเบียนคลังใช่หรือไม่?')) {
-      setAssetsList(prev => prev.filter(a => a.sn !== sn));
-      
-      // Also auto decrement totalAssets in metrics
-      setData(prev => {
-        const copy = { ...prev };
-        Object.keys(copy).forEach(m => {
-          copy[m].totalAssets = Math.max(0, assetsList.length - 1);
-        });
-        return copy;
+      setAssetsList(prev => {
+        const updated = prev.filter(a => a.sn !== sn);
+        runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
+        return updated;
       });
+      if (editingAssetSn === sn) {
+        handleCancelEditAsset();
+      }
     }
   };
 
-  // Ticket Log Editor Handlers
+  // Ticket Log Editor (Dual-Mode: Create / Update)
   const handleAddTicket = () => {
     if (!newTicketIssue) {
       alert('กรุณากรอกอาการเสีย/ปัญหา');
       return;
     }
-    const tickets = data[consoleMonth]?.ticketsList || [];
-    const newTicket = {
-      sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
-      date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
-      complainant: newTicketComplainant || 'ไม่ระบุชื่อ',
-      email: newTicketEmail || '-',
-      anydesk: newTicketAnydesk || '-',
-      issue: newTicketIssue,
-      cause: newTicketCause || '-',
-      duration: newTicketDuration,
-      responder: newTicketResponder || '-',
-      status: newTicketStatus,
-      cost: Number(newTicketCost) || 0
-    };
 
-    setData(prev => {
-      const monthData = prev[consoleMonth] || {};
-      const updatedList = [...(monthData.ticketsList || []), newTicket];
-      return {
-        ...prev,
-        [consoleMonth]: {
-          ...monthData,
-          ticketsList: updatedList,
-          ticketsCount: updatedList.length
-        }
+    const tickets = data[consoleMonth]?.ticketsList || [];
+
+    if (editingTicketSn !== null) {
+      // Edit mode
+      const updatedTickets = tickets.map(t => t.sn === editingTicketSn ? {
+        ...t,
+        complainant: newTicketComplainant || 'ไม่ระบุชื่อ',
+        email: newTicketEmail || '-',
+        anydesk: newTicketAnydesk || '-',
+        issue: newTicketIssue,
+        cause: newTicketCause || '-',
+        duration: newTicketDuration,
+        responder: newTicketResponder || '-',
+        status: newTicketStatus,
+        cost: Number(newTicketCost) || 0
+      } : t);
+
+      runRecalculation(consoleMonth, updatedTickets, assetsList);
+      setEditingTicketSn(null);
+      alert('แก้ไขข้อมูลงานแจ้งซ่อมสำเร็จ!');
+    } else {
+      // Create mode
+      const newTicket = {
+        sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
+        date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
+        complainant: newTicketComplainant || 'ไม่ระบุชื่อ',
+        email: newTicketEmail || '-',
+        anydesk: newTicketAnydesk || '-',
+        issue: newTicketIssue,
+        cause: newTicketCause || '-',
+        duration: newTicketDuration,
+        responder: newTicketResponder || '-',
+        status: newTicketStatus,
+        cost: Number(newTicketCost) || 0
       };
-    });
+
+      const updatedTickets = [...tickets, newTicket];
+      runRecalculation(consoleMonth, updatedTickets, assetsList);
+      alert('เพิ่มประวัติงานแจ้งซ่อมสำเร็จ!');
+    }
 
     setNewTicketComplainant('');
     setNewTicketEmail('');
@@ -5540,23 +5721,41 @@ export default function App() {
     setNewTicketResponder('');
     setNewTicketStatus('เสร็จสิ้น');
     setNewTicketCost('0');
-    alert('เพิ่มประวัติงานแจ้งซ่อมสำเร็จ!');
+  };
+
+  const handleLoadEditTicket = (ticket) => {
+    setEditingTicketSn(ticket.sn);
+    setNewTicketComplainant(ticket.complainant);
+    setNewTicketEmail(ticket.email || '');
+    setNewTicketAnydesk(ticket.anydesk || '');
+    setNewTicketIssue(ticket.issue);
+    setNewTicketCause(ticket.cause || '');
+    setNewTicketDuration(ticket.duration);
+    setNewTicketResponder(ticket.responder);
+    setNewTicketStatus(ticket.status);
+    setNewTicketCost(String(ticket.cost || 0));
+  };
+
+  const handleCancelEditTicket = () => {
+    setEditingTicketSn(null);
+    setNewTicketComplainant('');
+    setNewTicketEmail('');
+    setNewTicketAnydesk('');
+    setNewTicketIssue('');
+    setNewTicketCause('');
+    setNewTicketDuration('00:30');
+    setNewTicketResponder('');
+    setNewTicketStatus('เสร็จสิ้น');
+    setNewTicketCost('0');
   };
 
   const handleDeleteTicket = (sn) => {
     if (window.confirm('คุณต้องการลบรายการแจ้งซ่อมนี้ใช่หรือไม่?')) {
-      setData(prev => {
-        const monthData = prev[consoleMonth];
-        const updatedList = (monthData.ticketsList || []).filter(t => t.sn !== sn);
-        return {
-          ...prev,
-          [consoleMonth]: {
-            ...monthData,
-            ticketsList: updatedList,
-            ticketsCount: updatedList.length
-          }
-        };
-      });
+      const updatedTickets = (data[consoleMonth]?.ticketsList || []).filter(t => t.sn !== sn);
+      runRecalculation(consoleMonth, updatedTickets, assetsList);
+      if (editingTicketSn === sn) {
+        handleCancelEditTicket();
+      }
     }
   };
 
@@ -5604,6 +5803,8 @@ export default function App() {
       setAssetsList(initialAssetsData);
       setCurrentMonth('2026-07');
       setConsoleMonth('2026-07');
+      setEditingAssetSn(null);
+      setEditingTicketSn(null);
       alert('รีเซ็ตข้อมูลกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว!');
     }
   };
@@ -7897,7 +8098,7 @@ export default function App() {
                 {/* TAB 4: ASSETS INVENTORY EDITOR */}
                 {consoleTab === 'assets' && (
                   <div>
-                    <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor)</h4>
+                    <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
                     <div className="console-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
                       <div className="console-field">
                         <span className="console-label">ผู้เบิกใช้งาน</span>
@@ -7928,7 +8129,14 @@ export default function App() {
                         <span className="console-label">หมายเหตุ</span>
                         <input type="text" value={newAssetNotes} onChange={e => setNewAssetNotes(e.target.value)} placeholder="รายละเอียด" className="console-input" />
                       </div>
-                      <button type="button" onClick={handleAddAsset} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>เพิ่มทรัพย์สินเข้าคลัง</button>
+                      {editingAssetSn !== null ? (
+                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
+                          <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
+                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
+                        </div>
+                      ) : (
+                        <button type="button" onClick={handleAddAsset} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>เพิ่มทรัพย์สินเข้าคลัง</button>
+                      )}
                     </div>
 
                     <div className="console-table-scroll">
@@ -7958,7 +8166,10 @@ export default function App() {
                                 </span>
                               </td>
                               <td>
-                                <button onClick={() => handleDeleteAsset(asset.sn)} className="console-delete-btn">ลบ</button>
+                                <div style={{ display: 'flex', gap: '6px' }}>
+                                  <button onClick={() => handleLoadEditAsset(asset)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>แก้ไข</button>
+                                  <button onClick={() => handleDeleteAsset(asset.sn)} className="console-delete-btn">ลบ</button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -7974,10 +8185,10 @@ export default function App() {
                   return (
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
-                        <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🚨 ประวัติรับเคสแจ้งซ่อม Support</h4>
+                        <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🚨 ประวัติรับเคสแจ้งซ่อม Support - {editingTicketSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingTicketSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
                         <div>
                           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะจัดการ:</span>
-                          <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
+                          <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                             {Object.keys(data).map(key => (
                               <option key={key} value={key}>{data[key].monthName}</option>
                             ))}
@@ -8026,7 +8237,14 @@ export default function App() {
                           <span className="console-label">ค่าใช้จ่าย (บาท)</span>
                           <input type="number" value={newTicketCost} onChange={e => setNewTicketCost(e.target.value)} className="console-input" />
                         </div>
-                        <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>บันทึกเคสแจ้งซ่อม</button>
+                        {editingTicketSn !== null ? (
+                          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
+                            <button type="button" onClick={handleAddTicket} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
+                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
+                          </div>
+                        ) : (
+                          <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>บันทึกเคสแจ้งซ่อม</button>
+                        )}
                       </div>
 
                       <div className="console-table-scroll">
@@ -8061,7 +8279,10 @@ export default function App() {
                                   </span>
                                 </td>
                                 <td>
-                                  <button onClick={() => handleDeleteTicket(t.sn)} className="console-delete-btn">ลบ</button>
+                                  <div style={{ display: 'flex', gap: '6px' }}>
+                                    <button onClick={() => handleLoadEditTicket(t)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>แก้ไข</button>
+                                    <button onClick={() => handleDeleteTicket(t.sn)} className="console-delete-btn">ลบ</button>
+                                  </div>
                                 </td>
                               </tr>
                             ))}
