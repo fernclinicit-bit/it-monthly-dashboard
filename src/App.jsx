@@ -26,6 +26,7 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  Menu,
   Laptop,
   FileCode,
   ShieldCheck,
@@ -5301,6 +5302,7 @@ export default function App() {
     excel: false,
     export: false
   });
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -7023,13 +7025,22 @@ export default function App() {
   return (
     <>
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
-      <aside className="sidebar no-print">
-        <div className="logo-container">
-          <div className="logo-icon">MD</div>
-          <div className="logo-text">
-            <h1>IT Dashboard</h1>
-            <p>React Executive Report</p>
+      <aside className={`sidebar no-print ${mobileSidebarOpen ? 'mobile-active' : ''}`}>
+        <div className="logo-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="logo-icon">MD</div>
+            <div className="logo-text">
+              <h1>IT Dashboard</h1>
+              <p>React Executive Report</p>
+            </div>
           </div>
+          <button 
+            onClick={() => setMobileSidebarOpen(false)} 
+            className="mobile-menu-close"
+            style={{ display: 'none', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Month Dropdown Selection */}
@@ -7160,9 +7171,18 @@ export default function App() {
       {/* DASHBOARD GRID CONTENT */}
       <main className="dashboard-container">
         <header className="dashboard-header">
-          <div className="dashboard-title">
-            <h2>รายงานสรุปการดำเนินงานเทคโนโลยีสารสนเทศ (IT Monthly Dashboard)</h2>
-            <p>ประจำเดือน {activeData.monthName}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              onClick={() => setMobileSidebarOpen(true)} 
+              className="mobile-menu-toggle"
+              style={{ display: 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
+            >
+              <Menu size={24} />
+            </button>
+            <div className="dashboard-title">
+              <h2>รายงานสรุปการดำเนินงานเทคโนโลยีสารสนเทศ (IT Monthly Dashboard)</h2>
+              <p>ประจำเดือน {activeData.monthName}</p>
+            </div>
           </div>
           <div className="header-status status-indicator">
             <span className="status-dot"></span>
