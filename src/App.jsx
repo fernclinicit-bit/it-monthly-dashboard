@@ -21,145 +21,46 @@ import {
   FileSpreadsheet
 } from 'lucide-react';
 
-// Initial Mock Data (Google DeepMind Research IT Operations)
+// Initial blank data - use Excel import to load real data
 const initialDashboardData = {
   "2026-07": {
     monthName: "กรกฎาคม 2026",
     // Asset
-    totalAssets: 1450,
-    assetValue: 85200000,
-    assetsExpiring: 38,
-    assetsBroken: 8,
-    assetsLost: 1,
-    // Support
-    ticketsCount: 280,
-    slaPercent: 98.8,
-    responseTime: 8,
-    resolutionTime: 1.8,
-    csat: 4.9,
-    // Software
-    totalSoftware: 45,
-    licensesInUse: 2450,
-    licensesVacant: 350,
-    softwareCost: 1280000,
-    softwareExpiring: 3,
-    // Security
-    backupSuccess: 99.98,
-    securityIncidents: 0,
-    antivirusCoverage: 100.0,
-    mfaCoverage: 100.0,
-    // Repair
-    repairCount: 12,
-    repairCost: 145000,
-    topBrokenDevices: [
-      { name: "Google TPU v5e Node", count: 4, cost: 80000 },
-      { name: "NVIDIA H100 Workstation", count: 3, cost: 45000 },
-      { name: "MacBook Pro M3 Max 16\"", count: 2, cost: 12000 },
-      { name: "Dell Precision 7960", count: 1, cost: 5000 },
-      { name: "ASUS ProArt AI Monitor", count: 1, cost: 2000 },
-      { name: "Logitech MX Master 3S", count: 1, cost: 1000 },
-      { name: "Google Pixel Fold 2", count: 0, cost: 0 },
-      { name: "Cisco Catalyst Switch 9300", count: 0, cost: 0 },
-      { name: "Supermicro Server H12", count: 0, cost: 0 },
-      { name: "HP Color LaserJet Enterprise", count: 0, cost: 0 }
-    ],
-    deptCosts: {
-      "AI Research": 85000,
-      "Robotics Lab": 35000,
-      "Infrastructure": 15000,
-      "Operations": 6000,
-      "Finance": 4000
-    },
-    softwareExpiringDetails: [
-      { name: "Google Cloud Platform (GCP Enterprise)", expiringDate: "15 ส.ค. 2026", licenses: 500, status: "ใกล้หมดอายุ" },
-      { name: "Slack Enterprise Grid", expiringDate: "28 ส.ค. 2026", licenses: 1200, status: "ใกล้หมดอายุ" },
-      { name: "Weights & Biases (W&B Teams)", expiringDate: "12 ก.ย. 2026", licenses: 350, status: "แจ้งเตือนล่วงหน้า" }
-    ],
-    assetsExpiringDetails: [
-      { id: "AST-TPU-042", type: "Server Node", model: "Google TPU v4 Node", dept: "AI Research", expDate: "10 ส.ค. 2026" },
-      { id: "AST-GPU-109", type: "Workstation", model: "NVIDIA A100 Workstation", dept: "Robotics Lab", expDate: "15 ส.ค. 2026" },
-      { id: "AST-LAP-882", type: "Laptop", model: "MacBook Pro M1 Max 16\"", dept: "Operations", expDate: "20 ส.ค. 2026" }
-    ],
-    // Improvement
-    automationsDone: 5,
-    aiApps: 4,
-    hoursSaved: 320,
-    ongoingProjects: [
-      { title: "Gemini Auto-IT Agent", desc: "นำโมเดล Gemini มาช่วยตอบและแก้ปัญหาไอทีอัตโนมัติ คืบหน้า 85%" },
-      { title: "TPU Cluster Optimization", desc: "ปรับปรุงการจัดสรรทรัพยากรการคำนวณสำหรับโมเดลวิจัย คืบหน้า 70%" },
-      { title: "Zero Trust Security", desc: "ยกระดับระบบตรวจสอบสิทธิ์เข้าถึงข้อมูลโมเดลวิจัย คืบหน้า 90%" }
-    ],
-    recommendations: [
-      "แนะนำจัดทำแผนงบประมาณเพื่อเปลี่ยนผ่านจาก TPU v4 Nodes ที่ใกล้หมดอายุไปยัง TPU v6e เพื่อเพิ่มประสิทธิภาพการคำนวณและลดการใช้พลังงาน",
-      "เสนออนุมัติต่ออายุสัญญา Google Cloud Platform (GCP Enterprise) ล่วงหน้าก่อนหมดอายุในวันที่ 15 ส.ค. เพื่อเลี่ยงผลกระทบต่อ Training Pipelines ของทีมนักวิจัย",
-      "ผลลัพธ์ของโครงการ Gemini Auto-IT Agent ช่วยลดภาระงาน Support Tickets ได้ถึง 35% ในเดือนนี้ แนะนำขยายผลให้รองรับภาษาท้องถิ่นเพิ่มเติมในสาขาเอเชียแปซิฟิก"
-    ]
-  },
-  "2026-06": {
-    monthName: "มิถุนายน 2026",
-    // Asset
-    totalAssets: 1420,
-    assetValue: 84100000,
-    assetsExpiring: 22,
-    assetsBroken: 10,
+    totalAssets: 0,
+    assetValue: 0,
+    assetsExpiring: 0,
+    assetsBroken: 0,
     assetsLost: 0,
     // Support
-    ticketsCount: 310,
-    slaPercent: 98.1,
-    responseTime: 9.5,
-    resolutionTime: 2.1,
-    csat: 4.8,
+    ticketsCount: 0,
+    slaPercent: 0,
+    responseTime: 0,
+    resolutionTime: 0,
+    csat: 0,
     // Software
-    totalSoftware: 44,
-    licensesInUse: 2400,
-    licensesVacant: 400,
-    softwareCost: 1250000,
-    softwareExpiring: 1,
+    totalSoftware: 0,
+    licensesInUse: 0,
+    licensesVacant: 0,
+    softwareCost: 0,
+    softwareExpiring: 0,
     // Security
-    backupSuccess: 99.95,
+    backupSuccess: 0,
     securityIncidents: 0,
-    antivirusCoverage: 100.0,
-    mfaCoverage: 100.0,
+    antivirusCoverage: 0,
+    mfaCoverage: 0,
     // Repair
-    repairCount: 15,
-    repairCost: 168000,
-    topBrokenDevices: [
-      { name: "Google TPU v5e Node", count: 5, cost: 100000 },
-      { name: "NVIDIA H100 Workstation", count: 4, cost: 60000 },
-      { name: "MacBook Pro M3 Max 16\"", count: 3, cost: 8000 },
-      { name: "Dell Precision 7960", count: 2, cost: 10000 },
-      { name: "ASUS ProArt AI Monitor", count: 1, cost: 2000 },
-      { name: "Logitech MX Master 3S", count: 0, cost: 0 },
-      { name: "Google Pixel Fold 2", count: 0, cost: 0 },
-      { name: "Cisco Catalyst Switch 9300", count: 0, cost: 0 },
-      { name: "Supermicro Server H12", count: 0, cost: 0 },
-      { name: "HP Color LaserJet Enterprise", count: 0, cost: 0 }
-    ],
-    deptCosts: {
-      "AI Research": 110000,
-      "Robotics Lab": 40000,
-      "Infrastructure": 10000,
-      "Operations": 8000,
-      "Finance": 0
-    },
-    softwareExpiringDetails: [
-      { name: "Weights & Biases (W&B Teams)", expiringDate: "12 ก.ค. 2026", licenses: 350, status: "ต่ออายุแล้ว" }
-    ],
-    assetsExpiringDetails: [
-      { id: "AST-GPU-004", type: "Workstation", model: "NVIDIA A100 Workstation", dept: "AI Research", expDate: "15 มิ.ย. 2026" }
-    ],
+    repairCount: 0,
+    repairCost: 0,
+    topBrokenDevices: [],
+    deptCosts: {},
+    softwareExpiringDetails: [],
+    assetsExpiringDetails: [],
     // Improvement
-    automationsDone: 3,
-    aiApps: 3,
-    hoursSaved: 280,
-    ongoingProjects: [
-      { title: "Gemini Auto-IT Agent", desc: "เริ่มทดสอบระบบคัดกรอง Ticket อัตโนมัติ คืบหน้า 50%" },
-      { title: "TPU Cluster Optimization", desc: "วิเคราะห์การใช้พลังงานในคลัสเตอร์ขนาดใหญ่ คืบหน้า 45%" }
-    ],
-    recommendations: [
-      "มีการจัดเก็บและคืนอุปกรณ์คอมพิวเตอร์อย่างมีประสิทธิภาพในเดือนนี้ ส่งผลให้อัตราอุปกรณ์สูญหายเป็นศูนย์ (0 เครื่อง)",
-      "การเคลมประกันและส่งซ่อมของ TPU Nodes ในแผนก AI Research ส่งผลกระทบต่อเวลาของนักวิจัยบางส่วน แนะนำให้จัดหา Nodes สำรองเพิ่มสำหรับความล้มเหลวแบบฮาร์ดแวร์"
-    ]
+    automationsDone: 0,
+    aiApps: 0,
+    hoursSaved: 0,
+    ongoingProjects: [],
+    recommendations: []
   }
 };
 
