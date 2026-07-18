@@ -150,6 +150,78 @@ const initialDashboardData = {
       "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
     ],
+    "ticketsList": [
+      {
+        "sn": 1,
+        "date": "11/11/2568 10:29",
+        "complainant": "ปัณณวิชญ์   ทองวัน",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:10",
+        "responder": "ปัณณวิชญ์ สิริภานุพัฒน์ (บอย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 2,
+        "date": "11/11/2568 14:04",
+        "complainant": "นิธิดา รัตนอาภรณ์",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: ์Adobe",
+        "duration": "00:30",
+        "responder": "นิธิดา รัตนอาภรณ์ (เตย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 3,
+        "date": "18/11/2568 15:49",
+        "complainant": "พรพิมล เขียวจันทร์",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows",
+        "duration": "00:50",
+        "responder": "ผู้ใช้รับเชิญ 95166",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 4,
+        "date": "19/11/2568 10:09",
+        "complainant": "กฤษณา ลำเพ็ง",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:50",
+        "responder": "กฤษณา ลำเพ็ง (พลอย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 5,
+        "date": "19/11/2568 10:35",
+        "complainant": "นายกฤติน  วิชันดิษฐ ",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:30",
+        "responder": "กฤติน วิชัยดิษฐ  (อ้น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 6,
+        "date": "20/11/2568 11:01",
+        "complainant": "เนตรปรีญา ทัดศรี",
+        "issue": "ฮาร์ดแวร์: Notebook, เน็ตเวิร์ค: เชื่อมต่อ บลูทูธ ไม่ได้",
+        "duration": "00:30",
+        "responder": "เนตรปรีญา ทัดศรี (แตงกวา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 7,
+        "date": "26/11/2568 15:58",
+        "complainant": "สุภาพ  แสนจันทร์ ",
+        "issue": "ฮาร์ดแวร์: Notebook, Printer",
+        "duration": "00:10",
+        "responder": "สุภาพ แสนจันทร์ (ส้ม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
+    ],
     "automationsDone": 1,
     "aiApps": 2,
     "hoursSaved": 15
@@ -280,6 +352,78 @@ const initialDashboardData = {
       "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 9 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Printer",
       "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "ticketsList": [
+      {
+        "sn": 8,
+        "date": "02/12/2568 10:49",
+        "complainant": "นางสาวสุพรรษา อินทะเรืองรุ่ง",
+        "issue": "ฮาร์ดแวร์: Notebook, Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 77838",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 9,
+        "date": "02/12/2568 13:21",
+        "complainant": "โชตินันท์ ณ นคร",
+        "issue": "ฮาร์ดแวร์: Notebook, Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:40",
+        "responder": "ผู้ใช้รับเชิญ 24619",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 10,
+        "date": "04/12/2568 13:05",
+        "complainant": "โชตินันท์ ณ นคร",
+        "issue": "ฮาร์ดแวร์: PC Computer, บัญชีผู้ใช้: เชื่อมต่อ Nas ",
+        "duration": "00:50",
+        "responder": "ผู้ใช้รับเชิญ 81829",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 11,
+        "date": "12/12/2568 10:25",
+        "complainant": "นางสาวอัจฉรา เหรียญพิมาย",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:50",
+        "responder": "ผู้ใช้รับเชิญ 94307",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 12,
+        "date": "12/12/2568 12:43",
+        "complainant": "นภัสสร นาสวน",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:40",
+        "responder": "ผู้ใช้รับเชิญ 47307",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 13,
+        "date": "15/12/2568 16:14",
+        "complainant": "โชตินันท์ ณ นคร",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows",
+        "duration": "00:40",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 14,
+        "date": "19/12/2568 10:17",
+        "complainant": "พรพิมล เขียวจันทร์",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: ์Adobe, Windows",
+        "duration": "01:00",
+        "responder": "ผู้ใช้รับเชิญ 22143",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
     ],
     "automationsDone": 1,
     "aiApps": 2,
@@ -412,6 +556,648 @@ const initialDashboardData = {
       "อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ 89.1% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
     ],
+    "ticketsList": [
+      {
+        "sn": 15,
+        "date": "05/01/2569 11:03",
+        "complainant": "นาเดียร์",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: Email",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 31440",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 16,
+        "date": "05/01/2569 11:06",
+        "complainant": "นางสาวสุพรรษา อินทะเรืองรุ่ง",
+        "issue": "ฮาร์ดแวร์: Printer, ซอฟต์แวร์: Windows, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:30",
+        "responder": "สุพรรษา อินทะเรืองรุ่ง (ต่าย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 17,
+        "date": "06/01/2569 09:52",
+        "complainant": "นางสาวอังคณา ธงศรี",
+        "issue": "ฮาร์ดแวร์: Notebook, บัญชีผู้ใช้: Email",
+        "duration": "00:10",
+        "responder": "Ampol",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 18,
+        "date": "07/01/2569 10:50",
+        "complainant": "ขวัญลออ นวลละออง",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:10",
+        "responder": "Kwanlaoa Nuanlaong",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 19,
+        "date": "08/01/2569 09:38",
+        "complainant": "ชลธิชา ตาลพันธ์ นิชา",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows, Microsoft Office",
+        "duration": "01:00",
+        "responder": "ผู้ใช้รับเชิญ 65327",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 20,
+        "date": "08/01/2569 10:03",
+        "complainant": "ดลพร อุลุชาฎะ",
+        "issue": "ฮาร์ดแวร์: Mac, ซอฟต์แวร์: Microsoft Office",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 48018",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 21,
+        "date": "08/01/2569 10:42",
+        "complainant": "อนุสรา สิมจันทา",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: IOS, บัญชีผู้ใช้: Tiktok",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 24821",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 22,
+        "date": "08/01/2569 13:55",
+        "complainant": "ปัณณวิชญ์   ทองวัน (บอย)",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "00:30",
+        "responder": "ปัณณวิชญ์ สิริภานุพัฒน์ (บอย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 23,
+        "date": "08/01/2569 14:52",
+        "complainant": "กรรณิกา ค่ำคูณ",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: IOS, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 35630",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 24,
+        "date": "08/01/2569 14:54",
+        "complainant": "ฐานิสา ศรีจันทร์โคตร",
+        "issue": "ฮาร์ดแวร์: iPad",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 63311",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 25,
+        "date": "12/01/2569 09:04",
+        "complainant": "พิชยา ฮงทอง",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Google Link",
+        "duration": "00:30",
+        "responder": "พิชยา ฮงทอง (แนน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 26,
+        "date": "12/01/2569 09:51",
+        "complainant": "อังคณา ธงศรี (ใบเฟิร์น/บัญชี)",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Microsoft Office",
+        "duration": "00:20",
+        "responder": "Ampol",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 27,
+        "date": "12/01/2569 10:44",
+        "complainant": "ปาหนัน สุพรม",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 55719",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 29,
+        "date": "15/01/2569 15:01",
+        "complainant": "ขวัญลออ นวลละออง",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:30",
+        "responder": "Kwanlaoa Nuanlaong",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 30,
+        "date": "16/01/2569 09:34",
+        "complainant": "อัจฉรา เหรียญพิมาย (โบกี้)",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows",
+        "duration": "00:30",
+        "responder": "อัจฉรา เหรียญพิมาย (Bogie)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 31,
+        "date": "16/01/2569 12:13",
+        "complainant": "อนุสรา สิมจันทา",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: IOS",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 62685",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 32,
+        "date": "19/01/2569 11:16",
+        "complainant": "กฤติญา ทาระพันธ์",
+        "issue": "ฮาร์ดแวร์: Notebook, Smartphone, ซอฟต์แวร์: Google Link, IOS, บัญชีผู้ใช้: Tiktok, Email",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 76985",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 33,
+        "date": "20/01/2569 16:02",
+        "complainant": "ณัฐณิชา ศรีวรอรรถิกุล",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: เชื่อมต่อ บลูทูธ ไม่ได้, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:40",
+        "responder": "ผู้ใช้รับเชิญ 73645",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 34,
+        "date": "21/01/2569 09:41",
+        "complainant": "เอกรินทร์ จีนเพชร",
+        "issue": "ฮาร์ดแวร์: PC Computer",
+        "duration": "00:20",
+        "responder": "Guest User 75941",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 35,
+        "date": "21/01/2569 16:13",
+        "complainant": "อนุสรา สิมจันทา",
+        "issue": "ฮาร์ดแวร์: iPad",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 13173",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 36,
+        "date": "22/01/2569 12:15",
+        "complainant": "สุภาพ แสนจันทร์ ",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: Printer WIFI, Email",
+        "duration": "00:50",
+        "responder": "สุภาพ แสนจันทร์ (ส้ม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 40,
+        "date": "22/01/2569 15:31",
+        "complainant": "เฟิร์น",
+        "issue": "ฮาร์ดแวร์: iPad, บัญชีผู้ใช้: Tiktok",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 42,
+        "date": "22/01/2569 15:34",
+        "complainant": "ต่าย HR",
+        "issue": "ฮาร์ดแวร์: CCTV, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 43,
+        "date": "22/01/2569 15:50",
+        "complainant": "ครีม",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 44,
+        "date": "22/01/2569 15:51",
+        "complainant": "พี่ส้ม",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 46,
+        "date": "23/01/2569 09:31",
+        "complainant": "อำพล   แซ่แฮ",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 48,
+        "date": "23/01/2569 09:38",
+        "complainant": "ปภาวิน อักโขสุวรรณ",
+        "issue": "ฮาร์ดแวร์: iPad, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 16976",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 49,
+        "date": "23/01/2569 10:25",
+        "complainant": "นนทภัทร์  พึ่งพุ่ม",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: IOS, บัญชีผู้ใช้: Tiktok",
+        "duration": "00:35",
+        "responder": "Guest User 89423",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 50,
+        "date": "23/01/2569 13:12",
+        "complainant": "ขวัญลออ นวลละออง",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:50",
+        "responder": "Kwanlaoa Nuanlaong",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 51,
+        "date": "23/01/2569 13:19",
+        "complainant": "กฤติญา ทาระพันธ์",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 76985",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 52,
+        "date": "23/01/2569 13:31",
+        "complainant": "ณัฏฐ์ชาวีร์ หิรัญรัชชากุล",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: Calenda",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 88787",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 53,
+        "date": "23/01/2569 13:59",
+        "complainant": "อำพล   แซ่แฮ",
+        "issue": "ฮาร์ดแวร์: Mac, ซอฟต์แวร์: IOS, Windows",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 54,
+        "date": "26/01/2569 08:31",
+        "complainant": "อำพล  แซ่แฮ",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 55,
+        "date": "26/01/2569 08:45",
+        "complainant": "ภัทรศยา ไชยคุณ",
+        "issue": "ฮาร์ดแวร์: iPad, บัญชีผู้ใช้: Email",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 94075",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 57,
+        "date": "26/01/2569 16:06",
+        "complainant": "สุดธิดา เผ่าหอม",
+        "issue": "ฮาร์ดแวร์: Notebook, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "01:00",
+        "responder": "สุดธิดา เผ่าหอม (ต่าย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 58,
+        "date": "26/01/2569 16:56",
+        "complainant": "พี่บี จัดซื้อ",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 59,
+        "date": "27/01/2569 08:36",
+        "complainant": "อำพล  แซ่แฮ",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 29120",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 60,
+        "date": "27/01/2569 09:05",
+        "complainant": "เบนซ์",
+        "issue": "ฮาร์ดแวร์: Mac, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 61,
+        "date": "27/01/2569 10:05",
+        "complainant": "ทัศวรรณ วัลย์ดาว ",
+        "issue": "ซอฟต์แวร์: CCTV",
+        "duration": "03:00",
+        "responder": "ผู้ใช้รับเชิญ 78271",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 62,
+        "date": "27/01/2569 13:50",
+        "complainant": "กฤติมา สอนพู",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 78411",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 63,
+        "date": "27/01/2569 13:55",
+        "complainant": "ภัทรศยา ไชยคุณ",
+        "issue": "ฮาร์ดแวร์: Smartphone, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 94075",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 64,
+        "date": "27/01/2569 14:38",
+        "complainant": "บอม",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 65,
+        "date": "27/01/2569 14:48",
+        "complainant": "พิชยา ฮงทอง (แนน)",
+        "issue": "ฮาร์ดแวร์: Notebook, Printer, ซอฟต์แวร์: Microsoft Office, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้",
+        "duration": "00:45",
+        "responder": "พิชยา ฮงทอง (แนน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 66,
+        "date": "28/01/2569 08:33",
+        "complainant": "อำพล  แซ่แฮ",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 68,
+        "date": "28/01/2569 08:38",
+        "complainant": "ทีมไลฟ์",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: เชื่อมต่อ Nas ไม่ได้, บัญชีผู้ใช้: เชื่อมต่อ Nas , G-Suit",
+        "duration": "03:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 69,
+        "date": "28/01/2569 09:34",
+        "complainant": "HR",
+        "issue": "ซอฟต์แวร์: CCTV",
+        "duration": "00:40",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 70,
+        "date": "29/01/2569 14:14",
+        "complainant": "Ing Admin",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 71,
+        "date": "29/01/2569 14:16",
+        "complainant": "Prem",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: IOS, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 72,
+        "date": "29/01/2569 16:40",
+        "complainant": "อภิสิทธิ์ พรจันทราวัฒน์",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: G-Suit",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 43809",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 73,
+        "date": "29/01/2569 16:48",
+        "complainant": "IT",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: google dive",
+        "duration": "05:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 74,
+        "date": "30/01/2569 12:11",
+        "complainant": "ฐานิสา ศรีจีนทร์โคตร",
+        "issue": "บัญชีผู้ใช้: google dive",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 86927",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 75,
+        "date": "30/01/2569 13:14",
+        "complainant": "กฤติน วิชัยดิษฐ  ",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: google dive",
+        "duration": "00:20",
+        "responder": "กฤติน วิชัยดิษฐ  (อ้น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 76,
+        "date": "30/01/2569 13:32",
+        "complainant": "IT",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: google dive",
+        "duration": "03:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 77,
+        "date": "30/01/2569 13:35",
+        "complainant": "พี่พอส",
+        "issue": "ฮาร์ดแวร์: Mac, บัญชีผู้ใช้: Click Up",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 79,
+        "date": "31/01/2569 08:26",
+        "complainant": "นนทภัทร์ พึ่งพุ่ม (หมู)",
+        "issue": "ฮาร์ดแวร์: iPad, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "Guest User 75073",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 80,
+        "date": "31/01/2569 08:32",
+        "complainant": "เอกรินทร์ จีนเพชร(เอก)",
+        "issue": "เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "02:00",
+        "responder": "ผู้ใช้รับเชิญ 90720",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 81,
+        "date": "31/01/2569 09:29",
+        "complainant": "Bam",
+        "issue": "ฮาร์ดแวร์: Smartphone, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: Calenda, G-Suit, บัญชีผู้ใช้: google dive",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 82,
+        "date": "31/01/2569 09:40",
+        "complainant": "ฐิตารีย์ นรกุลศิริภักดี",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: เชื่อมต่อ Server ",
+        "duration": "00:30",
+        "responder": "ฐิตารีย์  นรกุลศิริภักดี (เฟิร์น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 83,
+        "date": "31/01/2569 09:42",
+        "complainant": "ต่าย กราฟิก",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: G-Suit, บัญชีผู้ใช้: G-Suit",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 84,
+        "date": "31/01/2569 09:47",
+        "complainant": "ทีม DATA",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 85,
+        "date": "31/01/2569 09:52",
+        "complainant": "พรพิมล เขียวจันทร์",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows",
+        "duration": "03:00",
+        "responder": "ผู้ใช้รับเชิญ 14598",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 86,
+        "date": "31/01/2569 12:25",
+        "complainant": "ชลธิชา ตาลพันธ์",
+        "issue": "ฮาร์ดแวร์: Notebook, iPad, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้, Calenda, เชื่อมต่อ บลูทูธ ไม่ได้, บัญชีผู้ใช้: Email, google dive, เชื่อมต่อ Server ",
+        "duration": "02:00",
+        "responder": "ชลธิชา ตาลพันธ์ (นิชา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 87,
+        "date": "31/01/2569 13:36",
+        "complainant": "นนทภัทร์ พึ่งพุ่มา(หมู) TikTok content creators ",
+        "issue": "บัญชีผู้ใช้: Capcut",
+        "duration": "00:30",
+        "responder": "Guest User 75513",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 88,
+        "date": "31/01/2569 16:00",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
+    ],
     "automationsDone": 6,
     "aiApps": 2,
     "hoursSaved": 90
@@ -542,6 +1328,358 @@ const initialDashboardData = {
       "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 19 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Notebook",
       "อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ 80% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "ticketsList": [
+      {
+        "sn": 89,
+        "date": "03/02/2569 07:51",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 90,
+        "date": "03/02/2569 09:24",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: เชื่อมต่อ Nas ไม่ได้, บัญชีผู้ใช้: เชื่อมต่อ Server ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 91,
+        "date": "03/02/2569 09:28",
+        "complainant": "ปาหนัน สุพรม",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "03:00",
+        "responder": "ปาหนัน สุพรม (พู่กัน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 92,
+        "date": "03/02/2569 12:29",
+        "complainant": "สุภาพ  แสนจันทร์ (พี่ส่ม)ี",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "01:00",
+        "responder": "ผู้ใช้รับเชิญ 81286",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 93,
+        "date": "04/02/2569 07:52",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 94,
+        "date": "04/02/2569 09:10",
+        "complainant": "สุภาพ แสนจันทร์ ",
+        "issue": "ฮาร์ดแวร์: CCTV, ซอฟต์แวร์: CCTV, บัญชีผู้ใช้: CCTV",
+        "duration": "01:30",
+        "responder": "ผู้ใช้รับเชิญ 81286",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 95,
+        "date": "04/02/2569 10:44",
+        "complainant": "พิชยา ฮงทอง",
+        "issue": "ฮาร์ดแวร์: Notebook, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "01:00",
+        "responder": "Guest User 16356",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 96,
+        "date": "04/02/2569 10:45",
+        "complainant": "พิชยา ฮงทอง",
+        "issue": "ฮาร์ดแวร์: Printer, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:30",
+        "responder": "Guest User 16356",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 98,
+        "date": "05/02/2569 09:51",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 99,
+        "date": "05/02/2569 09:52",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: CCTV, ซอฟต์แวร์: CCTV",
+        "duration": "48:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 101,
+        "date": "05/02/2569 09:54",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: CCTV, ซอฟต์แวร์: CCTV",
+        "duration": "48:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 102,
+        "date": "05/02/2569 15:11",
+        "complainant": "ชลธิชา ตาลพันธ์",
+        "issue": "ฮาร์ดแวร์: PC Computer, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: Calenda, G-Suit, บัญชีผู้ใช้: Email",
+        "duration": "00:30",
+        "responder": "ชลธิชา ตาลพันธ์ (นิชา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 103,
+        "date": "06/02/2569 10:56",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 105,
+        "date": "06/02/2569 14:01",
+        "complainant": "สุรวิชญ์ โพธิ์ตาก",
+        "issue": "ฮาร์ดแวร์: Mac, ซอฟต์แวร์: Windows, เน็ตเวิร์ค: เชื่อมต่อ Nas ไม่ได้, บัญชีผู้ใช้: เชื่อมต่อ Nas ",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 44149",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 106,
+        "date": "09/02/2569 08:42",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 107,
+        "date": "10/02/2569 09:06",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 108,
+        "date": "10/02/2569 09:46",
+        "complainant": "อัจฉรา เหรียญพิมาย (โบกี้)",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:10",
+        "responder": "อัจฉรา เหรียญพิมาย (Bogie)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 109,
+        "date": "10/02/2569 10:12",
+        "complainant": "พิชยา ฮงทอง",
+        "issue": "ฮาร์ดแวร์: Notebook, เน็ตเวิร์ค: Calenda",
+        "duration": "00:30",
+        "responder": "Guest User 22874",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 110,
+        "date": "13/02/2569 10:07",
+        "complainant": "นภัสสร นาสวน",
+        "issue": "ฮาร์ดแวร์: Printer",
+        "duration": "00:30",
+        "responder": "Guest User 75198",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 111,
+        "date": "16/02/2569 09:22",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 113,
+        "date": "16/02/2569 10:58",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: Printer, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "04:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 114,
+        "date": "17/02/2569 08:40",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 115,
+        "date": "17/02/2569 08:56",
+        "complainant": "กฤษณา ลำเพ็ง",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows",
+        "duration": "00:30",
+        "responder": "Guest User 67573",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 116,
+        "date": "17/02/2569 09:13",
+        "complainant": "อนุสรา สิมจันทา",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: IOS",
+        "duration": "00:10",
+        "responder": "ผู้ใช้รับเชิญ 52165",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 117,
+        "date": "17/02/2569 13:57",
+        "complainant": "กฤติมา สอนพูน",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Microsoft Office, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้, บัญชีผู้ใช้: google dive",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 14230",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 118,
+        "date": "18/02/2569 08:28",
+        "complainant": "",
+        "issue": "โปรดให้เนื้อหาต้นฉบับที่ต้องการสรุปมาเพื่อให้ฉันสามารถสรุปเป็นภาษาไทยให้คุณได้ครับ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 119,
+        "date": "23/02/2569 09:38",
+        "complainant": "",
+        "issue": "โปรดให้เนื้อหาหลักที่ต้องการสรุปมา ฉันจะสรุปให้เป็นภาษาไทยตามที่ขอค่ะ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 120,
+        "date": "23/02/2569 09:39",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: CCTV, ซอฟต์แวร์: CCTV",
+        "duration": "72:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 121,
+        "date": "23/02/2569 11:00",
+        "complainant": "นางสาวสุพรรษา อินทะเรืองรุ่ง",
+        "issue": "บัญชีผู้ใช้: เชื่อมต่อ Server , Email",
+        "duration": "00:30",
+        "responder": "สุพรรษา อินทะเรืองรุ่ง (ต่าย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 123,
+        "date": "24/02/2569 08:47",
+        "complainant": "",
+        "issue": "กรุณาให้เนื้อหาหลัก (正文) ที่ต้องการสรุปเป็นภาษาไทยมาให้ฉันนะครับ/คะ ฉันจะสรุปเนื้อหานั้นให้ถูกต้องและกระชับตามที่คุณต้องการโดยทันที",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 132,
+        "date": "25/02/2569 15:39",
+        "complainant": "นิชา",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:20",
+        "responder": "ผู้ใช้รับเชิญ 53591",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 136,
+        "date": "26/02/2569 09:00",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 140,
+        "date": "26/02/2569 11:12",
+        "complainant": "ปาหนัน สุพรม พู่กัน",
+        "issue": "ฮาร์ดแวร์: Mouse",
+        "duration": "00:20",
+        "responder": "ปาหนัน สุพรม (พู่กัน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 143,
+        "date": "27/02/2569 09:04",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 144,
+        "date": "28/02/2569 08:47",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
     ],
     "automationsDone": 4,
     "aiApps": 2,
@@ -674,6 +1812,178 @@ const initialDashboardData = {
       "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
     ],
+    "ticketsList": [
+      {
+        "sn": 145,
+        "date": "03/03/2569 08:34",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 146,
+        "date": "04/03/2569 08:30",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 147,
+        "date": "10/03/2569 08:36",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 148,
+        "date": "10/03/2569 09:51",
+        "complainant": "",
+        "issue": "เทรนนิ่ง Lark",
+        "duration": "01:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 150,
+        "date": "11/03/2569 08:28",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 151,
+        "date": "12/03/2569 08:20",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 167,
+        "date": "18/03/2569 09:06",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 169,
+        "date": "18/03/2569 09:06",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 171,
+        "date": "19/03/2569 10:09",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 172,
+        "date": "19/03/2569 10:09",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 173,
+        "date": "19/03/2569 10:10",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows",
+        "duration": "00:30",
+        "responder": "Base Assistant",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 175,
+        "date": "19/03/2569 16:46",
+        "complainant": "",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: CCTV",
+        "duration": "00:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 177,
+        "date": "19/03/2569 16:48",
+        "complainant": "",
+        "issue": "แจ้งติดตั้ง/อื่นๆ",
+        "duration": "00:30",
+        "responder": "Base Assistant",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 178,
+        "date": "20/03/2569 12:54",
+        "complainant": "พิชยา ฮงทอง (แนน)",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Microsoft Office",
+        "duration": "00:20",
+        "responder": "พิชยา ฮงทอง (แนน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 181,
+        "date": "30/03/2569 08:47",
+        "complainant": "ต่าย HR",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Microsoft Office",
+        "duration": "0030",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 184,
+        "date": "31/03/2569 13:06",
+        "complainant": "ช่างภาพ ไมค์",
+        "issue": "ฮาร์ดแวร์: Mac, ซอฟต์แวร์: IOS",
+        "duration": "00:40",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 186,
+        "date": "31/03/2569 15:42",
+        "complainant": "กิ๊กจัดซื้อ",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Windows",
+        "duration": "00:20",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
+    ],
     "automationsDone": 2,
     "aiApps": 2,
     "hoursSaved": 30
@@ -805,6 +2115,88 @@ const initialDashboardData = {
       "อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ 50% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
     ],
+    "ticketsList": [
+      {
+        "sn": 188,
+        "date": "03/04/2569 09:48",
+        "complainant": "กฤษณา ลำเพ็ง",
+        "issue": "ติดตั้งเครื่องปริ้นบ้าน 18 ในโน้ตบุ้ค",
+        "duration": "00:20",
+        "responder": "กฤษณา ลำเพ็ง (พลอย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 189,
+        "date": "07/04/2569 08:31",
+        "complainant": "สุภาพ  แสนจันทร์ ",
+        "issue": "ฮาร์ดแวร์: Printer, บัญชีผู้ใช้: เชื่อมต่อ Server , Printer WIFI",
+        "duration": "02:00",
+        "responder": "สุภาพ แสนจันทร์ (ส้ม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 190,
+        "date": "07/04/2569 12:08",
+        "complainant": "ชลธิชา สุวาส",
+        "issue": "ฮาร์ดแวร์: Notebook, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้, บัญชีผู้ใช้: Email",
+        "duration": "00:30",
+        "responder": "ชลธิชา สุวาส (จิน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 191,
+        "date": "09/04/2569 09:12",
+        "complainant": "เอกรินทร์ จีนเพชร",
+        "issue": "บัญชีผู้ใช้: Kumoo, Email",
+        "duration": "02:00",
+        "responder": "ผู้ใช้รับเชิญ 55420",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 192,
+        "date": "22/04/2569 10:56",
+        "complainant": "เนตรปรีญา ทัดศรี",
+        "issue": "ฮาร์ดแวร์: Printer",
+        "duration": "03:00",
+        "responder": "เนตรปรีญา ทัดศรี(แตงกวา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 193,
+        "date": "23/04/2569 15:21",
+        "complainant": "ชลธิชา สุวาส",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Microsoft Office, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้",
+        "duration": "01:00",
+        "responder": "ผู้ใช้รับเชิญ 98623",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 194,
+        "date": "24/04/2569 13:22",
+        "complainant": "เนตรปรีญา ทัดศรี",
+        "issue": "ฮาร์ดแวร์: Mac, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้",
+        "duration": "01:00",
+        "responder": "เนตรปรีญา ทัดศรี(แตงกวา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 195,
+        "date": "30/04/2569 08:25",
+        "complainant": "",
+        "issue": "ซอฟต์แวร์: Config System, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "03:00",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
+    ],
     "automationsDone": 1,
     "aiApps": 2,
     "hoursSaved": 15
@@ -934,6 +2326,88 @@ const initialDashboardData = {
     "recommendations": [
       "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "ticketsList": [
+      {
+        "sn": 196,
+        "date": "06/05/2569 10:44",
+        "complainant": "เบญจภรณ์ เอี่ยมต้นเค้า",
+        "issue": "ฮาร์ดแวร์: Printer, เน็ตเวิร์ค: เชื่อมต่ออินเตอร์เน็ตไม่ได้",
+        "duration": "01:00",
+        "responder": "เนตรปรีญา ทัดศรี(แตงกวา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 197,
+        "date": "18/05/2569 14:04",
+        "complainant": "กฤติญา ทาระพันธ์",
+        "issue": "ฮาร์ดแวร์: iPad, Notebook, ซอฟต์แวร์: Google Link, เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: Email",
+        "duration": "00:30",
+        "responder": "ผู้ใช้รับเชิญ 41070",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 198,
+        "date": "19/05/2569 13:30",
+        "complainant": "ปาหนัน สุพรม",
+        "issue": "ฮาร์ดแวร์: Mouse",
+        "duration": "00:20",
+        "responder": "ปาหนัน สุพรม (พู่กัน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 200,
+        "date": "20/05/2569 13:22",
+        "complainant": "ธนัชชา บุญมีมาก",
+        "issue": "ฮาร์ดแวร์: Smartphone, บัญชีผู้ใช้: Email",
+        "duration": "00:10",
+        "responder": "ธนัชชา บุญมีมาก (ป๊อป)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 201,
+        "date": "20/05/2569 14:49",
+        "complainant": "ชนันพร อินขำ",
+        "issue": "เน็ตเวิร์ค: Calenda, บัญชีผู้ใช้: google dive",
+        "duration": "00:40",
+        "responder": "ผู้ใช้รับเชิญ 40358",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 202,
+        "date": "22/05/2569 09:02",
+        "complainant": "ณัฏชณินภา กำจร",
+        "issue": "บัญชีผู้ใช้: Lark, Chat GPT",
+        "duration": "00:05",
+        "responder": "ผู้ใช้รับเชิญ 57602",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 203,
+        "date": "22/05/2569 10:16",
+        "complainant": "ชนันพร อินขำ",
+        "issue": "บัญชีผู้ใช้: Tiktok",
+        "duration": "00:05",
+        "responder": "ชนันพร อินขำ (ไอซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 204,
+        "date": "22/05/2569 10:37",
+        "complainant": "ปัญจมา สมบัติกำไร",
+        "issue": "บัญชีผู้ใช้: Tiktok",
+        "duration": "00:05",
+        "responder": "Guest User 61903",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
     ],
     "automationsDone": 1,
     "aiApps": 2,
@@ -1066,6 +2540,258 @@ const initialDashboardData = {
       "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
     ],
+    "ticketsList": [
+      {
+        "sn": 205,
+        "date": "01/06/2569 08:44",
+        "complainant": "เอก",
+        "issue": "บัญชีผู้ใช้: Lark",
+        "duration": "00.05",
+        "responder": "ธันวา เเซ่เเฮ (ไนซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 206,
+        "date": "01/06/2569 11:02",
+        "complainant": "รามจิตติ ชินนะเกิด",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00.05",
+        "responder": "รามจิตติ ชินนะเกิดโชค (เบนซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 208,
+        "date": "02/06/2569 08:46",
+        "complainant": "กานต์ฑิตา ธีระพิบูลย์",
+        "issue": "ฮาร์ดแวร์: Notebook, ซอฟต์แวร์: Google Link, Windows, Lark, เน็ตเวิร์ค: เชื่อมต่อ Server ไม่ได้, บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "กานต์ฑิตา ธีระพิบูลย์ (อิง)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 209,
+        "date": "02/06/2569 11:27",
+        "complainant": "รามจิตติ",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "รามจิตติ ชินนะเกิดโชค (เบนซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 210,
+        "date": "02/06/2569 11:41",
+        "complainant": "ชนันพร อินขำ",
+        "issue": "บัญชีผู้ใช้: Chat GPT",
+        "duration": "00.02",
+        "responder": "Guest User 94269",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 211,
+        "date": "02/06/2569 12:09",
+        "complainant": "พิชชาพร คอทอง",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00:30",
+        "responder": "พิชชาพร คอทอง (พีเจ้น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 212,
+        "date": "04/06/2569 09:24",
+        "complainant": "เย็นฤดี มาระวัง",
+        "issue": "ฮาร์ดแวร์: Notebook",
+        "duration": "00.05",
+        "responder": "เย็นฤดี มาระวัง (ฝ้าย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 213,
+        "date": "05/06/2569 10:14",
+        "complainant": "อาทิตยา มุมทอง",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00:10",
+        "responder": "อาทิตยา มุมทอง (ขมิ้น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 219,
+        "date": "08/06/2569 11:01",
+        "complainant": "เย็นฤดี มาระวัง",
+        "issue": "ฮาร์ดแวร์: Notebook, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00.10",
+        "responder": "เย็นฤดี มาระวัง (ฝ้าย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 220,
+        "date": "09/06/2569 09:34",
+        "complainant": "เย็นฤดี มาระวัง",
+        "issue": "ฮาร์ดแวร์: Mouse",
+        "duration": "00.03",
+        "responder": "ผู้ใช้รับเชิญ 66959",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 221,
+        "date": "09/06/2569 09:51",
+        "complainant": "พิสิษฐ์ มงคลสมบัติศิริ",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00.03",
+        "responder": "พิสิษฐ์ มงคลสมบัติศิริ (เจมส์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 223,
+        "date": "09/06/2569 10:34",
+        "complainant": "เอมปวีภร์ วัชระตระการพงศ์",
+        "issue": "ฮาร์ดแวร์: Mac",
+        "duration": "00.23",
+        "responder": "เอมปวีภร์ วัชระตระการพงศ์ (กิ๊ฟ)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 224,
+        "date": "10/06/2569 15:57",
+        "complainant": "เนลินญาน์  ศิระไมตรีฉัตร (เนลิน)",
+        "issue": "ฮาร์ดแวร์: Mac",
+        "duration": "00.30",
+        "responder": "เนลินญาน์ ศิระไมตรีฉัตร (เนลิน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 225,
+        "date": "11/06/2569 08:21",
+        "complainant": "อาทิตยา มุมทอง",
+        "issue": "ฮาร์ดแวร์: Mac",
+        "duration": "00:20",
+        "responder": "อาทิตยา มุมทอง (ขมิ้น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 226,
+        "date": "15/06/2569 09:08",
+        "complainant": "มนัสนันท์ เทพแก้ว ",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00.01",
+        "responder": "Guest User 33774",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 227,
+        "date": "15/06/2569 10:30",
+        "complainant": "",
+        "issue": "เช็คอุปกรณ์ Admin CRM บัญชี Producer Live",
+        "duration": "02:30",
+        "responder": "อำพล แซ่แฮ (โอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 228,
+        "date": "15/06/2569 12:50",
+        "complainant": "เนลินญาน์  ศิระไมตรีฉัตร ",
+        "issue": "บัญชีผู้ใช้: google meet",
+        "duration": "00:10",
+        "responder": "เนลินญาน์ ศิระไมตรีฉัตร (เนลิน)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 257,
+        "date": "16/06/2569 14:18",
+        "complainant": "นภัสสร นาสวน",
+        "issue": "ฮาร์ดแวร์: iPad",
+        "duration": "00.02",
+        "responder": "นภัสสร นาสวน (โบว์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 258,
+        "date": "16/06/2569 15:40",
+        "complainant": "อิศราภรณ์ ปิ่นงาม",
+        "issue": "เข้า IG Fern Clinic ในคอมกับโทรศัพท์เลขาให้หน่อยค่ะ เพื่อให้ฝั่ง content ทำการปรับแก้ไอจีได้",
+        "duration": "00:20",
+        "responder": "อิศราภรณ์ ปิ่นงาม (เบนซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 259,
+        "date": "16/06/2569 16:08",
+        "complainant": "ชนันพร อินขำ",
+        "issue": "บัญชีผู้ใช้: Tiktok",
+        "duration": "00.15",
+        "responder": "ชนันพร อินขำ (ไอซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 260,
+        "date": "18/06/2569 08:15",
+        "complainant": "อาทิตยา มุมทอง",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00:20",
+        "responder": "อาทิตยา มุมทอง (ขมิ้น)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 261,
+        "date": "19/06/2569 10:34",
+        "complainant": "อารยา ธนพันธุ์พาณิชย์",
+        "issue": "ขอบัญชี",
+        "duration": "00.10",
+        "responder": "Guest User 72644",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 262,
+        "date": "23/06/2569 10:02",
+        "complainant": "ชัยธัช ชัยวัฒน์",
+        "issue": "บัญชีผู้ใช้: Email, Lark",
+        "duration": "00:30",
+        "responder": "รามจิตติ ชินนะเกิดโชค (เบนซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 263,
+        "date": "29/06/2569 09:41",
+        "complainant": "ณัฐกานต์ ชิดปรางค์",
+        "issue": "ฮาร์ดแวร์: Printer",
+        "duration": "00:30",
+        "responder": "ณัฐกานต์ ชิดปรางค์ (เตยหอม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 264,
+        "date": "29/06/2569 13:09",
+        "complainant": "บุษกร บัวสวรรค์",
+        "issue": "กดล็อกอิน CapCut เข้าเมลที่ชื่อวิดีโอทีม แล้วมันให้กรอกวันเดือนปีเกิด กดออกจากหน้านี้ไม่ได้เลย น่าจะเป็นวันเดือนปีเกิดที่ตรงกับเมล โลกบังคับออกแล้วก็รีสตาร์ตเครื่องแล้วก็เป็นเหมือนเดิม",
+        "duration": "00:20",
+        "responder": "บุษกร บัวสวรรค์ (เรนนี่)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      }
+    ],
     "automationsDone": 3,
     "aiApps": 2,
     "hoursSaved": 45
@@ -1197,11 +2923,145 @@ const initialDashboardData = {
       "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
       "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
     ],
+    "ticketsList": [
+      {
+        "sn": 265,
+        "date": "01/07/2569 09:11",
+        "complainant": "ชนันพร อินขำ",
+        "issue": "บัญชีผู้ใช้: Chat GPT",
+        "duration": "07.00",
+        "responder": "ชนันพร อินขำ (ไอซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 266,
+        "date": "01/07/2569 13:47",
+        "complainant": "ศุภฤกษ์ ภายไธสง",
+        "issue": "ฮาร์ดแวร์: iPad, ซอฟต์แวร์: IOS, บัญชีผู้ใช้: Email",
+        "duration": "00.10",
+        "responder": "ศุภฤกษ์ ภายไธสง (ดรีม)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 267,
+        "date": "01/07/2569 16:14",
+        "complainant": "สุรวิชญ์ โพธิ์ตาก (ไมค์)",
+        "issue": "ท้องเสียบางวันเวลาเช้า ๆ ",
+        "duration": "00:15",
+        "responder": "สุรวิชญ์ โพธิ์ตาก (ไมค์เมโลดี้)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 268,
+        "date": "03/07/2569 11:09",
+        "complainant": "พิสิษฐ์ มงคลสมบัติศิริ",
+        "issue": "ฮาร์ดแวร์: Notebook, บัญชีผู้ใช้: Printer WIFI",
+        "duration": "00:20",
+        "responder": "พิสิษฐ์ มงคลสมบัติศิริ (เจมส์)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 269,
+        "date": "08/07/2569 15:57",
+        "complainant": "วิลาสินี ทับทิม",
+        "issue": "ไม่มีเครื่องปริ้นท์ในโปรแกรมพีคค่ะ/พี่นีปริ้นท์งานไม่ได้เลยค่ะ/SET ให้ด้วยค่ะ",
+        "duration": "00:30",
+        "responder": "Guest User 35635",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 271,
+        "date": "13/07/2569 14:04",
+        "complainant": "รามจิตติ ชินนะเกิดโชค",
+        "issue": "ฮาร์ดแวร์: PC Computer, บัญชีผู้ใช้: Email, Kumoo, google dive",
+        "duration": "00.25",
+        "responder": "รามจิตติ ชินนะเกิดโชค (เบนซ์)",
+        "status": "เสร็จสิ้น",
+        "cost": 13900
+      },
+      {
+        "sn": 272,
+        "date": "14/07/2569 13:37",
+        "complainant": "วิลาสินี ทับทิม",
+        "issue": "ฮาร์ดแวร์: Keyboard , บัญชีผู้ใช้: Lark, Chat GPT",
+        "duration": "00.30",
+        "responder": "Guest User 35635",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 274,
+        "date": "16/07/2569 08:45",
+        "complainant": "เนลินญาน์  ศิระไมตรีฉัตร",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00.05",
+        "responder": "Guest User 32271",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 275,
+        "date": "16/07/2569 09:06",
+        "complainant": "ปณิศอร บุญจูบุตร",
+        "issue": "บัญชีผู้ใช้: Email",
+        "duration": "00.05",
+        "responder": "ปณิศอร  บุญจูบุตร   (แต๊นซ์ )",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 276,
+        "date": "16/07/2569 09:47",
+        "complainant": "วิจิตราภรณ์ พึ่งจันดุม",
+        "issue": "ฮาร์ดแวร์: PC Computer",
+        "duration": "00.30",
+        "responder": "วิจิตราภรณ์ พึ่งจันดุม (พลอย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 277,
+        "date": "16/07/2569 12:34",
+        "complainant": "วิจิตราภรณ์ พึ่งจันดุม",
+        "issue": "ฮาร์ดแวร์: PC Computer",
+        "duration": "00.30",
+        "responder": "วิจิตราภรณ์ พึ่งจันดุม (พลอย)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": 278,
+        "date": "16/07/2569 13:58",
+        "complainant": "เนตรปรีญา ทัดศรี",
+        "issue": "ฮาร์ดแวร์: Printer",
+        "duration": "00.30",
+        "responder": "เนตรปรีญา ทัดศรี(แตงกวา)",
+        "status": "เสร็จสิ้น",
+        "cost": 0
+      },
+      {
+        "sn": "EXP-1",
+        "date": "13/07/2569 14:04",
+        "complainant": "รามจิตติ ชินนะเกิดโชค",
+        "issue": "ค่าใช้จ่าย IT: ซื้ออุปกรณ์ (เสื่อมตามสภาพ)",
+        "duration": "-",
+        "responder": "-",
+        "status": "จ่ายเงินแล้ว",
+        "cost": 13900
+      }
+    ],
     "automationsDone": 1,
     "aiApps": 2,
     "hoursSaved": 15
   }
 };
+
+
 
 
 
@@ -1628,7 +3488,18 @@ export default function App() {
             'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
           ];
 
-          formRows.forEach((row) => {
+          const formatDate = (date) => {
+            if (!date) return '';
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear() + 543; // Thai year
+            const hours = String(d.getHours()).padStart(2, '0');
+            const mins = String(d.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${mins}`;
+          };
+
+          formRows.forEach((row, rowIndex) => {
             const dateObj = parseExcelDate(row['Submitted on']);
             if (!dateObj) return;
 
@@ -1673,6 +3544,7 @@ export default function App() {
                 ],
                 ongoingProjects: [],
                 recommendations: [],
+                ticketsList: [], // Store raw ticket data here
                 _durationSum: 0,
                 _durationCount: 0,
                 _slaCompliantCount: 0,
@@ -1695,6 +3567,31 @@ export default function App() {
               monthData._slaCompliantCount++;
             }
 
+            // Determine issue type and save ticket
+            const hwIssue = row['แจ้ง ฮาร์ดแวร์ ขัดข้อง'];
+            const swIssue = row['แจ้ง ซอต์ฟแวร์ ขัดข้อง'] || row['แจ้ง ซоต์ฟแวร์ ขัดข้อง'];
+            const netIssue = row['แจ้ง ระบบเน็ตเวิร์ค ขัดข้อง'];
+            const acctIssue = row['แจ้งขอบัญชีการใช้งานต่าง / ขัดข้อง'];
+            
+            let issueSummary = [];
+            if (hwIssue) issueSummary.push(`ฮาร์ดแวร์: ${hwIssue}`);
+            if (swIssue) issueSummary.push(`ซอฟต์แวร์: ${swIssue}`);
+            if (netIssue) issueSummary.push(`เน็ตเวิร์ค: ${netIssue}`);
+            if (acctIssue) issueSummary.push(`บัญชีผู้ใช้: ${acctIssue}`);
+            
+            const finalIssueText = issueSummary.join(', ') || row['อาการเสียต่างๆ'] || 'แจ้งติดตั้ง/อื่นๆ';
+
+            monthData.ticketsList.push({
+              sn: row['SN'] || (rowIndex + 1),
+              date: formatDate(dateObj),
+              complainant: row['ชื่อ-นามสกุล'] || '',
+              issue: finalIssueText,
+              duration: row['เวลาที่ใช้ในการทำงาน'] || '-',
+              responder: row['Respondents'] || '-',
+              status: row['ความคืบหน้า'] || 'เสร็จสิ้น',
+              cost: Number(row['จำนวนเงิน']) || 0
+            });
+
             const hwField = row['แจ้ง ฮาร์ดแวร์ ขัดข้อง'] || row['แจ้งติดตั้ง ฮาร์ดแวร์'];
             if (hwField) {
               const devices = String(hwField).split(',').map(d => d.trim()).filter(Boolean);
@@ -1715,7 +3612,7 @@ export default function App() {
           });
 
           if (costRows) {
-            costRows.forEach((row) => {
+            costRows.forEach((row, i) => {
               let dateObj = parseExcelDate(row['วันที่']);
               if (!dateObj && row['เดือน']) {
                 const mIdx = THAI_MONTHS.indexOf(row['เดือน'].trim());
@@ -1734,6 +3631,17 @@ export default function App() {
                 const amount = Number(row['จำนวนเงิน']) || 0;
                 newData[monthKey].repairCost += amount;
                 newData[monthKey].repairCount++;
+                
+                newData[monthKey].ticketsList.push({
+                  sn: `EXP-${row['ลำดับ'] || (i + 1)}`,
+                  date: formatDate(dateObj),
+                  complainant: row['ชื่อ-นามสกุล'] || 'IT Dept',
+                  issue: `ค่าใช้จ่าย IT: ${row['ค่าใช้จ่าย'] || 'ซื้ออุปกรณ์'} (${row['สาเหตุการเสีย'] || 'เสื่อมตามสภาพ'})`,
+                  duration: '-',
+                  responder: '-',
+                  status: 'จ่ายเงินแล้ว',
+                  cost: amount
+                });
               }
             });
           }
@@ -2239,6 +4147,12 @@ export default function App() {
                 <span className="card-icon"><Ticket size={18} style={{ color: 'var(--violet)' }} /></span>
                 การสนับสนุนผู้ใช้ (Support)
               </h3>
+              <button 
+                onClick={() => setActiveModal('ticketsList')} 
+                className="btn-details"
+              >
+                ดูรายละเอียด
+              </button>
             </div>
             <div className="metrics-row">
               <div className="metric-item">
@@ -2830,6 +4744,65 @@ export default function App() {
                         <td>{device.cost > 0 ? formatThaiBaht(device.cost) : '0 บาท'}</td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: TICKETS LIST DETAILS */}
+      {activeModal === 'ticketsList' && (
+        <div className="modal-overlay active">
+          <div className="modal large" style={{ maxWidth: '90%' }}>
+            <header className="modal-header">
+              <h3>รายละเอียดประวัติงานซ่อมและบริการ Support ({activeData.monthName})</h3>
+              <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+            </header>
+            <div className="modal-body">
+              <div style={{ overflowX: 'auto' }}>
+                <table className="details-table">
+                  <thead>
+                    <tr>
+                      <th>SN / รหัส</th>
+                      <th>วัน-เวลา</th>
+                      <th>ชื่อผู้แจ้ง</th>
+                      <th>ปัญหา / อาการเสีย / รายการ</th>
+                      <th>ผู้รับผิดชอบ (IT)</th>
+                      <th>เวลาทำงาน</th>
+                      <th>สถานะ</th>
+                      <th>ค่าใช้จ่าย (บาท)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeData.ticketsList && activeData.ticketsList.length > 0 ? (
+                      activeData.ticketsList.map((ticket, idx) => (
+                        <tr key={idx}>
+                          <td><strong>{ticket.sn}</strong></td>
+                          <td>{ticket.date}</td>
+                          <td>{ticket.complainant}</td>
+                          <td>{ticket.issue}</td>
+                          <td>{ticket.responder}</td>
+                          <td>{ticket.duration}</td>
+                          <td>
+                            <span 
+                              style={{ 
+                                color: ticket.status === 'เสร็จสิ้น' || ticket.status === 'จ่ายเงินแล้ว' ? 'var(--success)' : 'var(--warning)', 
+                                fontWeight: '600' 
+                              }}
+                            >
+                              {ticket.status}
+                            </span>
+                          </td>
+                          <td>{ticket.cost > 0 ? formatThaiBaht(ticket.cost) : '-'}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="8" style={{ textAlign: 'center' }}>ไม่มีข้อมูลประวัติประวัติงานซ่อมสำหรับเดือนนี้</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
