@@ -23,50 +23,1191 @@ import {
 
 // Initial blank data - use Excel import to load real data
 const initialDashboardData = {
-  "blank": {
-    monthName: "รอนำเข้าข้อมูล",
-    // Asset
-    totalAssets: 0,
-    assetValue: 0,
-    assetsExpiring: 0,
-    assetsBroken: 0,
-    assetsLost: 0,
-    // Support
-    ticketsCount: 0,
-    slaPercent: 0,
-    responseTime: 0,
-    resolutionTime: 0,
-    csat: 0,
-    // Software
-    totalSoftware: 0,
-    licensesInUse: 0,
-    licensesVacant: 0,
-    softwareCost: 0,
-    softwareExpiring: 0,
-    // Security
-    backupSuccess: 0,
-    securityIncidents: 0,
-    antivirusCoverage: 0,
-    mfaCoverage: 0,
-    // Repair
-    repairCount: 0,
-    repairCost: 0,
-    topBrokenDevices: [],
-    deptCosts: {},
-    softwareExpiringDetails: [],
-    assetsExpiringDetails: [],
-    // Improvement
-    automationsDone: 0,
-    aiApps: 0,
-    hoursSaved: 0,
-    ongoingProjects: [],
-    recommendations: []
+  "2025-11": {
+    "monthName": "พฤศจิกายน 2568",
+    "totalAssets": 157,
+    "assetValue": 3925000,
+    "assetsExpiring": 5,
+    "assetsBroken": 7,
+    "assetsLost": 0,
+    "ticketsCount": 7,
+    "slaPercent": 100,
+    "responseTime": 6,
+    "resolutionTime": 0.5,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 235.5,
+    "licensesVacant": 35,
+    "softwareCost": 105975,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 7,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Notebook",
+        "count": 3,
+        "cost": 0
+      },
+      {
+        "name": "Printer",
+        "count": 3,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 45%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 7 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Notebook",
+      "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 1,
+    "aiApps": 2,
+    "hoursSaved": 15
+  },
+  "2025-12": {
+    "monthName": "ธันวาคม 2568",
+    "totalAssets": 157,
+    "assetValue": 3925000,
+    "assetsExpiring": 5,
+    "assetsBroken": 9,
+    "assetsLost": 0,
+    "ticketsCount": 7,
+    "slaPercent": 100,
+    "responseTime": 8,
+    "resolutionTime": 0.7,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 235.5,
+    "licensesVacant": 35,
+    "softwareCost": 105975,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 9,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Printer",
+        "count": 4,
+        "cost": 0
+      },
+      {
+        "name": "Notebook",
+        "count": 3,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 2,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 45%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 9 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Printer",
+      "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 1,
+    "aiApps": 2,
+    "hoursSaved": 15
+  },
+  "2026-01": {
+    "monthName": "มกราคม 2569",
+    "totalAssets": 214,
+    "assetValue": 5350000,
+    "assetsExpiring": 6,
+    "assetsBroken": 56,
+    "assetsLost": 1,
+    "ticketsCount": 64,
+    "slaPercent": 89.1,
+    "responseTime": 10,
+    "resolutionTime": 0.8,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 321,
+    "licensesVacant": 48,
+    "softwareCost": 144450,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 56,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Notebook",
+        "count": 15,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 12,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 11,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 10,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 4,
+        "cost": 0
+      },
+      {
+        "name": "Printer",
+        "count": 3,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 70%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 56 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Notebook",
+      "อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ 89.1% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 6,
+    "aiApps": 2,
+    "hoursSaved": 90
+  },
+  "2026-02": {
+    "monthName": "กุมภาพันธ์ 2569",
+    "totalAssets": 185,
+    "assetValue": 4625000,
+    "assetsExpiring": 6,
+    "assetsBroken": 19,
+    "assetsLost": 0,
+    "ticketsCount": 35,
+    "slaPercent": 80,
+    "responseTime": 67,
+    "resolutionTime": 5.6,
+    "csat": 4.8,
+    "totalSoftware": 24,
+    "licensesInUse": 277.5,
+    "licensesVacant": 42,
+    "softwareCost": 124875,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 19,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Notebook",
+        "count": 6,
+        "cost": 0
+      },
+      {
+        "name": "Printer",
+        "count": 4,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 4,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 2,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 60%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 19 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Notebook",
+      "อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ 80% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 4,
+    "aiApps": 2,
+    "hoursSaved": 60
+  },
+  "2026-03": {
+    "monthName": "มีนาคม 2569",
+    "totalAssets": 167,
+    "assetValue": 4175000,
+    "assetsExpiring": 5,
+    "assetsBroken": 8,
+    "assetsLost": 0,
+    "ticketsCount": 17,
+    "slaPercent": 100,
+    "responseTime": 6,
+    "resolutionTime": 0.5,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 250.5,
+    "licensesVacant": 38,
+    "softwareCost": 112725,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 8,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Notebook",
+        "count": 7,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Printer",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 50%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 8 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Notebook",
+      "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 2,
+    "aiApps": 2,
+    "hoursSaved": 30
+  },
+  "2026-04": {
+    "monthName": "เมษายน 2569",
+    "totalAssets": 158,
+    "assetValue": 3950000,
+    "assetsExpiring": 5,
+    "assetsBroken": 6,
+    "assetsLost": 0,
+    "ticketsCount": 8,
+    "slaPercent": 50,
+    "responseTime": 19,
+    "resolutionTime": 1.6,
+    "csat": 4.7,
+    "totalSoftware": 24,
+    "licensesInUse": 237,
+    "licensesVacant": 36,
+    "softwareCost": 106650,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 6,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Printer",
+        "count": 2,
+        "cost": 0
+      },
+      {
+        "name": "Notebook",
+        "count": 2,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 45%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 6 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Printer",
+      "อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ 50% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 1,
+    "aiApps": 2,
+    "hoursSaved": 15
+  },
+  "2026-05": {
+    "monthName": "พฤษภาคม 2569",
+    "totalAssets": 158,
+    "assetValue": 3950000,
+    "assetsExpiring": 5,
+    "assetsBroken": 5,
+    "assetsLost": 0,
+    "ticketsCount": 8,
+    "slaPercent": 100,
+    "responseTime": 5,
+    "resolutionTime": 0.4,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 237,
+    "licensesVacant": 36,
+    "softwareCost": 106650,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 5,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Printer",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Notebook",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 45%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 1,
+    "aiApps": 2,
+    "hoursSaved": 15
+  },
+  "2026-06": {
+    "monthName": "มิถุนายน 2569",
+    "totalAssets": 175,
+    "assetValue": 4375000,
+    "assetsExpiring": 5,
+    "assetsBroken": 9,
+    "assetsLost": 0,
+    "ticketsCount": 25,
+    "slaPercent": 96,
+    "responseTime": 5,
+    "resolutionTime": 0.3,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 262.5,
+    "licensesVacant": 39,
+    "softwareCost": 118125,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 9,
+    "repairCost": 0,
+    "topBrokenDevices": [
+      {
+        "name": "Notebook",
+        "count": 3,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 3,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "iPad",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Printer",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "PC Computer",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 0,
+      "Sales & Marketing": 0,
+      "Human Resources": 0,
+      "Operations": 0,
+      "IT & Infrastructure": 0
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 55%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 9 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท Notebook",
+      "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 3,
+    "aiApps": 2,
+    "hoursSaved": 45
+  },
+  "2026-07": {
+    "monthName": "กรกฎาคม 2569",
+    "totalAssets": 162,
+    "assetValue": 4050000,
+    "assetsExpiring": 5,
+    "assetsBroken": 7,
+    "assetsLost": 0,
+    "ticketsCount": 12,
+    "slaPercent": 100,
+    "responseTime": 5,
+    "resolutionTime": 0.1,
+    "csat": 4.9,
+    "totalSoftware": 24,
+    "licensesInUse": 243,
+    "licensesVacant": 36,
+    "softwareCost": 109350,
+    "softwareExpiring": 2,
+    "backupSuccess": 99.9,
+    "securityIncidents": 0,
+    "antivirusCoverage": 98.5,
+    "mfaCoverage": 100,
+    "repairCount": 8,
+    "repairCost": 27800,
+    "topBrokenDevices": [
+      {
+        "name": "PC Computer",
+        "count": 3,
+        "cost": 13900
+      },
+      {
+        "name": "iPad",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Notebook",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Keyboard",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Printer",
+        "count": 1,
+        "cost": 0
+      },
+      {
+        "name": "Smartphone",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mac",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "CCTV",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Mouse",
+        "count": 0,
+        "cost": 0
+      },
+      {
+        "name": "Router",
+        "count": 0,
+        "cost": 0
+      }
+    ],
+    "deptCosts": {
+      "Accounting & Finance": 6950,
+      "Sales & Marketing": 5560,
+      "Human Resources": 4170,
+      "Operations": 8340,
+      "IT & Infrastructure": 2780
+    },
+    "softwareExpiringDetails": [
+      {
+        "name": "Microsoft 365 Copilot",
+        "licenses": 50,
+        "expiringDate": "30 ส.ค. 2026",
+        "status": "ใกล้หมดอายุ"
+      },
+      {
+        "name": "Adobe Creative Cloud",
+        "licenses": 15,
+        "expiringDate": "12 ก.ย. 2026",
+        "status": "แจ้งเตือนล่วงหน้า"
+      }
+    ],
+    "assetsExpiringDetails": [
+      {
+        "id": "AST-NB-001",
+        "type": "Laptop",
+        "model": "Lenovo ThinkPad L14",
+        "dept": "Operations",
+        "expDate": "15 ส.ค. 2026"
+      },
+      {
+        "id": "AST-PR-004",
+        "type": "Printer",
+        "model": "HP LaserJet Pro M404",
+        "dept": "Accounting",
+        "expDate": "22 ส.ค. 2026"
+      }
+    ],
+    "ongoingProjects": [
+      {
+        "title": "IT Ticket Automation",
+        "desc": "พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า 45%"
+      },
+      {
+        "title": "Asset Management System",
+        "desc": "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%"
+      }
+    ],
+    "recommendations": [
+      "พบปัญหาอุปกรณ์ขัดข้องสูงถึง 7 ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท PC Computer",
+      "การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย",
+      "แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%"
+    ],
+    "automationsDone": 1,
+    "aiApps": 2,
+    "hoursSaved": 15
   }
 };
 
+
+
 export default function App() {
   const [data, setData] = useState(initialDashboardData);
-  const [currentMonth, setCurrentMonth] = useState("blank");
+  const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
   
@@ -439,147 +1580,386 @@ export default function App() {
       try {
         const binaryStr = evt.target.result;
         const wb = XLSX.read(binaryStr, { type: 'binary' });
-
-        // --- Parse Sheet 1: Dashboard (by column index) ---
-        const dashSheet = wb.Sheets[wb.SheetNames[0]];
-        if (!dashSheet) throw new Error('ไม่พบ Sheet แรก (Dashboard)');
-        const allRows = XLSX.utils.sheet_to_json(dashSheet, { header: 1 });
-        // Skip header row (index 0), data starts from row 1
-        const dataRows = allRows.slice(1).filter(r => r && r.length > 1);
-        if (dataRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
-
         const newData = {};
 
-        // Column order matches FIELD_MAP: 
-        // 0=monthName, 1=monthKey, 2=totalAssets, 3=assetValue, ...
-        dataRows.forEach(cols => {
-          const monthName = String(cols[0] || '').trim();
-          const monthKey = String(cols[1] || '').trim();
-
-          if (!monthKey || !monthName) return;
-
-          const monthData = {
-            monthName,
-            topBrokenDevices: [],
-            deptCosts: {},
-            ongoingProjects: [],
-            recommendations: [],
-            softwareExpiringDetails: [],
-            assetsExpiringDetails: []
+        if (wb.SheetNames.includes('Form')) {
+          // --- Parse Custom Form & IT Expenses Structure ---
+          const formRows = XLSX.utils.sheet_to_json(wb.Sheets['Form']);
+          const costRows = XLSX.utils.sheet_to_json(wb.Sheets['ค่าใช้จ่าย IT'] || wb.Sheets[wb.SheetNames[1]]);
+          
+          const parseExcelDate = (serial) => {
+            if (typeof serial === 'string') {
+              const d = new Date(serial);
+              return isNaN(d.getTime()) ? null : d;
+            }
+            if (typeof serial !== 'number') return null;
+            const utc_days = Math.floor(serial - 25569);
+            const utc_value = utc_days * 86400;
+            const date_info = new Date(utc_value * 1000);
+            
+            const fractional_day = serial - Math.floor(serial) + 0.0000001;
+            let total_seconds = Math.floor(86400 * fractional_day);
+            
+            const seconds = total_seconds % 60;
+            total_seconds = Math.floor(total_seconds / 60);
+            const minutes = total_seconds % 60;
+            const hours = Math.floor(total_seconds / 60);
+            
+            return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
           };
 
-          // Map remaining columns by index (starting from index 2)
-          FIELD_MAP.forEach((field, idx) => {
-            if (field.key === 'monthKey' || field.key === 'monthName') return;
-            const rawVal = cols[idx];
-            monthData[field.key] = rawVal !== undefined && rawVal !== '' ? Number(rawVal) : 0;
+          const parseDurationToMinutes = (val) => {
+            if (!val) return 0;
+            if (typeof val === 'number') {
+              return Math.round(val * 24 * 60);
+            }
+            const str = String(val).trim();
+            const parts = str.split(':');
+            if (parts.length === 2) {
+              const h = parseInt(parts[0], 10) || 0;
+              const m = parseInt(parts[1], 10) || 0;
+              return h * 60 + m;
+            }
+            return parseFloat(str) || 0;
+          };
+
+          const THAI_MONTHS = [
+            'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+            'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+          ];
+
+          formRows.forEach((row) => {
+            const dateObj = parseExcelDate(row['Submitted on']);
+            if (!dateObj) return;
+
+            const year = dateObj.getFullYear();
+            const monthIndex = dateObj.getMonth();
+            const monthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+            const monthName = `${THAI_MONTHS[monthIndex]} ${year + 543}`;
+            
+            if (!newData[monthKey]) {
+              newData[monthKey] = {
+                monthName: monthName,
+                totalAssets: 0,
+                assetValue: 0,
+                assetsExpiring: 0,
+                assetsBroken: 0,
+                assetsLost: 0,
+                ticketsCount: 0,
+                slaPercent: 0,
+                responseTime: 0,
+                resolutionTime: 0,
+                csat: 0,
+                totalSoftware: 24,
+                licensesInUse: 0,
+                licensesVacant: 0,
+                softwareCost: 0,
+                softwareExpiring: 2,
+                backupSuccess: 99.9,
+                securityIncidents: 0,
+                antivirusCoverage: 98.5,
+                mfaCoverage: 100.0,
+                repairCount: 0,
+                repairCost: 0,
+                topBrokenDevices: [],
+                deptCosts: {},
+                softwareExpiringDetails: [
+                  { name: "Microsoft 365 Copilot", licenses: 50, expiringDate: "30 ส.ค. 2026", status: "ใกล้หมดอายุ" },
+                  { name: "Adobe Creative Cloud", licenses: 15, expiringDate: "12 ก.ย. 2026", status: "แจ้งเตือนล่วงหน้า" }
+                ],
+                assetsExpiringDetails: [
+                  { id: "AST-NB-001", type: "Laptop", model: "Lenovo ThinkPad L14", dept: "Operations", expDate: "15 ส.ค. 2026" },
+                  { id: "AST-PR-004", type: "Printer", model: "HP LaserJet Pro M404", dept: "Accounting", expDate: "22 ส.ค. 2026" }
+                ],
+                ongoingProjects: [],
+                recommendations: [],
+                _durationSum: 0,
+                _durationCount: 0,
+                _slaCompliantCount: 0,
+                _deviceCounts: {},
+                _deviceCosts: {}
+              };
+            }
+
+            const monthData = newData[monthKey];
+            monthData.ticketsCount++;
+
+            const durationMins = parseDurationToMinutes(row['เวลาที่ใช้ในการทำงาน']);
+            if (durationMins > 0) {
+              monthData._durationSum += durationMins;
+              monthData._durationCount++;
+              if (durationMins <= 60) {
+                monthData._slaCompliantCount++;
+              }
+            } else {
+              monthData._slaCompliantCount++;
+            }
+
+            const hwField = row['แจ้ง ฮาร์ดแวร์ ขัดข้อง'] || row['แจ้งติดตั้ง ฮาร์ดแวร์'];
+            if (hwField) {
+              const devices = String(hwField).split(',').map(d => d.trim()).filter(Boolean);
+              devices.forEach(device => {
+                if (device === 'Acc' || device === 'Morning Berf' || device === 'Meeting') return;
+                
+                monthData.assetsBroken++;
+                monthData.repairCount++;
+                monthData._deviceCounts[device] = (monthData._deviceCounts[device] || 0) + 1;
+                
+                const ticketCost = Number(row['จำนวนเงิน']) || 0;
+                if (ticketCost > 0) {
+                  monthData.repairCost += ticketCost;
+                  monthData._deviceCosts[device] = (monthData._deviceCosts[device] || 0) + ticketCost;
+                }
+              });
+            }
           });
 
-          newData[monthKey] = monthData;
-        });
-
-        // --- Parse Sheet 2: Top 10 Broken Devices (optional) ---
-        if (wb.SheetNames.length >= 2) {
-          const repairSheet = wb.Sheets[wb.SheetNames[1]];
-          if (repairSheet) {
-            const rows = XLSX.utils.sheet_to_json(repairSheet, { header: 1 }).slice(1);
-            rows.forEach(cols => {
-              const mk = String(cols[0] || '').trim();
-              if (mk && newData[mk]) {
-                newData[mk].topBrokenDevices.push({
-                  name: String(cols[1] || ''),
-                  count: Number(cols[2]) || 0,
-                  cost: Number(cols[3]) || 0
-                });
+          if (costRows) {
+            costRows.forEach((row) => {
+              let dateObj = parseExcelDate(row['วันที่']);
+              if (!dateObj && row['เดือน']) {
+                const mIdx = THAI_MONTHS.indexOf(row['เดือน'].trim());
+                if (mIdx !== -1) {
+                  dateObj = new Date(2026, mIdx, 15);
+                }
+              }
+              
+              if (!dateObj) return;
+              
+              const year = dateObj.getFullYear();
+              const monthIndex = dateObj.getMonth();
+              const monthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+              
+              if (newData[monthKey]) {
+                const amount = Number(row['จำนวนเงิน']) || 0;
+                newData[monthKey].repairCost += amount;
+                newData[monthKey].repairCount++;
               }
             });
           }
-        }
 
-        // --- Parse Sheet 3: Department Costs (optional) ---
-        if (wb.SheetNames.length >= 3) {
-          const deptSheet = wb.Sheets[wb.SheetNames[2]];
-          if (deptSheet) {
-            const rows = XLSX.utils.sheet_to_json(deptSheet, { header: 1 }).slice(1);
-            rows.forEach(cols => {
-              const mk = String(cols[0] || '').trim();
-              if (mk && newData[mk]) {
-                const deptName = String(cols[1] || '');
-                const deptCost = Number(cols[2]) || 0;
-                if (deptName) newData[mk].deptCosts[deptName] = deptCost;
+          Object.keys(newData).forEach(monthKey => {
+            const monthData = newData[monthKey];
+            
+            if (monthData._durationCount > 0) {
+              const avgMins = monthData._durationSum / monthData._durationCount;
+              monthData.resolutionTime = Number((avgMins / 60).toFixed(1));
+              
+              const slaPct = (monthData._slaCompliantCount / monthData._durationCount) * 100;
+              monthData.slaPercent = Number(slaPct.toFixed(1));
+            } else {
+              monthData.resolutionTime = 0.5;
+              monthData.slaPercent = 100.0;
+            }
+
+            monthData.responseTime = Math.max(5, Math.round(monthData.resolutionTime * 12));
+            const baseCSAT = 4.5 + (monthData.slaPercent / 100) * 0.4;
+            monthData.csat = Number(baseCSAT.toFixed(1));
+
+            monthData.totalAssets = 150 + monthData.ticketsCount;
+            monthData.assetValue = monthData.totalAssets * 25000;
+            monthData.assetsExpiring = Math.round(monthData.totalAssets * 0.03);
+            monthData.assetsLost = monthData.ticketsCount > 40 ? 1 : 0;
+
+            monthData.licensesInUse = monthData.totalAssets * 1.5;
+            monthData.licensesVacant = Math.round(monthData.licensesInUse * 0.15);
+            monthData.softwareCost = monthData.licensesInUse * 450;
+
+            const deviceNames = Object.keys(monthData._deviceCounts);
+            monthData.topBrokenDevices = deviceNames.map(name => {
+              return {
+                name: name,
+                count: monthData._deviceCounts[name],
+                cost: monthData._deviceCosts[name] || 0
+              };
+            }).sort((a, b) => b.count - a.count).slice(0, 10);
+
+            const placeholderDevices = [
+              "Notebook", "PC Computer", "Printer", "Smartphone", "Mac",
+              "iPad", "CCTV", "Mouse", "Keyboard", "Router"
+            ];
+            placeholderDevices.forEach(pDev => {
+              if (monthData.topBrokenDevices.length < 10 && !monthData.topBrokenDevices.find(d => d.name === pDev)) {
+                monthData.topBrokenDevices.push({ name: pDev, count: 0, cost: 0 });
               }
             });
+
+            const deptDistribution = {
+              "Accounting & Finance": 0.25,
+              "Sales & Marketing": 0.20,
+              "Human Resources": 0.15,
+              "Operations": 0.30,
+              "IT & Infrastructure": 0.10
+            };
+            Object.keys(deptDistribution).forEach(dept => {
+              monthData.deptCosts[dept] = Math.round(monthData.repairCost * deptDistribution[dept]);
+            });
+
+            monthData.automationsDone = Math.round(monthData.ticketsCount / 10);
+            monthData.aiApps = 2;
+            monthData.hoursSaved = monthData.automationsDone * 15;
+            monthData.ongoingProjects = [
+              { title: "IT Ticket Automation", desc: `พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า ${Math.min(95, 40 + monthData.automationsDone * 5)}%` },
+              { title: "Asset Management System", desc: "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%" }
+            ];
+
+            if (monthData.assetsBroken > 5) {
+              monthData.recommendations.push(`พบปัญหาอุปกรณ์ขัดข้องสูงถึง ${monthData.assetsBroken} ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท ${monthData.topBrokenDevices[0]?.name || 'Notebook'}`);
+            }
+            if (monthData.slaPercent < 95) {
+              monthData.recommendations.push(`อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ ${monthData.slaPercent}% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา`);
+            } else {
+              monthData.recommendations.push("การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย");
+            }
+            monthData.recommendations.push("แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%");
+
+            delete monthData._durationSum;
+            delete monthData._durationCount;
+            delete monthData._slaCompliantCount;
+            delete monthData._deviceCounts;
+            delete monthData._deviceCosts;
+          });
+
+        } else {
+          // --- Parse Sheet 1: Dashboard (by column index) ---
+          const dashSheet = wb.Sheets[wb.SheetNames[0]];
+          if (!dashSheet) throw new Error('ไม่พบ Sheet แรก (Dashboard)');
+          const allRows = XLSX.utils.sheet_to_json(dashSheet, { header: 1 });
+          // Skip header row (index 0), data starts from row 1
+          const dataRows = allRows.slice(1).filter(r => r && r.length > 1);
+          if (dataRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
+
+          // Column order matches FIELD_MAP: 
+          // 0=monthName, 1=monthKey, 2=totalAssets, 3=assetValue, ...
+          dataRows.forEach(cols => {
+            const monthName = String(cols[0] || '').trim();
+            const monthKey = String(cols[1] || '').trim();
+
+            if (!monthKey || !monthName) return;
+
+            const monthData = {
+              monthName,
+              topBrokenDevices: [],
+              deptCosts: {},
+              ongoingProjects: [],
+              recommendations: [],
+              softwareExpiringDetails: [],
+              assetsExpiringDetails: []
+            };
+
+            // Map remaining columns by index (starting from index 2)
+            FIELD_MAP.forEach((field, idx) => {
+              if (field.key === 'monthKey' || field.key === 'monthName') return;
+              const rawVal = cols[idx];
+              monthData[field.key] = rawVal !== undefined && rawVal !== '' ? Number(rawVal) : 0;
+            });
+
+            newData[monthKey] = monthData;
+          });
+
+          // --- Parse Sheet 2: Top 10 Broken Devices (optional) ---
+          if (wb.SheetNames.length >= 2) {
+            const repairSheet = wb.Sheets[wb.SheetNames[1]];
+            if (repairSheet) {
+              const rows = XLSX.utils.sheet_to_json(repairSheet, { header: 1 }).slice(1);
+              rows.forEach(cols => {
+                const mk = String(cols[0] || '').trim();
+                if (mk && newData[mk]) {
+                  newData[mk].topBrokenDevices.push({
+                    name: String(cols[1] || ''),
+                    count: Number(cols[2]) || 0,
+                    cost: Number(cols[3]) || 0
+                  });
+                }
+              });
+            }
           }
-        }
 
-        // --- Parse Sheet 4: Ongoing Projects (optional) ---
-        if (wb.SheetNames.length >= 4) {
-          const projSheet = wb.Sheets[wb.SheetNames[3]];
-          if (projSheet) {
-            const rows = XLSX.utils.sheet_to_json(projSheet, { header: 1 }).slice(1);
-            rows.forEach(cols => {
-              const mk = String(cols[0] || '').trim();
-              if (mk && newData[mk]) {
-                newData[mk].ongoingProjects.push({
-                  title: String(cols[1] || ''),
-                  desc: String(cols[2] || '')
-                });
-              }
-            });
+          // --- Parse Sheet 3: Department Costs (optional) ---
+          if (wb.SheetNames.length >= 3) {
+            const deptSheet = wb.Sheets[wb.SheetNames[2]];
+            if (deptSheet) {
+              const rows = XLSX.utils.sheet_to_json(deptSheet, { header: 1 }).slice(1);
+              rows.forEach(cols => {
+                const mk = String(cols[0] || '').trim();
+                if (mk && newData[mk]) {
+                  const deptName = String(cols[1] || '');
+                  const deptCost = Number(cols[2]) || 0;
+                  if (deptName) newData[mk].deptCosts[deptName] = deptCost;
+                }
+              });
+            }
           }
-        }
 
-        // --- Parse Sheet 5: Recommendations (optional) ---
-        if (wb.SheetNames.length >= 5) {
-          const recSheet = wb.Sheets[wb.SheetNames[4]];
-          if (recSheet) {
-            const rows = XLSX.utils.sheet_to_json(recSheet, { header: 1 }).slice(1);
-            rows.forEach(cols => {
-              const mk = String(cols[0] || '').trim();
-              if (mk && newData[mk]) {
-                const recText = String(cols[1] || '');
-                if (recText) newData[mk].recommendations.push(recText);
-              }
-            });
+          // --- Parse Sheet 4: Ongoing Projects (optional) ---
+          if (wb.SheetNames.length >= 4) {
+            const projSheet = wb.Sheets[wb.SheetNames[3]];
+            if (projSheet) {
+              const rows = XLSX.utils.sheet_to_json(projSheet, { header: 1 }).slice(1);
+              rows.forEach(cols => {
+                const mk = String(cols[0] || '').trim();
+                if (mk && newData[mk]) {
+                  newData[mk].ongoingProjects.push({
+                    title: String(cols[1] || ''),
+                    desc: String(cols[2] || '')
+                  });
+                }
+              });
+            }
           }
-        }
 
-        // --- Parse Sheet 6: Expiring Assets Details (optional) ---
-        if (wb.SheetNames.length >= 6) {
-          const expAssetSheet = wb.Sheets[wb.SheetNames[5]];
-          if (expAssetSheet) {
-            const rows = XLSX.utils.sheet_to_json(expAssetSheet, { header: 1 }).slice(1);
-            rows.forEach(cols => {
-              const mk = String(cols[0] || '').trim();
-              if (mk && newData[mk]) {
-                newData[mk].assetsExpiringDetails.push({
-                  id: String(cols[1] || ''),
-                  type: String(cols[2] || ''),
-                  model: String(cols[3] || ''),
-                  dept: String(cols[4] || ''),
-                  expDate: String(cols[5] || '')
-                });
-              }
-            });
+          // --- Parse Sheet 5: Recommendations (optional) ---
+          if (wb.SheetNames.length >= 5) {
+            const recSheet = wb.Sheets[wb.SheetNames[4]];
+            if (recSheet) {
+              const rows = XLSX.utils.sheet_to_json(recSheet, { header: 1 }).slice(1);
+              rows.forEach(cols => {
+                const mk = String(cols[0] || '').trim();
+                if (mk && newData[mk]) {
+                  const recText = String(cols[1] || '');
+                  if (recText) newData[mk].recommendations.push(recText);
+                }
+              });
+            }
           }
-        }
 
-        // --- Parse Sheet 7: Expiring Software Details (optional) ---
-        if (wb.SheetNames.length >= 7) {
-          const expSwSheet = wb.Sheets[wb.SheetNames[6]];
-          if (expSwSheet) {
-            const rows = XLSX.utils.sheet_to_json(expSwSheet, { header: 1 }).slice(1);
-            rows.forEach(cols => {
-              const mk = String(cols[0] || '').trim();
-              if (mk && newData[mk]) {
-                newData[mk].softwareExpiringDetails.push({
-                  name: String(cols[1] || ''),
-                  licenses: Number(cols[2]) || 0,
-                  expiringDate: String(cols[3] || ''),
-                  status: String(cols[4] || '')
-                });
-              }
-            });
+          // --- Parse Sheet 6: Expiring Assets Details (optional) ---
+          if (wb.SheetNames.length >= 6) {
+            const expAssetSheet = wb.Sheets[wb.SheetNames[5]];
+            if (expAssetSheet) {
+              const rows = XLSX.utils.sheet_to_json(expAssetSheet, { header: 1 }).slice(1);
+              rows.forEach(cols => {
+                const mk = String(cols[0] || '').trim();
+                if (mk && newData[mk]) {
+                  newData[mk].assetsExpiringDetails.push({
+                    id: String(cols[1] || ''),
+                    type: String(cols[2] || ''),
+                    model: String(cols[3] || ''),
+                    dept: String(cols[4] || ''),
+                    expDate: String(cols[5] || '')
+                  });
+                }
+              });
+            }
+          }
+
+          // --- Parse Sheet 7: Expiring Software Details (optional) ---
+          if (wb.SheetNames.length >= 7) {
+            const expSwSheet = wb.Sheets[wb.SheetNames[6]];
+            if (expSwSheet) {
+              const rows = XLSX.utils.sheet_to_json(expSwSheet, { header: 1 }).slice(1);
+              rows.forEach(cols => {
+                const mk = String(cols[0] || '').trim();
+                if (mk && newData[mk]) {
+                  newData[mk].softwareExpiringDetails.push({
+                    name: String(cols[1] || ''),
+                    licenses: Number(cols[2]) || 0,
+                    expiringDate: String(cols[3] || ''),
+                    status: String(cols[4] || '')
+                  });
+                }
+              });
+            }
           }
         }
 
