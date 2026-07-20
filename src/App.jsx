@@ -5307,6 +5307,15 @@ export default function App() {
   const API_BASE = import.meta.env.VITE_API_BASE || 
     (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
 
+  const isPollingUpdateRef = useRef(false);
+  const latestDataRef = useRef(data);
+  const latestAssetsRef = useRef(assetsList);
+
+  useEffect(() => {
+    latestDataRef.current = data;
+    latestAssetsRef.current = assetsList;
+  }, [data, assetsList]);
+
   const syncStateToDb = async (updatedData, updatedAssets) => {
     try {
       await fetch(`${API_BASE}/api/sync-all`, {
@@ -5328,6 +5337,7 @@ export default function App() {
         const result = await res.json();
         
         if (result.data && Object.keys(result.data).length > 0) {
+          isPollingUpdateRef.current = true;
           setData(result.data);
           if (result.assetsList) {
             setAssetsList(result.assetsList);
@@ -5351,9 +5361,43 @@ export default function App() {
     loadDbState();
   }, []);
 
+  // Poll database state every 3 seconds for real-time synchronization
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/db-state`);
+        if (!res.ok) return;
+        const result = await res.json();
+
+        const currentLocalData = latestDataRef.current;
+        const currentLocalAssets = latestAssetsRef.current;
+
+        const hasDataChanged = JSON.stringify(result.data) !== JSON.stringify(currentLocalData);
+        const hasAssetsChanged = JSON.stringify(result.assetsList) !== JSON.stringify(currentLocalAssets);
+
+        if (hasDataChanged || hasAssetsChanged) {
+          isPollingUpdateRef.current = true;
+          if (hasDataChanged) setData(result.data);
+          if (hasAssetsChanged) setAssetsList(result.assetsList);
+          console.log('Real-time update synced from Render PostgreSQL.');
+        }
+      } catch (err) {
+        console.warn('Real-time sync poll failed:', err.message);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isLoaded]);
+
   // Automatically sync local changes to PostgreSQL database once loaded
   useEffect(() => {
     if (!isLoaded) return;
+    if (isPollingUpdateRef.current) {
+      isPollingUpdateRef.current = false;
+      return;
+    }
     
     const timer = setTimeout(() => {
       syncStateToDb(data, assetsList);
