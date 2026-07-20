@@ -5966,7 +5966,7 @@ export default function App() {
         }
         
         // IT Close work mode
-        const updatedTickets = tickets.map(t => t.sn === Number(selectedPendingTicketSn) ? {
+        const updatedTickets = tickets.map(t => Number(t.sn) === Number(selectedPendingTicketSn) ? {
           ...t,
           responder: larkTicketResponder,
           duration: larkTicketDuration || '00:30',
@@ -8745,7 +8745,7 @@ export default function App() {
                       </div>
                     ) : (() => {
                       const pendingTickets = tickets.filter(t => t.status === 'กำลังดำเนินการ');
-                      const selectedTicket = pendingTickets.find(t => t.sn === Number(selectedPendingTicketSn));
+                      const selectedTicket = pendingTickets.find(t => Number(t.sn) === Number(selectedPendingTicketSn));
 
                       return (
                         <div>
