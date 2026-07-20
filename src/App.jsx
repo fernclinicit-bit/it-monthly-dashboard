@@ -5308,6 +5308,7 @@ export default function App() {
     (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
 
   const isPollingUpdateRef = useRef(false);
+  const isPendingSyncRef = useRef(false);
   const latestDataRef = useRef(data);
   const latestAssetsRef = useRef(assetsList);
 
@@ -5366,10 +5367,19 @@ export default function App() {
     if (!isLoaded) return;
 
     const interval = setInterval(async () => {
+      // If we have local changes pending database sync, skip polling to avoid race overwrites!
+      if (isPendingSyncRef.current) {
+        console.log('Sync in progress, skipping polling interval.');
+        return;
+      }
+
       try {
         const res = await fetch(`${API_BASE}/api/db-state`);
         if (!res.ok) return;
         const result = await res.json();
+
+        // Check again after fetch completes in case sync was initiated during network roundtrip
+        if (isPendingSyncRef.current) return;
 
         const currentLocalData = latestDataRef.current;
         const currentLocalAssets = latestAssetsRef.current;
@@ -5399,8 +5409,15 @@ export default function App() {
       return;
     }
     
-    const timer = setTimeout(() => {
-      syncStateToDb(data, assetsList);
+    // Mark pending sync lock immediately
+    isPendingSyncRef.current = true;
+
+    const timer = setTimeout(async () => {
+      try {
+        await syncStateToDb(data, assetsList);
+      } finally {
+        isPendingSyncRef.current = false;
+      }
     }, 1000);
     return () => clearTimeout(timer);
   }, [data, assetsList, isLoaded]);
