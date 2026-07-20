@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -17,80 +19,82 @@ const pool = new pg.Pool({
 });
 
 async function initDb() {
-  const client = await pool.connect();
   try {
-    console.log('Connected to PostgreSQL. Initializing tables...');
-    
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS monthly_data (
-        month_key VARCHAR(50) PRIMARY KEY,
-        month_name VARCHAR(255) NOT NULL,
-        total_assets INTEGER NOT NULL,
-        asset_value NUMERIC(15, 2) NOT NULL,
-        assets_expiring INTEGER NOT NULL,
-        assets_broken INTEGER NOT NULL,
-        assets_lost INTEGER NOT NULL,
-        assets_vacant INTEGER NOT NULL,
-        tickets_count INTEGER NOT NULL,
-        sla_percent NUMERIC(5, 2) NOT NULL,
-        response_time INTEGER NOT NULL,
-        resolution_time NUMERIC(5, 2) NOT NULL,
-        csat NUMERIC(3, 1) NOT NULL,
-        total_software INTEGER NOT NULL,
-        licenses_in_use NUMERIC(10, 2) NOT NULL,
-        licenses_vacant NUMERIC(10, 2) NOT NULL,
-        software_cost NUMERIC(12, 2) NOT NULL,
-        software_expiring INTEGER NOT NULL,
-        backup_success NUMERIC(5, 2) NOT NULL,
-        security_incidents INTEGER NOT NULL,
-        antivirus_coverage NUMERIC(5, 2) NOT NULL,
-        mfa_coverage NUMERIC(5, 2) NOT NULL,
-        repair_count INTEGER NOT NULL,
-        repair_cost NUMERIC(12, 2) NOT NULL,
-        top_broken_devices JSONB NOT NULL,
-        dept_costs JSONB NOT NULL,
-        software_expiring_details JSONB NOT NULL,
-        assets_expiring_details JSONB NOT NULL,
-        ongoing_projects JSONB NOT NULL,
-        recommendations JSONB NOT NULL
-      )
-    `);
+    const client = await pool.connect();
+    try {
+      console.log('Connected to PostgreSQL. Initializing tables...');
+      
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS monthly_data (
+          month_key VARCHAR(50) PRIMARY KEY,
+          month_name VARCHAR(255) NOT NULL,
+          total_assets INTEGER NOT NULL,
+          asset_value NUMERIC(15, 2) NOT NULL,
+          assets_expiring INTEGER NOT NULL,
+          assets_broken INTEGER NOT NULL,
+          assets_lost INTEGER NOT NULL,
+          assets_vacant INTEGER NOT NULL,
+          tickets_count INTEGER NOT NULL,
+          sla_percent NUMERIC(5, 2) NOT NULL,
+          response_time INTEGER NOT NULL,
+          resolution_time NUMERIC(5, 2) NOT NULL,
+          csat NUMERIC(3, 1) NOT NULL,
+          total_software INTEGER NOT NULL,
+          licenses_in_use NUMERIC(10, 2) NOT NULL,
+          licenses_vacant NUMERIC(10, 2) NOT NULL,
+          software_cost NUMERIC(12, 2) NOT NULL,
+          software_expiring INTEGER NOT NULL,
+          backup_success NUMERIC(5, 2) NOT NULL,
+          security_incidents INTEGER NOT NULL,
+          antivirus_coverage NUMERIC(5, 2) NOT NULL,
+          mfa_coverage NUMERIC(5, 2) NOT NULL,
+          repair_count INTEGER NOT NULL,
+          repair_cost NUMERIC(12, 2) NOT NULL,
+          top_broken_devices JSONB NOT NULL,
+          dept_costs JSONB NOT NULL,
+          software_expiring_details JSONB NOT NULL,
+          assets_expiring_details JSONB NOT NULL,
+          ongoing_projects JSONB NOT NULL,
+          recommendations JSONB NOT NULL
+        )
+      `);
 
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS assets (
-        sn INTEGER PRIMARY KEY,
-        date VARCHAR(50) NOT NULL,
-        user_name VARCHAR(255) NOT NULL,
-        position VARCHAR(255) NOT NULL,
-        item_type VARCHAR(255) NOT NULL,
-        device_serial VARCHAR(255) NOT NULL,
-        status VARCHAR(50) NOT NULL,
-        notes TEXT
-      )
-    `);
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS assets (
+          sn INTEGER PRIMARY KEY,
+          date VARCHAR(50) NOT NULL,
+          user_name VARCHAR(255) NOT NULL,
+          position VARCHAR(255) NOT NULL,
+          item_type VARCHAR(255) NOT NULL,
+          device_serial VARCHAR(255) NOT NULL,
+          status VARCHAR(50) NOT NULL,
+          notes TEXT
+        )
+      `);
 
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS tickets (
-        sn INTEGER PRIMARY KEY,
-        month_key VARCHAR(50) NOT NULL,
-        date VARCHAR(50) NOT NULL,
-        complainant VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        anydesk VARCHAR(255) NOT NULL,
-        issue TEXT NOT NULL,
-        cause TEXT NOT NULL,
-        duration VARCHAR(50) NOT NULL,
-        responder VARCHAR(255) NOT NULL,
-        status VARCHAR(50) NOT NULL,
-        cost NUMERIC(12, 2) NOT NULL
-      )
-    `);
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS tickets (
+          sn INTEGER PRIMARY KEY,
+          month_key VARCHAR(50) NOT NULL,
+          date VARCHAR(50) NOT NULL,
+          complainant VARCHAR(255) NOT NULL,
+          email VARCHAR(255) NOT NULL,
+          anydesk VARCHAR(255) NOT NULL,
+          issue TEXT NOT NULL,
+          cause TEXT NOT NULL,
+          duration VARCHAR(50) NOT NULL,
+          responder VARCHAR(255) NOT NULL,
+          status VARCHAR(50) NOT NULL,
+          cost NUMERIC(12, 2) NOT NULL
+        )
+      `);
 
-    console.log('Tables initialized successfully.');
+      console.log('Tables initialized successfully.');
+    } finally {
+      client.release();
+    }
   } catch (err) {
-    console.error('Error initializing tables:', err);
-  } finally {
-    client.release();
+    console.warn('WARNING: Failed to connect to PostgreSQL database. Server will start in offline API fallback mode.', err.message);
   }
 }
 
@@ -277,6 +281,15 @@ app.post('/api/sync-all', async (req, res) => {
   } finally {
     client.release();
   }
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 initDb().then(() => {

@@ -5304,7 +5304,8 @@ export default function App() {
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+  const API_BASE = import.meta.env.VITE_API_BASE || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
 
   const syncStateToDb = async (updatedData, updatedAssets) => {
     try {
