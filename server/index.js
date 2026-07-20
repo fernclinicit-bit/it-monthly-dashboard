@@ -182,8 +182,9 @@ app.post('/api/sync-all', async (req, res) => {
     return res.status(400).json({ error: 'Missing data or assetsList' });
   }
 
-  const client = await pool.connect();
+  let client;
   try {
+    client = await pool.connect();
     await client.query('BEGIN');
 
     await client.query('DELETE FROM monthly_data');
@@ -275,11 +276,15 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query('COMMIT');
     res.json({ success: true, message: 'All state synchronized successfully' });
   } catch (err) {
-    await client.query('ROLLBACK');
+    if (client) {
+      await client.query('ROLLBACK');
+    }
     console.error('Error syncing all state:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
-    client.release();
+    if (client) {
+      client.release();
+    }
   }
 });
 
