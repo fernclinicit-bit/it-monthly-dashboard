@@ -5303,6 +5303,62 @@ export default function App() {
     export: false
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+
+  const syncStateToDb = async (updatedData, updatedAssets) => {
+    try {
+      await fetch(`${API_BASE}/api/sync-all`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: updatedData, assetsList: updatedAssets })
+      });
+    } catch (err) {
+      console.error('Failed to sync state to PostgreSQL database:', err);
+    }
+  };
+
+  // Load state from Render PostgreSQL database on mount
+  useEffect(() => {
+    async function loadDbState() {
+      try {
+        const res = await fetch(`${API_BASE}/api/db-state`);
+        if (!res.ok) throw new Error('API server returned error');
+        const result = await res.json();
+        
+        if (result.data && Object.keys(result.data).length > 0) {
+          setData(result.data);
+          if (result.assetsList) {
+            setAssetsList(result.assetsList);
+          }
+          console.log('Successfully synced dashboard state with Render PostgreSQL database.');
+        } else {
+          // Database is empty. Seed it with the default initial data!
+          console.log('PostgreSQL database is empty. Seeding initial baseline datasets...');
+          await fetch(`${API_BASE}/api/sync-all`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data, assetsList })
+          });
+        }
+      } catch (err) {
+        console.warn('Could not connect to Render PostgreSQL API server. Operating in offline/localStorage mode.', err);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    loadDbState();
+  }, []);
+
+  // Automatically sync local changes to PostgreSQL database once loaded
+  useEffect(() => {
+    if (!isLoaded) return;
+    
+    const timer = setTimeout(() => {
+      syncStateToDb(data, assetsList);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [data, assetsList, isLoaded]);
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
