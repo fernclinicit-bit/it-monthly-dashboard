@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import LarkForm from './pages/LarkForm';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -5253,7 +5255,8 @@ const initialDashboardData = {
 
 
 
-export default function App() {
+function Dashboard() {
+  const navigate = useNavigate();
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('it_dashboard_data');
     return saved ? JSON.parse(saved) : initialDashboardData;
@@ -7201,12 +7204,7 @@ export default function App() {
                 <Database size={16} />
                 ปรับเปลี่ยนข้อมูลทั้งหมด
               </button>
-              <button onClick={() => {
-                setLarkFormType('ticket');
-                setLarkTicketRole('user');
-                setLarkSubmitted(false);
-                setActiveModal('larkForm');
-              }} className="sidebar-btn" style={{ backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
+              <button onClick={() => window.open('/form', '_blank')} className="sidebar-btn" style={{ backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
                 <FileText size={16} />
                 แจ้งซ่อมบำรุง / ปัญหาไอที
               </button>
@@ -7326,9 +7324,17 @@ export default function App() {
               <p>ประจำเดือน {activeData.monthName}</p>
             </div>
           </div>
-          <div className="header-status status-indicator">
-            <span className="status-dot"></span>
-            <span>ระบบรายงานพร้อมทำงาน</span>
+          <div className="header-status status-indicator" style={{ display: 'flex', gap: '15px', alignItems: 'center', background: 'none' }}>
+            <button 
+              onClick={() => navigate('/form')}
+              style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              + กรอกแบบฟอร์ม
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
+              <span className="status-dot"></span>
+              <span>ระบบรายงานพร้อมทำงาน</span>
+            </div>
           </div>
         </header>
 
@@ -8952,5 +8958,14 @@ export default function App() {
       );
     })()}
   </>
-);
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/form" element={<LarkForm />} />
+    </Routes>
+  );
 }
