@@ -8222,7 +8222,7 @@ function Dashboard() {
       {/* MODAL 3: EXPIRING SOFTWARE AGREEMENTS */}
       {activeModal === 'expiringSoftware' && (
         <div className="modal-overlay active">
-          <div className="modal large">
+          <div className="modal large software-license-modal">
             <header className="modal-header">
               <h3>ทะเบียนโปรแกรมและ License ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
