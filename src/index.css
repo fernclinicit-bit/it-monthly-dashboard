@@ -1047,18 +1047,25 @@ body {
     padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    background-color: white;
-    color: black;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+    caret-color: #000000;
     font-size: 0.85rem;
 }
 
 .console-input::placeholder {
-    color: #7b7b7b;
+    color: #6b7280;
+    -webkit-text-fill-color: #6b7280;
+    opacity: 1;
 }
 
 .console-input:focus {
     border-color: var(--primary);
     outline: none;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
 }
 
 .console-table-scroll {
