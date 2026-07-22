@@ -367,6 +367,12 @@ body {
 .metric-value.highlight-warning { color: #fbbf24; }
 .metric-value.highlight-danger { color: #f87171; }
 
+.metric-note {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+}
+
 .main-assets-breakdown {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

@@ -6182,17 +6182,24 @@ function Dashboard() {
 
   const activeData = data[currentMonth];
 
-  const mainAssetBreakdown = [
+  const mainAssetCategories = [
     { label: 'PC', match: (type) => /computer\s*\(pc\)|\bpc\b/i.test(type) },
     { label: 'Notebook', match: (type) => /notebook/i.test(type) },
     { label: 'iMac', match: (type) => /imac/i.test(type) },
     { label: 'MacBook', match: (type) => /mac\s*book/i.test(type) },
     { label: 'iPhone', match: (type) => /iphone/i.test(type) },
     { label: 'iPad', match: (type) => /ipad/i.test(type) },
-  ].map((category) => ({
+  ];
+
+  const mainAssetBreakdown = mainAssetCategories.map((category) => ({
     label: category.label,
     count: assetsList.filter((asset) => category.match(String(asset.itemType || ''))).length,
   }));
+
+  const primaryVacantAssets = assetsList.filter((asset) => {
+    const type = String(asset.itemType || '');
+    return asset.status === 'ว่าง' && mainAssetCategories.some((category) => category.match(type));
+  }).length;
 
   // Helper currency formatter
   const formatThaiBaht = (value) => {
@@ -7462,7 +7469,8 @@ function Dashboard() {
               </div>
               <div className="metric-item">
                 <div className="metric-label">เครื่องว่าง (พร้อมใช้)</div>
-                <div className="metric-value highlight-success">{(activeData.assetsVacant || 0)} เครื่อง</div>
+                <div className="metric-value highlight-success">{primaryVacantAssets} เครื่อง</div>
+                <div className="metric-note">เฉพาะอุปกรณ์หลัก</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">ชำรุด</div>
