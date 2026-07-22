@@ -8186,7 +8186,7 @@ function Dashboard() {
       {/* MODAL 2: EXPIRING HARDWARE LIST */}
       {activeModal === 'expiringAssets' && (
         <div className="modal-overlay active">
-          <div className="modal large">
+          <div className="modal large dashboard-fullscreen-modal">
             <header className="modal-header">
               <h3>รายละเอียดอุปกรณ์ใกล้หมดอายุ ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
@@ -8230,7 +8230,7 @@ function Dashboard() {
       {/* MODAL 3: EXPIRING SOFTWARE AGREEMENTS */}
       {activeModal === 'expiringSoftware' && (
         <div className="modal-overlay active">
-          <div className="modal large software-license-modal">
+          <div className="modal large software-license-modal dashboard-fullscreen-modal">
             <header className="modal-header">
               <h3>ทะเบียนโปรแกรมและ License ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
@@ -8377,7 +8377,7 @@ function Dashboard() {
       {/* MODAL 5: TICKETS LIST DETAILS */}
       {activeModal === 'ticketsList' && (
         <div className="modal-overlay active">
-          <div className="modal large" style={{ maxWidth: '90%' }}>
+          <div className="modal large dashboard-fullscreen-modal">
             <header className="modal-header">
               <h3>รายละเอียดประวัติงานซ่อมและบริการ Support ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
@@ -8463,7 +8463,7 @@ function Dashboard() {
 
         return (
           <div className="modal-overlay active">
-            <div className="modal large" style={{ maxWidth: '90%' }}>
+            <div className="modal large dashboard-fullscreen-modal">
               <header className="modal-header">
                 <h3>ทะเบียนคลังทรัพย์สินและอุปกรณ์ IT (Asset Registry)</h3>
                 <button onClick={() => {

@@ -625,7 +625,7 @@ body {
     max-width: 800px;
 }
 
-.software-license-modal {
+.dashboard-fullscreen-modal {
     width: calc(100vw - 24px);
     max-width: none !important;
     height: calc(100vh - 24px);
@@ -636,7 +636,7 @@ body {
     overflow: hidden;
 }
 
-.software-license-modal .modal-body {
+.dashboard-fullscreen-modal .modal-body {
     padding: 18px 22px 24px;
     flex: 1;
     min-height: 0;
@@ -662,7 +662,7 @@ body {
 }
 
 @media (max-width: 768px) {
-    .software-license-modal {
+    .dashboard-fullscreen-modal {
         width: 100vw;
         height: 100vh;
         max-height: 100vh;
