@@ -608,13 +608,21 @@ body {
 }
 
 .software-license-modal {
-    width: 97vw;
-    max-width: 1500px !important;
-    max-height: 94vh;
+    width: calc(100vw - 24px);
+    max-width: none !important;
+    height: calc(100vh - 24px);
+    max-height: none;
+    margin: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .software-license-modal .modal-body {
     padding: 18px 22px 24px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
 }
 
 .software-license-modal .details-table {
@@ -638,7 +646,9 @@ body {
 @media (max-width: 768px) {
     .software-license-modal {
         width: 100vw;
+        height: 100vh;
         max-height: 100vh;
+        margin: 0;
         border-radius: 0;
     }
 }
