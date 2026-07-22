@@ -5308,11 +5308,11 @@ const AssetTags = ({ value, empty = '-' }) => {
 };
 
 const seedSoftwareLicenses = [
-  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
-  { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
+  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
+  { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
   { name: 'Freepik', owner: 'กราฟฟิก', price: 11250, paymentChannel: 'บัตร', paymentDate: '11/05/2026-2027 (1 ปี)', expiringDate: '2027-06-11', registeredEmail: 'graphicfernclinic@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
   { name: 'Kumoo', owner: 'กราฟฟิก', price: 3077, paymentChannel: 'บัตร', paymentDate: '06/01/2026', expiringDate: '2027-01-07', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
-  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 345, paymentChannel: 'Apple', paymentDate: '31/07/2026', expiringDate: '2026-08-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'บุษกร บัวสวรรค์ (เรนนี่), อสิทธิ์ พรจันทรวัฒน์ (จุ้ย)' },
+  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 345, paymentChannel: 'Apple', paymentDate: '31/07/2026', expiringDate: '2026-08-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'บุษกร บัวสวรรค์ (เรนนี่), อภิสิทธิ์ พรจันทร์วัฒน์ (จุ้ย)' },
   { name: 'Microsoft Office 365', owner: 'IT', price: 3690, paymentChannel: 'Microsoft Office', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
   { name: 'Lark', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
   { name: 'Google Suite', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
@@ -5323,11 +5323,9 @@ const seedSoftwareLicenses = [
   { name: 'PEAK', owner: 'Accounting', price: 12480, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-03-30', registeredEmail: '', currentUsers: '' },
   { name: 'empeo', owner: 'HR', price: 132515, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-06-09', registeredEmail: '', currentUsers: '' },
   { name: 'Chromecast Premium', owner: 'HR', price: 399, paymentChannel: '', paymentDate: 'รายเดือน', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Suno AI', owner: '', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Eightify App', owner: '', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
 ].map((item) => {
   const used = item.currentUsers ? item.currentUsers.split(',').filter(Boolean).length : 0;
-  return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'ใช้งาน', isLicenseRecord: true };
+  return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'ใช้งาน', isLicenseRecord: true, sourceVersion: 'software-image-v2' };
 });
 
 function Dashboard() {
@@ -5501,12 +5499,13 @@ function Dashboard() {
     if (!isLoaded || softwareSeededRef.current || !data[currentMonth]) return;
     softwareSeededRef.current = true;
     const existing = data[currentMonth].softwareExpiringDetails || [];
-    if (existing.some((item) => item.isLicenseRecord)) return;
+    if (existing.some((item) => item.sourceVersion === 'software-image-v2')) return;
+    const preservedDetails = existing.filter((item) => !item.isLicenseRecord);
     setData((previous) => ({
       ...previous,
       [currentMonth]: {
         ...previous[currentMonth],
-        softwareExpiringDetails: [...existing, ...seedSoftwareLicenses],
+        softwareExpiringDetails: [...preservedDetails, ...seedSoftwareLicenses],
       },
     }));
   }, [isLoaded, currentMonth, data]);
