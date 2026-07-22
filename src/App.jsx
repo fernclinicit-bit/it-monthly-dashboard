@@ -5307,6 +5307,29 @@ const AssetTags = ({ value, empty = '-' }) => {
   );
 };
 
+const seedSoftwareLicenses = [
+  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
+  { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
+  { name: 'Freepik', owner: 'กราฟฟิก', price: 11250, paymentChannel: 'บัตร', paymentDate: '11/05/2026-2027 (1 ปี)', expiringDate: '2027-06-11', registeredEmail: 'graphicfernclinic@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
+  { name: 'Kumoo', owner: 'กราฟฟิก', price: 3077, paymentChannel: 'บัตร', paymentDate: '06/01/2026', expiringDate: '2027-01-07', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
+  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 345, paymentChannel: 'Apple', paymentDate: '31/07/2026', expiringDate: '2026-08-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'บุษกร บัวสวรรค์ (เรนนี่), อสิทธิ์ พรจันทรวัฒน์ (จุ้ย)' },
+  { name: 'Microsoft Office 365', owner: 'IT', price: 3690, paymentChannel: 'Microsoft Office', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'Lark', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'Google Suite', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'Chat GPT', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'Adobe', owner: 'กราฟฟิก', price: 11105, paymentChannel: 'บัตร', paymentDate: '2025-12-01', expiringDate: '2026-12-01', registeredEmail: 'fernclinic.it@gmail.com', currentUsers: 'ชัยธัช ชัยวัฒน์ (มาร์ค), พิชญาพร คลอวง (พี่เจน)' },
+  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 1810, paymentChannel: 'Apple', paymentDate: '25/06/2027', expiringDate: '2027-07-23', registeredEmail: 'drfernbussiness@gmail.com', currentUsers: '' },
+  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1190, paymentChannel: 'Applepay', paymentDate: '22/01/2027', expiringDate: '2027-01-22', registeredEmail: 'drfernbussiness@gmail.com', currentUsers: '' },
+  { name: 'PEAK', owner: 'Accounting', price: 12480, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-03-30', registeredEmail: '', currentUsers: '' },
+  { name: 'empeo', owner: 'HR', price: 132515, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-06-09', registeredEmail: '', currentUsers: '' },
+  { name: 'Chromecast Premium', owner: 'HR', price: 399, paymentChannel: '', paymentDate: 'รายเดือน', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'Suno AI', owner: '', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'Eightify App', owner: '', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
+].map((item) => {
+  const used = item.currentUsers ? item.currentUsers.split(',').filter(Boolean).length : 0;
+  return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'ใช้งาน', isLicenseRecord: true };
+});
+
 function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(() => {
@@ -5335,6 +5358,11 @@ function Dashboard() {
   const [softwareVacant, setSoftwareVacant] = useState('0');
   const [softwareExpiryDate, setSoftwareExpiryDate] = useState('');
   const [softwareMonthlyCost, setSoftwareMonthlyCost] = useState('0');
+  const [softwareOwner, setSoftwareOwner] = useState('');
+  const [softwarePaymentChannel, setSoftwarePaymentChannel] = useState('');
+  const [softwarePaymentDate, setSoftwarePaymentDate] = useState('');
+  const [softwareRegisteredEmail, setSoftwareRegisteredEmail] = useState('');
+  const [softwareCurrentUsers, setSoftwareCurrentUsers] = useState('');
 
   // Lark Form states
   const [larkFormType, setLarkFormType] = useState('ticket'); // 'ticket' | 'asset'
@@ -5372,6 +5400,7 @@ function Dashboard() {
   const isPendingSyncRef = useRef(false);
   const latestDataRef = useRef(data);
   const latestAssetsRef = useRef(assetsList);
+  const softwareSeededRef = useRef(false);
 
   useEffect(() => {
     latestDataRef.current = data;
@@ -5468,6 +5497,20 @@ function Dashboard() {
   }, [isLoaded]);
 
   // Automatically sync local changes to PostgreSQL database once loaded
+  useEffect(() => {
+    if (!isLoaded || softwareSeededRef.current || !data[currentMonth]) return;
+    softwareSeededRef.current = true;
+    const existing = data[currentMonth].softwareExpiringDetails || [];
+    if (existing.some((item) => item.isLicenseRecord)) return;
+    setData((previous) => ({
+      ...previous,
+      [currentMonth]: {
+        ...previous[currentMonth],
+        softwareExpiringDetails: [...existing, ...seedSoftwareLicenses],
+      },
+    }));
+  }, [isLoaded, currentMonth, data]);
+
   useEffect(() => {
     if (!isLoaded) return;
     if (isPollingUpdateRef.current) {
@@ -6259,6 +6302,11 @@ function Dashboard() {
     setSoftwareVacant('0');
     setSoftwareExpiryDate('');
     setSoftwareMonthlyCost('0');
+    setSoftwareOwner('');
+    setSoftwarePaymentChannel('');
+    setSoftwarePaymentDate('');
+    setSoftwareRegisteredEmail('');
+    setSoftwareCurrentUsers('');
   };
 
   const saveSoftwareLicense = (event) => {
@@ -6270,6 +6318,12 @@ function Dashboard() {
       licenses: Number(softwareUsed || 0) + Number(softwareVacant || 0),
       expiringDate: softwareExpiryDate,
       monthlyCost: Number(softwareMonthlyCost || 0),
+      price: Number(softwareMonthlyCost || 0),
+      owner: softwareOwner.trim(),
+      paymentChannel: softwarePaymentChannel.trim(),
+      paymentDate: softwarePaymentDate.trim(),
+      registeredEmail: softwareRegisteredEmail.trim(),
+      currentUsers: softwareCurrentUsers.trim(),
       status: 'ใช้งาน',
       isLicenseRecord: true,
     };
@@ -6294,6 +6348,11 @@ function Dashboard() {
     setSoftwareVacant(String(item.vacant ?? 0));
     setSoftwareExpiryDate(item.expiringDate || '');
     setSoftwareMonthlyCost(String(item.monthlyCost ?? 0));
+    setSoftwareOwner(item.owner || '');
+    setSoftwarePaymentChannel(item.paymentChannel || '');
+    setSoftwarePaymentDate(item.paymentDate || '');
+    setSoftwareRegisteredEmail(item.registeredEmail || '');
+    setSoftwareCurrentUsers(item.currentUsers || '');
   };
 
   const deleteSoftwareLicense = (index) => {
@@ -8148,6 +8207,22 @@ function Dashboard() {
                     <input type="date" value={softwareExpiryDate} onChange={(event) => setSoftwareExpiryDate(event.target.value)} />
                   </div>
                   <div className="form-group">
+                    <label>Owner / แผนก</label>
+                    <input value={softwareOwner} onChange={(event) => setSoftwareOwner(event.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>ช่องทางชำระเงิน</label>
+                    <input value={softwarePaymentChannel} onChange={(event) => setSoftwarePaymentChannel(event.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>วันที่/รอบชำระเงิน</label>
+                    <input value={softwarePaymentDate} onChange={(event) => setSoftwarePaymentDate(event.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>อีเมลที่สมัคร</label>
+                    <input type="email" value={softwareRegisteredEmail} onChange={(event) => setSoftwareRegisteredEmail(event.target.value)} />
+                  </div>
+                  <div className="form-group">
                     <label>License ใช้งาน</label>
                     <input type="number" min="0" value={softwareUsed} onChange={(event) => setSoftwareUsed(event.target.value)} required />
                   </div>
@@ -8158,6 +8233,10 @@ function Dashboard() {
                   <div className="form-group">
                     <label>ค่าใช้จ่ายต่อเดือน (บาท)</label>
                     <input type="number" min="0" value={softwareMonthlyCost} onChange={(event) => setSoftwareMonthlyCost(event.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>ผู้ใช้งานปัจจุบัน (คั่นด้วยจุลภาค)</label>
+                    <textarea value={softwareCurrentUsers} onChange={(event) => setSoftwareCurrentUsers(event.target.value)} />
                   </div>
                 </div>
                 <div className="software-license-actions">
@@ -8170,11 +8249,16 @@ function Dashboard() {
                   <thead>
                     <tr>
                       <th>ชื่อซอฟต์แวร์/โปรแกรม</th>
+                      <th>Owner</th>
                       <th>ใช้งาน</th>
                       <th>ว่าง</th>
                       <th>รวม</th>
+                      <th>ราคา</th>
+                      <th>ช่องทางชำระ</th>
+                      <th>วันที่ชำระ</th>
                       <th>วันหมดสัญญา</th>
-                      <th>ค่าใช้จ่าย/เดือน</th>
+                      <th>อีเมลสมัคร</th>
+                      <th>ผู้ใช้งานปัจจุบัน</th>
                       <th>จัดการ</th>
                     </tr>
                   </thead>
@@ -8183,11 +8267,16 @@ function Dashboard() {
                       activeData.softwareExpiringDetails.map((soft, idx) => (
                         <tr key={idx}>
                           <td><strong>{soft.name}</strong></td>
+                          <td>{soft.owner || '-'}</td>
                           <td>{soft.used ?? '-'}</td>
                           <td>{soft.vacant ?? '-'}</td>
                           <td>{soft.licenses ?? (Number(soft.used || 0) + Number(soft.vacant || 0))}</td>
-                          <td>{soft.expiringDate || '-'}</td>
                           <td>{soft.monthlyCost !== undefined ? formatThaiBaht(soft.monthlyCost) : '-'}</td>
+                          <td>{soft.paymentChannel || '-'}</td>
+                          <td>{soft.paymentDate || '-'}</td>
+                          <td>{soft.expiringDate || '-'}</td>
+                          <td>{soft.registeredEmail || '-'}</td>
+                          <td style={{ minWidth: '220px' }}>{soft.currentUsers || '-'}</td>
                           <td>
                             <div className="software-row-actions">
                               <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, idx)}>แก้ไข</button>
@@ -8198,7 +8287,7 @@ function Dashboard() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="7" style={{ textAlign: 'center' }}>ยังไม่มีรายละเอียด License</td>
+                        <td colSpan="12" style={{ textAlign: 'center' }}>ยังไม่มีรายละเอียด License</td>
                       </tr>
                     )}
                   </tbody>
