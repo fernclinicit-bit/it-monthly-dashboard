@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
-import ClinicDashboard from './pages/ClinicDashboard';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -7225,12 +7224,6 @@ function Dashboard() {
                 <Wrench size={16} />
                 เมนูปิดงาน (IT Close)
               </button>
-              <button onClick={() => {
-                navigate('/clinic');
-              }} className="sidebar-btn" style={{ backgroundColor: '#10b981', border: 'none', color: 'white', marginTop: '10px' }}>
-                <Activity size={16} />
-                ดูรายงานคลินิก (Clinic)
-              </button>
             </div>
           )}
         </div>
@@ -8970,7 +8963,6 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Dashboard />} />
       <Route path="/form" element={<LarkForm />} />
-      <Route path="/clinic" element={<ClinicDashboard />} />
     </Routes>
   );
 }
