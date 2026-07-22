@@ -7646,8 +7646,16 @@ function Dashboard() {
             </div>
             <div className="metrics-row">
               <div className="metric-item full-width">
-                <div className="metric-label">จำนวนอุปกรณ์ทั้งหมด</div>
-                <div className="metric-value highlight-primary">{activeData.totalAssets.toLocaleString()} เครื่อง</div>
+                <div className="asset-total-summary">
+                  <div>
+                    <div className="metric-label">จำนวนอุปกรณ์ทั้งหมด</div>
+                    <div className="metric-value highlight-primary">{activeData.totalAssets.toLocaleString()} เครื่อง</div>
+                  </div>
+                  <div className="asset-vacant-summary">
+                    <div className="metric-label">เครื่องว่าง</div>
+                    <div className="metric-value highlight-success">{primaryVacantAssets} เครื่อง</div>
+                  </div>
+                </div>
                 <div className="main-assets-breakdown">
                   {mainAssetBreakdown.map((asset) => (
                     <div className="main-asset-count" key={asset.label}>

@@ -399,6 +399,24 @@ body {
     margin-top: 10px;
 }
 
+.asset-total-summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.asset-vacant-summary {
+    min-width: 112px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(16, 185, 129, 0.35);
+    text-align: right;
+}
+
+.asset-vacant-summary .metric-value {
+    font-size: 1.05rem;
+}
+
 .main-asset-count {
     display: flex;
     align-items: center;
