@@ -7676,7 +7676,7 @@ function Dashboard() {
                       <label>จำนวนอุปกรณ์ทั้งหมด (เครื่อง)</label>
                       <input 
                         type="number" 
-                        value={formInputs.totalAssets || ''} 
+                        value={formInputs.totalAssets ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, totalAssets: e.target.value }))}
                         required 
                       />
@@ -7685,7 +7685,7 @@ function Dashboard() {
                       <label>มูลค่าทรัพย์สินไอทีรวม (บาท)</label>
                       <input 
                         type="number" 
-                        value={formInputs.assetValue || ''} 
+                        value={formInputs.assetValue ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, assetValue: e.target.value }))}
                         required 
                       />
@@ -7694,7 +7694,7 @@ function Dashboard() {
                       <label>อุปกรณ์ใกล้หมดอายุ (เครื่อง)</label>
                       <input 
                         type="number" 
-                        value={formInputs.assetsExpiring || ''} 
+                        value={formInputs.assetsExpiring ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, assetsExpiring: e.target.value }))}
                         required 
                       />
@@ -7703,7 +7703,7 @@ function Dashboard() {
                       <label>อุปกรณ์ชำรุด (เครื่อง)</label>
                       <input 
                         type="number" 
-                        value={formInputs.assetsBroken || ''} 
+                        value={formInputs.assetsBroken ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, assetsBroken: e.target.value }))}
                         required 
                       />
@@ -7712,7 +7712,7 @@ function Dashboard() {
                       <label>อุปกรณ์สูญหาย (เครื่อง)</label>
                       <input 
                         type="number" 
-                        value={formInputs.assetsLost || ''} 
+                        value={formInputs.assetsLost ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, assetsLost: e.target.value }))}
                         required 
                       />
@@ -7721,7 +7721,7 @@ function Dashboard() {
                       <label>อุปกรณ์ว่าง/พร้อมใช้ (เครื่อง)</label>
                       <input 
                         type="number" 
-                        value={formInputs.assetsVacant || ''} 
+                        value={formInputs.assetsVacant ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, assetsVacant: e.target.value }))}
                         required 
                       />
@@ -7737,7 +7737,7 @@ function Dashboard() {
                       <label>จำนวน Ticket ทั้งหมด (ใบ)</label>
                       <input 
                         type="number" 
-                        value={formInputs.ticketsCount || ''} 
+                        value={formInputs.ticketsCount ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, ticketsCount: e.target.value }))}
                         required 
                       />
@@ -7747,7 +7747,7 @@ function Dashboard() {
                       <input 
                         type="number" 
                         step="0.1" 
-                        value={formInputs.slaPercent || ''} 
+                        value={formInputs.slaPercent ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, slaPercent: e.target.value }))}
                         required 
                       />
@@ -7756,7 +7756,7 @@ function Dashboard() {
                       <label>Response Time เฉลี่ย (นาที)</label>
                       <input 
                         type="number" 
-                        value={formInputs.responseTime || ''} 
+                        value={formInputs.responseTime ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, responseTime: e.target.value }))}
                         required 
                       />
@@ -7766,7 +7766,7 @@ function Dashboard() {
                       <input 
                         type="number" 
                         step="0.1" 
-                        value={formInputs.resolutionTime || ''} 
+                        value={formInputs.resolutionTime ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, resolutionTime: e.target.value }))}
                         required 
                       />
@@ -7777,7 +7777,7 @@ function Dashboard() {
                         type="number" 
                         step="0.1" 
                         max="5" 
-                        value={formInputs.csat || ''} 
+                        value={formInputs.csat ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, csat: e.target.value }))}
                         required 
                       />
@@ -7793,7 +7793,7 @@ function Dashboard() {
                       <label>โปรแกรมซอฟต์แวร์ทั้งหมด</label>
                       <input 
                         type="number" 
-                        value={formInputs.totalSoftware || ''} 
+                        value={formInputs.totalSoftware ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, totalSoftware: e.target.value }))}
                         required 
                       />
@@ -7802,7 +7802,7 @@ function Dashboard() {
                       <label>โปรแกรมใกล้สัญญาหมดสัญญา</label>
                       <input 
                         type="number" 
-                        value={formInputs.softwareExpiring || ''} 
+                        value={formInputs.softwareExpiring ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, softwareExpiring: e.target.value }))}
                         required 
                       />
@@ -7811,7 +7811,7 @@ function Dashboard() {
                       <label>สิทธิ์/บัญชีใช้งานอยู่ (Licenses)</label>
                       <input 
                         type="number" 
-                        value={formInputs.licensesInUse || ''} 
+                        value={formInputs.licensesInUse ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, licensesInUse: e.target.value }))}
                         required 
                       />
@@ -7820,7 +7820,7 @@ function Dashboard() {
                       <label>สิทธิ์/บัญชีว่าง (Licenses)</label>
                       <input 
                         type="number" 
-                        value={formInputs.licensesVacant || ''} 
+                        value={formInputs.licensesVacant ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, licensesVacant: e.target.value }))}
                         required 
                       />
@@ -7829,7 +7829,7 @@ function Dashboard() {
                       <label>ค่าใช้จ่ายซอฟต์แวร์รวม (บาท)</label>
                       <input 
                         type="number" 
-                        value={formInputs.softwareCost || ''} 
+                        value={formInputs.softwareCost ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, softwareCost: e.target.value }))}
                         required 
                       />
@@ -7847,7 +7847,7 @@ function Dashboard() {
                         type="number" 
                         step="0.1" 
                         max="100" 
-                        value={formInputs.backupSuccess || ''} 
+                        value={formInputs.backupSuccess ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, backupSuccess: e.target.value }))}
                         required 
                       />
@@ -7856,7 +7856,7 @@ function Dashboard() {
                       <label>ภัยคุกคาม Security Incident (ครั้ง)</label>
                       <input 
                         type="number" 
-                        value={formInputs.securityIncidents || ''} 
+                        value={formInputs.securityIncidents ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, securityIncidents: e.target.value }))}
                         required 
                       />
@@ -7867,7 +7867,7 @@ function Dashboard() {
                         type="number" 
                         step="0.1" 
                         max="100" 
-                        value={formInputs.antivirusCoverage || ''} 
+                        value={formInputs.antivirusCoverage ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, antivirusCoverage: e.target.value }))}
                         required 
                       />
@@ -7878,7 +7878,7 @@ function Dashboard() {
                         type="number" 
                         step="0.1" 
                         max="100" 
-                        value={formInputs.mfaCoverage || ''} 
+                        value={formInputs.mfaCoverage ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, mfaCoverage: e.target.value }))}
                         required 
                       />
@@ -7894,7 +7894,7 @@ function Dashboard() {
                       <label>จำนวนครั้งการส่งซ่อม</label>
                       <input 
                         type="number" 
-                        value={formInputs.repairCount || ''} 
+                        value={formInputs.repairCount ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, repairCount: e.target.value }))}
                         required 
                       />
@@ -7903,7 +7903,7 @@ function Dashboard() {
                       <label>ค่าซ่อมแซมและบำรุงรักษาอุปกรณ์รวม (บาท)</label>
                       <input 
                         type="number" 
-                        value={formInputs.repairCost || ''} 
+                        value={formInputs.repairCost ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, repairCost: e.target.value }))}
                         required 
                       />

@@ -642,6 +642,21 @@ body {
     background-color: rgba(255, 255, 255, 0.08);
 }
 
+.modal .form-group input,
+.modal .form-group textarea {
+    background-color: #dbeafe !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+    caret-color: #000000;
+}
+
+.modal .form-group input:focus,
+.modal .form-group textarea:focus {
+    background-color: #bfdbfe !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+}
+
 .form-footer {
     display: flex;
     justify-content: flex-end;
