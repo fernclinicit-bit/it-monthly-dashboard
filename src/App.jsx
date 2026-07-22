@@ -6228,7 +6228,13 @@ function Dashboard() {
   const softwareChartInst = useRef(null);
   const repairChartInst = useRef(null);
 
-  const activeData = data[currentMonth];
+  const availableMonthKeys = Object.keys(data).sort();
+  const fallbackMonthKey = availableMonthKeys[availableMonthKeys.length - 1] || '2026-07';
+  const activeData = data[currentMonth] || data[fallbackMonthKey] || initialDashboardData['2026-07'];
+
+  useEffect(() => {
+    if (!data[currentMonth] && data[fallbackMonthKey]) setCurrentMonth(fallbackMonthKey);
+  }, [currentMonth, data, fallbackMonthKey]);
 
   const mainAssetCategories = [
     { label: 'PC', usefulLifeYears: 5, match: (type) => /computer\s*\(pc\)|\bpc\b/i.test(type) },
