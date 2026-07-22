@@ -5328,11 +5328,23 @@ const seedSoftwareLicenses = [
   return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'ใช้งาน', isLicenseRecord: true, sourceVersion: 'software-image-v2' };
 });
 
+const isValidDashboardData = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const monthKeys = Object.keys(value);
+  return monthKeys.length > 0 && monthKeys.every((key) => /^\d{4}-\d{2}$/.test(key) && value[key] && typeof value[key] === 'object');
+};
+
 function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('it_dashboard_data');
-    return saved ? JSON.parse(saved) : initialDashboardData;
+    if (!saved) return initialDashboardData;
+    try {
+      const parsed = JSON.parse(saved);
+      return isValidDashboardData(parsed) ? parsed : initialDashboardData;
+    } catch {
+      return initialDashboardData;
+    }
   });
   const [assetsList, setAssetsList] = useState(() => {
     const saved = localStorage.getItem('it_dashboard_assets');
