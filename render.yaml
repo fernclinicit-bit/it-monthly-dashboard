@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: it-monthly-dashboard-api
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: it-monthly-dashboard-db
+          property: connectionString
+
+databases:
+  - name: it-monthly-dashboard-db
+    databaseName: it_monthly_dashboard
+    user: it_monthly_dashboard
+    plan: free
+    region: singapore
+    postgresMajorVersion: "16"
+    ipAllowList: []

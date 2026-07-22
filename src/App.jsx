@@ -5403,8 +5403,10 @@ function Dashboard() {
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const API_BASE = import.meta.env.VITE_API_BASE || 
-    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+  const API_BASE = import.meta.env.VITE_API_BASE ||
+    (window.location.hostname === 'localhost'
+      ? 'http://localhost:5000'
+      : 'https://it-monthly-dashboard-api.onrender.com');
 
   const isPollingUpdateRef = useRef(false);
   const isPendingSyncRef = useRef(false);
@@ -5419,13 +5421,17 @@ function Dashboard() {
 
   const syncStateToDb = async (updatedData, updatedAssets) => {
     try {
-      await fetch(`${API_BASE}/api/sync-all`, {
+      const response = await fetch(`${API_BASE}/api/sync-all`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: updatedData, assetsList: updatedAssets })
       });
+      if (!response.ok) {
+        throw new Error(`API server returned ${response.status}`);
+      }
     } catch (err) {
       console.error('Failed to sync state to PostgreSQL database:', err);
+      throw err;
     }
   };
 
@@ -5452,11 +5458,6 @@ function Dashboard() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data, assetsList })
           });
-        }
-        const inventoryRes = await fetch(`${API_BASE}/api/inventory-data`);
-        if (inventoryRes.ok) {
-          const inventoryAssets = await inventoryRes.json();
-          if (inventoryAssets.length > 0) setAssetsList(inventoryAssets);
         }
       } catch (err) {
         console.warn('Could not connect to Render PostgreSQL API server. Operating in offline/localStorage mode.', err);
