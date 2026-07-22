@@ -6230,7 +6230,22 @@ function Dashboard() {
 
   const availableMonthKeys = Object.keys(data).sort();
   const fallbackMonthKey = availableMonthKeys[availableMonthKeys.length - 1] || '2026-07';
-  const activeData = data[currentMonth] || data[fallbackMonthKey] || initialDashboardData['2026-07'];
+  const activeDataSource = data[currentMonth] || data[fallbackMonthKey] || initialDashboardData['2026-07'];
+  const activeData = {
+    ...initialDashboardData['2026-07'],
+    ...activeDataSource,
+    monthName: activeDataSource?.monthName || fallbackMonthKey,
+    totalAssets: Number(activeDataSource?.totalAssets || 0),
+    ticketsCount: Number(activeDataSource?.ticketsCount || 0),
+    csat: Number(activeDataSource?.csat || 0),
+    deptCosts: activeDataSource?.deptCosts || {},
+    topBrokenDevices: activeDataSource?.topBrokenDevices || [],
+    recommendations: activeDataSource?.recommendations || [],
+    ongoingProjects: activeDataSource?.ongoingProjects || [],
+    assetsExpiringDetails: activeDataSource?.assetsExpiringDetails || [],
+    softwareExpiringDetails: activeDataSource?.softwareExpiringDetails || [],
+    ticketsList: activeDataSource?.ticketsList || [],
+  };
 
   useEffect(() => {
     if (!data[currentMonth] && data[fallbackMonthKey]) setCurrentMonth(fallbackMonthKey);
