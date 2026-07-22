@@ -367,6 +367,30 @@ body {
 .metric-value.highlight-warning { color: #fbbf24; }
 .metric-value.highlight-danger { color: #f87171; }
 
+.main-assets-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.main-asset-count {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: rgba(59, 130, 246, 0.12);
+    color: #bfdbfe;
+    font-size: 0.74rem;
+}
+
+.main-asset-count strong {
+    color: #ffffff;
+    font-size: 0.88rem;
+}
+
 /* Chart Container inside Card */
 .card-chart-container {
     height: 140px;

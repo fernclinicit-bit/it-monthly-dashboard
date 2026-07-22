@@ -6182,6 +6182,18 @@ function Dashboard() {
 
   const activeData = data[currentMonth];
 
+  const mainAssetBreakdown = [
+    { label: 'PC', match: (type) => /computer\s*\(pc\)|\bpc\b/i.test(type) },
+    { label: 'Notebook', match: (type) => /notebook/i.test(type) },
+    { label: 'iMac', match: (type) => /imac/i.test(type) },
+    { label: 'MacBook', match: (type) => /mac\s*book/i.test(type) },
+    { label: 'iPhone', match: (type) => /iphone/i.test(type) },
+    { label: 'iPad', match: (type) => /ipad/i.test(type) },
+  ].map((category) => ({
+    label: category.label,
+    count: assetsList.filter((asset) => category.match(String(asset.itemType || ''))).length,
+  }));
+
   // Helper currency formatter
   const formatThaiBaht = (value) => {
     return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(value);
@@ -7431,6 +7443,14 @@ function Dashboard() {
               <div className="metric-item full-width">
                 <div className="metric-label">จำนวนอุปกรณ์ทั้งหมด</div>
                 <div className="metric-value highlight-primary">{activeData.totalAssets.toLocaleString()} เครื่อง</div>
+                <div className="main-assets-breakdown">
+                  {mainAssetBreakdown.map((asset) => (
+                    <div className="main-asset-count" key={asset.label}>
+                      <span>{asset.label}</span>
+                      <strong>{asset.count}</strong>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="metric-item full-width">
                 <div className="metric-label">มูลค่าทรัพย์สิน IT รวม</div>
