@@ -71,9 +71,11 @@ async function initDb() {
           item_type VARCHAR(255) NOT NULL,
           device_serial VARCHAR(255) NOT NULL,
           status VARCHAR(50) NOT NULL,
-          notes TEXT
+          notes TEXT,
+          details JSONB NOT NULL DEFAULT '{}'::jsonb
         )
       `);
+      await client.query(`ALTER TABLE assets ADD COLUMN IF NOT EXISTS details JSONB NOT NULL DEFAULT '{}'::jsonb`);
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS tickets (
@@ -169,7 +171,8 @@ app.get('/api/db-state', async (req, res) => {
       itemType: row.item_type,
       deviceSerial: row.device_serial,
       status: row.status,
-      notes: row.notes || ''
+      notes: row.notes || '',
+      ...(row.details || {})
     }));
 
     res.json({ data: dataObj, assetsList });
@@ -196,6 +199,46 @@ app.get('/api/clinic-data', (req, res) => {
   }
 });
 
+app.get('/api/inventory-data', (req, res) => {
+  try {
+    const filePath = path.join(process.cwd(), 'Update', 'Inventory_Inventory_Results.xlsx');
+    if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Inventory file not found' });
+    const workbook = XLSX.readFile(filePath, { cellDates: true });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    const formatDate = (value) => {
+      if (!value) return '';
+      const d = value instanceof Date ? value : new Date(value);
+      if (Number.isNaN(d.getTime())) return String(value);
+      return new Intl.DateTimeFormat('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
+    };
+    res.json(rows.map((row, i) => ({
+      sn: row['Nember'] || i + 1,
+      submittedOn: formatDate(row['Submitted on']),
+      respondent: row['Respondents'],
+      date: formatDate(row['วันที่เบิกใช้งาน']),
+      user: row['บุคคลเบิกใช้อุปกรณ์'] || 'ส่วนกลาง/ไม่ระบุ',
+      position: row['ตำแหน่ง'] || '-',
+      itemType: row['รายการอุปกรณ์หลัก'] || 'อุปกรณ์เสริม/อื่นๆ',
+      additionalEquipment: row['อุปกรณ์เพิ่มเติมที่ต้องการเบิก'],
+      softwareApp: row['ซอต์ฟแวร์/ App'],
+      registeredEmail: row['เมลที่ลงทะเบียน'],
+      deviceSerial: row['หมายเลขอุปกรณ์ (เช่น  Ipad 016)'] || '-',
+      additionalSerial: row['หมายเลขอุปกรณ์ เพิ่มเติม  (เช่น  สาย อะเเดปเตอร์ ipad-011))'],
+      returnDueDate: formatDate(row['กำหนดคืนอุปกรณ์']),
+      status: row['สถานะ'] || 'ใช้งาน',
+      notes: row['หมายเหตุ'],
+      inspectionDate: formatDate(row['วันที่ตรวจสอบ']),
+      purchaseDate: formatDate(row['วันที่ซื้อ']),
+      warrantyEndDate: formatDate(row['วันหมดประกัน']),
+      expense: Number(row['ค่าใช้จ่าย']) || 0
+    })));
+  } catch (err) {
+    console.error('Error reading inventory data:', err);
+    res.status(500).json({ error: 'Failed to read inventory data' });
+  }
+});
+
 app.post('/api/sync-all', async (req, res) => {
   const { data, assetsList } = req.body;
   if (!data || !assetsList) {
@@ -213,8 +256,8 @@ app.post('/api/sync-all', async (req, res) => {
 
     for (const asset of assetsList) {
       await client.query(`
-        INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       `, [
         Number(asset.sn),
         asset.date || '',
@@ -223,7 +266,8 @@ app.post('/api/sync-all', async (req, res) => {
         asset.itemType || '',
         asset.deviceSerial || '-',
         asset.status || 'ใช้งาน',
-        asset.notes || ''
+        asset.notes || '',
+        JSON.stringify(asset)
       ]);
     }
 
