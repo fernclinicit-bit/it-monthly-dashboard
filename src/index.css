@@ -373,6 +373,25 @@ body {
     font-size: 0.68rem;
 }
 
+.software-license-form {
+    margin-bottom: 18px;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.software-license-actions,
+.software-row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.software-license-actions {
+    margin-top: 12px;
+}
+
 .main-assets-breakdown {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

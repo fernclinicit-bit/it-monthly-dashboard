@@ -5329,6 +5329,12 @@ function Dashboard() {
   const [consoleMonth, setConsoleMonth] = useState('2026-07');
   const [editingAssetSn, setEditingAssetSn] = useState(null);
   const [editingTicketSn, setEditingTicketSn] = useState(null);
+  const [editingSoftwareIndex, setEditingSoftwareIndex] = useState(null);
+  const [softwareName, setSoftwareName] = useState('');
+  const [softwareUsed, setSoftwareUsed] = useState('0');
+  const [softwareVacant, setSoftwareVacant] = useState('0');
+  const [softwareExpiryDate, setSoftwareExpiryDate] = useState('');
+  const [softwareMonthlyCost, setSoftwareMonthlyCost] = useState('0');
 
   // Lark Form states
   const [larkFormType, setLarkFormType] = useState('ticket'); // 'ticket' | 'asset'
@@ -6230,6 +6236,78 @@ function Dashboard() {
     return modelExpiryDate >= today && modelExpiryDate <= nearExpiryLimit;
   }).length;
 
+  const softwareDetails = activeData?.softwareExpiringDetails || [];
+  const configuredSoftwareLicenses = softwareDetails.filter((item) => item.isLicenseRecord);
+  const hasConfiguredSoftwareLicenses = configuredSoftwareLicenses.length > 0;
+  const calculatedLicensesInUse = hasConfiguredSoftwareLicenses
+    ? configuredSoftwareLicenses.reduce((sum, item) => sum + Number(item.used || 0), 0)
+    : Number(activeData?.licensesInUse || 0);
+  const calculatedLicensesVacant = hasConfiguredSoftwareLicenses
+    ? configuredSoftwareLicenses.reduce((sum, item) => sum + Number(item.vacant || 0), 0)
+    : Number(activeData?.licensesVacant || 0);
+  const calculatedSoftwareCost = hasConfiguredSoftwareLicenses
+    ? configuredSoftwareLicenses.reduce((sum, item) => sum + Number(item.monthlyCost || 0), 0)
+    : Number(activeData?.softwareCost || 0);
+  const calculatedTotalSoftware = hasConfiguredSoftwareLicenses
+    ? configuredSoftwareLicenses.length
+    : Number(activeData?.totalSoftware || 0);
+
+  const resetSoftwareForm = () => {
+    setEditingSoftwareIndex(null);
+    setSoftwareName('');
+    setSoftwareUsed('0');
+    setSoftwareVacant('0');
+    setSoftwareExpiryDate('');
+    setSoftwareMonthlyCost('0');
+  };
+
+  const saveSoftwareLicense = (event) => {
+    event.preventDefault();
+    const license = {
+      name: softwareName.trim(),
+      used: Number(softwareUsed || 0),
+      vacant: Number(softwareVacant || 0),
+      licenses: Number(softwareUsed || 0) + Number(softwareVacant || 0),
+      expiringDate: softwareExpiryDate,
+      monthlyCost: Number(softwareMonthlyCost || 0),
+      status: 'ใช้งาน',
+      isLicenseRecord: true,
+    };
+    if (!license.name) return;
+
+    setData((previous) => {
+      const rows = [...(previous[currentMonth].softwareExpiringDetails || [])];
+      if (editingSoftwareIndex === null) rows.push(license);
+      else rows[editingSoftwareIndex] = license;
+      return {
+        ...previous,
+        [currentMonth]: { ...previous[currentMonth], softwareExpiringDetails: rows },
+      };
+    });
+    resetSoftwareForm();
+  };
+
+  const editSoftwareLicense = (item, index) => {
+    setEditingSoftwareIndex(index);
+    setSoftwareName(item.name || '');
+    setSoftwareUsed(String(item.used ?? item.licenses ?? 0));
+    setSoftwareVacant(String(item.vacant ?? 0));
+    setSoftwareExpiryDate(item.expiringDate || '');
+    setSoftwareMonthlyCost(String(item.monthlyCost ?? 0));
+  };
+
+  const deleteSoftwareLicense = (index) => {
+    if (!window.confirm('ต้องการลบรายละเอียด License นี้ใช่หรือไม่?')) return;
+    setData((previous) => ({
+      ...previous,
+      [currentMonth]: {
+        ...previous[currentMonth],
+        softwareExpiringDetails: previous[currentMonth].softwareExpiringDetails.filter((_, rowIndex) => rowIndex !== index),
+      },
+    }));
+    resetSoftwareForm();
+  };
+
   // Helper currency formatter
   const formatThaiBaht = (value) => {
     return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(value);
@@ -6290,14 +6368,14 @@ function Dashboard() {
           datasets: [
             {
               label: 'ใช้งานอยู่ (In Use)',
-              data: [activeData.licensesInUse],
+              data: [calculatedLicensesInUse],
               backgroundColor: 'rgba(59, 130, 246, 0.75)',
               borderColor: '#3b82f6',
               borderWidth: 1
             },
             {
               label: 'ว่าง (Vacant)',
-              data: [activeData.licensesVacant],
+              data: [calculatedLicensesVacant],
               backgroundColor: 'rgba(6, 182, 212, 0.75)',
               borderColor: '#06b6d4',
               borderWidth: 1
@@ -6381,7 +6459,7 @@ function Dashboard() {
       if (softwareChartInst.current) softwareChartInst.current.destroy();
       if (repairChartInst.current) repairChartInst.current.destroy();
     };
-  }, [currentMonth, data, primaryExpiringAssets]);
+  }, [currentMonth, data, primaryExpiringAssets, calculatedLicensesInUse, calculatedLicensesVacant]);
 
   // ========================================
   // XLSX IMPORT / EXPORT / TEMPLATE FUNCTIONS
@@ -7565,13 +7643,13 @@ function Dashboard() {
                 onClick={() => setActiveModal('expiringSoftware')} 
                 className="btn-details"
               >
-                ดูโปรแกรมหมดสัญญา
+                ดูรายละเอียด / แก้ไข
               </button>
             </div>
             <div className="metrics-row">
               <div className="metric-item">
                 <div className="metric-label">โปรแกรมทั้งหมด</div>
-                <div className="metric-value">{activeData.totalSoftware} โปรแกรม</div>
+                <div className="metric-value">{calculatedTotalSoftware} โปรแกรม</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">โปรแกรมใกล้หมดสัญญา</div>
@@ -7579,15 +7657,15 @@ function Dashboard() {
               </div>
               <div className="metric-item">
                 <div className="metric-label">License ใช้งาน</div>
-                <div className="metric-value highlight-primary">{activeData.licensesInUse.toLocaleString()} Core/User</div>
+                <div className="metric-value highlight-primary">{calculatedLicensesInUse.toLocaleString()} Core/User</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">License ว่าง</div>
-                <div className="metric-value highlight-secondary">{activeData.licensesVacant.toLocaleString()} Core/User</div>
+                <div className="metric-value highlight-secondary">{calculatedLicensesVacant.toLocaleString()} Core/User</div>
               </div>
               <div className="metric-item full-width">
                 <div className="metric-label">ค่าใช้จ่ายซอฟต์แวร์รวมรายเดือน</div>
-                <div className="metric-value">{formatThaiBaht(activeData.softwareCost)}</div>
+                <div className="metric-value">{formatThaiBaht(calculatedSoftwareCost)}</div>
               </div>
             </div>
             <div className="card-chart-container">
@@ -8055,18 +8133,49 @@ function Dashboard() {
         <div className="modal-overlay active">
           <div className="modal large">
             <header className="modal-header">
-              <h3>รายละเอียดโปรแกรม/สิทธิ์ใกล้หมดอายุ ({activeData.monthName})</h3>
+              <h3>ทะเบียนโปรแกรมและ License ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
+              <form onSubmit={saveSoftwareLicense} className="software-license-form">
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>ชื่อซอฟต์แวร์/โปรแกรม</label>
+                    <input value={softwareName} onChange={(event) => setSoftwareName(event.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label>วันหมดอายุ</label>
+                    <input type="date" value={softwareExpiryDate} onChange={(event) => setSoftwareExpiryDate(event.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>License ใช้งาน</label>
+                    <input type="number" min="0" value={softwareUsed} onChange={(event) => setSoftwareUsed(event.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label>License ว่าง</label>
+                    <input type="number" min="0" value={softwareVacant} onChange={(event) => setSoftwareVacant(event.target.value)} required />
+                  </div>
+                  <div className="form-group">
+                    <label>ค่าใช้จ่ายต่อเดือน (บาท)</label>
+                    <input type="number" min="0" value={softwareMonthlyCost} onChange={(event) => setSoftwareMonthlyCost(event.target.value)} />
+                  </div>
+                </div>
+                <div className="software-license-actions">
+                  {editingSoftwareIndex !== null && <button type="button" className="btn-details" onClick={resetSoftwareForm}>ยกเลิก</button>}
+                  <button type="submit" className="btn-save">{editingSoftwareIndex === null ? 'เพิ่ม License' : 'บันทึกการแก้ไข'}</button>
+                </div>
+              </form>
               <div style={{ overflowX: 'auto' }}>
                 <table className="details-table">
                   <thead>
                     <tr>
                       <th>ชื่อซอฟต์แวร์/โปรแกรม</th>
-                      <th>จำนวนสิทธิ์ (Licenses)</th>
+                      <th>ใช้งาน</th>
+                      <th>ว่าง</th>
+                      <th>รวม</th>
                       <th>วันหมดสัญญา</th>
-                      <th>สถานะ</th>
+                      <th>ค่าใช้จ่าย/เดือน</th>
+                      <th>จัดการ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -8074,23 +8183,22 @@ function Dashboard() {
                       activeData.softwareExpiringDetails.map((soft, idx) => (
                         <tr key={idx}>
                           <td><strong>{soft.name}</strong></td>
-                          <td>{soft.licenses} Licenses</td>
-                          <td>{soft.expiringDate}</td>
+                          <td>{soft.used ?? '-'}</td>
+                          <td>{soft.vacant ?? '-'}</td>
+                          <td>{soft.licenses ?? (Number(soft.used || 0) + Number(soft.vacant || 0))}</td>
+                          <td>{soft.expiringDate || '-'}</td>
+                          <td>{soft.monthlyCost !== undefined ? formatThaiBaht(soft.monthlyCost) : '-'}</td>
                           <td>
-                            <span 
-                              style={{ 
-                                color: soft.status.includes('หมดอายุ') ? 'var(--danger)' : 'var(--warning)', 
-                                fontWeight: '600' 
-                              }}
-                            >
-                              {soft.status}
-                            </span>
+                            <div className="software-row-actions">
+                              <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, idx)}>แก้ไข</button>
+                              <button type="button" className="console-delete-btn" onClick={() => deleteSoftwareLicense(idx)}>ลบ</button>
+                            </div>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" style={{ textAlign: 'center' }}>ไม่มีข้อมูลโปรแกรมใกล้หมดสัญญา</td>
+                        <td colSpan="7" style={{ textAlign: 'center' }}>ยังไม่มีรายละเอียด License</td>
                       </tr>
                     )}
                   </tbody>
