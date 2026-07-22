@@ -5075,6 +5075,45 @@ const initialDashboardData = {
     ],
     "ticketsList": [
       {
+        "sn": 301,
+        "date": "22/07/2569 10:00",
+        "complainant": "คุณมินตรา (Facebook)",
+        "email": "089-234-8891",
+        "anydesk": "-",
+        "issue": "ความสนใจ: คอร์สลดน้ำหนัก | AI ตรวจสลิป: รอสลิป (ขาด 2,900 บาท)",
+        "cause": "-",
+        "duration": "00:00",
+        "responder": "Sale A",
+        "status": "ต้องติดตาม",
+        "cost": 2900
+      },
+      {
+        "sn": 302,
+        "date": "22/07/2569 10:30",
+        "complainant": "คุณต้น (LINE)",
+        "email": "082-775-4410",
+        "anydesk": "-",
+        "issue": "ความสนใจ: ปรึกษาผิวหน้า | AI ตรวจสลิป: ยอดตรงกัน (AI ตรวจสอบผ่าน)",
+        "cause": "-",
+        "duration": "00:00",
+        "responder": "Sale B",
+        "status": "เสร็จสิ้น",
+        "cost": 500
+      },
+      {
+        "sn": 303,
+        "date": "22/07/2569 11:00",
+        "complainant": "Nana Beauty (TikTok)",
+        "email": "-",
+        "anydesk": "-",
+        "issue": "ความสนใจ: รีวิวสินค้า | AI ตรวจสลิป: รอยอดจอง (ยังไม่มียอดให้ AI ตรวจ)",
+        "cause": "-",
+        "duration": "00:00",
+        "responder": "Unassigned",
+        "status": "รอดำเนินการ",
+        "cost": 0
+      },
+      {
         "sn": 265,
         "date": "01/07/2569 09:11",
         "complainant": "ชนันพร อินขำ",
