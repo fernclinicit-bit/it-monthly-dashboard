@@ -6183,12 +6183,12 @@ function Dashboard() {
   const activeData = data[currentMonth];
 
   const mainAssetCategories = [
-    { label: 'PC', match: (type) => /computer\s*\(pc\)|\bpc\b/i.test(type) },
-    { label: 'Notebook', match: (type) => /notebook/i.test(type) },
-    { label: 'iMac', match: (type) => /imac/i.test(type) },
-    { label: 'MacBook', match: (type) => /mac\s*book/i.test(type) },
-    { label: 'iPhone', match: (type) => /iphone/i.test(type) },
-    { label: 'iPad', match: (type) => /ipad/i.test(type) },
+    { label: 'PC', usefulLifeYears: 5, match: (type) => /computer\s*\(pc\)|\bpc\b/i.test(type) },
+    { label: 'Notebook', usefulLifeYears: 5, match: (type) => /notebook/i.test(type) },
+    { label: 'iMac', usefulLifeYears: 5, match: (type) => /imac/i.test(type) },
+    { label: 'MacBook', usefulLifeYears: 5, match: (type) => /mac\s*book/i.test(type) },
+    { label: 'iPhone', usefulLifeYears: 4, match: (type) => /iphone/i.test(type) },
+    { label: 'iPad', usefulLifeYears: 4, match: (type) => /ipad/i.test(type) },
   ];
 
   const mainAssetBreakdown = mainAssetCategories.map((category) => ({
@@ -6199,6 +6199,35 @@ function Dashboard() {
   const primaryVacantAssets = assetsList.filter((asset) => {
     const type = String(asset.itemType || '');
     return asset.status === 'ว่าง' && mainAssetCategories.some((category) => category.match(type));
+  }).length;
+
+  const parseAssetDate = (value) => {
+    if (!value) return null;
+    const text = String(value).trim();
+    const thaiDate = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (thaiDate) {
+      const year = Number(thaiDate[3]) > 2400 ? Number(thaiDate[3]) - 543 : Number(thaiDate[3]);
+      const parsed = new Date(year, Number(thaiDate[2]) - 1, Number(thaiDate[1]));
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+    const parsed = new Date(text);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const nearExpiryLimit = new Date(today);
+  nearExpiryLimit.setFullYear(nearExpiryLimit.getFullYear() + 1);
+
+  const primaryExpiringAssets = assetsList.filter((asset) => {
+    const type = String(asset.itemType || '');
+    const category = mainAssetCategories.find((item) => item.match(type));
+    const startDate = parseAssetDate(asset.purchaseDate) || parseAssetDate(asset.date);
+    if (!category || !startDate || asset.status === 'สูญหาย') return false;
+
+    const modelExpiryDate = new Date(startDate);
+    modelExpiryDate.setFullYear(modelExpiryDate.getFullYear() + category.usefulLifeYears);
+    return modelExpiryDate >= today && modelExpiryDate <= nearExpiryLimit;
   }).length;
 
   // Helper currency formatter
@@ -6214,14 +6243,14 @@ function Dashboard() {
     if (assetCanvasRef.current) {
       if (assetChartInst.current) assetChartInst.current.destroy();
 
-      const normalAssets = activeData.totalAssets - activeData.assetsBroken - activeData.assetsLost - activeData.assetsExpiring;
+      const normalAssets = activeData.totalAssets - activeData.assetsBroken - activeData.assetsLost - primaryExpiringAssets;
       const ctx = assetCanvasRef.current.getContext('2d');
       assetChartInst.current = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: ['ปกติ', 'ใกล้หมดอายุ', 'ชำรุด', 'สูญหาย'],
           datasets: [{
-            data: [normalAssets, activeData.assetsExpiring, activeData.assetsBroken, activeData.assetsLost],
+            data: [normalAssets, primaryExpiringAssets, activeData.assetsBroken, activeData.assetsLost],
             backgroundColor: [
               'rgba(16, 185, 129, 0.7)',
               'rgba(245, 158, 11, 0.7)',
@@ -6352,7 +6381,7 @@ function Dashboard() {
       if (softwareChartInst.current) softwareChartInst.current.destroy();
       if (repairChartInst.current) repairChartInst.current.destroy();
     };
-  }, [currentMonth, data]);
+  }, [currentMonth, data, primaryExpiringAssets]);
 
   // ========================================
   // XLSX IMPORT / EXPORT / TEMPLATE FUNCTIONS
@@ -7465,7 +7494,8 @@ function Dashboard() {
               </div>
               <div className="metric-item">
                 <div className="metric-label">ใกล้หมดอายุ</div>
-                <div className="metric-value highlight-warning">{activeData.assetsExpiring} เครื่อง</div>
+                <div className="metric-value highlight-warning">{primaryExpiringAssets} เครื่อง</div>
+                <div className="metric-note">เหลืออายุรุ่นไม่เกิน 1 ปี</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">เครื่องว่าง (พร้อมใช้)</div>
