@@ -673,6 +673,15 @@ body {
     background-color: rgba(255, 255, 255, 0.02);
 }
 
+.asset-tags { display: flex; flex-wrap: wrap; gap: 5px; min-width: 110px; }
+.asset-tag { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; color: #243042; font-size: 0.75rem; font-weight: 600; line-height: 1.25; white-space: nowrap; }
+.asset-tag-0 { background: #dbeafe; }
+.asset-tag-1 { background: #dcfce7; }
+.asset-tag-2 { background: #fef3c7; }
+.asset-tag-3 { background: #fce7f3; }
+.asset-tag-4 { background: #ede9fe; }
+.asset-tag-5 { background: #cffafe; }
+
 /* Responsive Overrides */
 @media (max-width: 1024px) {
     body {
@@ -1038,18 +1047,25 @@ body {
     padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid rgba(0, 0, 0, 0.15);
-    background-color: white;
-    color: black;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
+    caret-color: #000000;
     font-size: 0.85rem;
 }
 
 .console-input::placeholder {
-    color: #7b7b7b;
+    color: #6b7280;
+    -webkit-text-fill-color: #6b7280;
+    opacity: 1;
 }
 
 .console-input:focus {
     border-color: var(--primary);
     outline: none;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000;
 }
 
 .console-table-scroll {

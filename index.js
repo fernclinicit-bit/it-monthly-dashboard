@@ -68,9 +68,11 @@ async function initDb() {
           item_type VARCHAR(255) NOT NULL,
           device_serial VARCHAR(255) NOT NULL,
           status VARCHAR(50) NOT NULL,
-          notes TEXT
+          notes TEXT,
+          details JSONB NOT NULL DEFAULT '{}'::jsonb
         )
       `);
+      await client.query(`ALTER TABLE assets ADD COLUMN IF NOT EXISTS details JSONB NOT NULL DEFAULT '{}'::jsonb`);
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS tickets (
@@ -166,7 +168,8 @@ app.get('/api/db-state', async (req, res) => {
       itemType: row.item_type,
       deviceSerial: row.device_serial,
       status: row.status,
-      notes: row.notes || ''
+      notes: row.notes || '',
+      ...(row.details || {})
     }));
 
     res.json({ data: dataObj, assetsList });
@@ -193,8 +196,8 @@ app.post('/api/sync-all', async (req, res) => {
 
     for (const asset of assetsList) {
       await client.query(`
-        INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       `, [
         Number(asset.sn),
         asset.date || '',
@@ -203,7 +206,8 @@ app.post('/api/sync-all', async (req, res) => {
         asset.itemType || '',
         asset.deviceSerial || '-',
         asset.status || 'ใช้งาน',
-        asset.notes || ''
+        asset.notes || '',
+        JSON.stringify(asset)
       ]);
     }
 

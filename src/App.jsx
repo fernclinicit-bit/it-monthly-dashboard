@@ -5294,6 +5294,19 @@ const initialDashboardData = {
 
 
 
+const AssetTags = ({ value, empty = '-' }) => {
+  const tags = String(value || '').split(/[,\n]+/).map((item) => item.trim()).filter(Boolean);
+  if (tags.length === 0) return empty;
+  return (
+    <div className="asset-tags">
+      {tags.map((tag, index) => {
+        const colorIndex = [...tag].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 6;
+        return <span key={`${tag}-${index}`} className={`asset-tag asset-tag-${colorIndex}`}>{tag}</span>;
+      })}
+    </div>
+  );
+};
+
 function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(() => {
@@ -5394,6 +5407,11 @@ function Dashboard() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data, assetsList })
           });
+        }
+        const inventoryRes = await fetch(`${API_BASE}/api/inventory-data`);
+        if (inventoryRes.ok) {
+          const inventoryAssets = await inventoryRes.json();
+          if (inventoryAssets.length > 0) setAssetsList(inventoryAssets);
         }
       } catch (err) {
         console.warn('Could not connect to Render PostgreSQL API server. Operating in offline/localStorage mode.', err);
@@ -6566,7 +6584,18 @@ function Dashboard() {
               itemType: row['รายการอุปกรณ์หลัก'] || 'อุปกรณ์เสริม/อื่นๆ',
               deviceSerial: row['หมายเลขอุปกรณ์ (เช่น  Ipad 016)'] || '-',
               status: row['สถานะ'] || 'ใช้งาน',
-              notes: row['หมายเหตุ'] || ''
+              notes: row['หมายเหตุ'] || '',
+              submittedOn: row['Submitted on'] || '',
+              respondent: row['Respondents'] || '',
+              additionalEquipment: row['อุปกรณ์เพิ่มเติมที่ต้องการเบิก'] || '',
+              softwareApp: row['ซอต์ฟแวร์/ App'] || '',
+              registeredEmail: row['เมลที่ลงทะเบียน'] || '',
+              additionalSerial: row['หมายเลขอุปกรณ์ เพิ่มเติม  (เช่น  สาย อะเเดปเตอร์ ipad-011))'] || '',
+              returnDueDate: row['กำหนดคืนอุปกรณ์'] || '',
+              inspectionDate: row['วันที่ตรวจสอบ'] || '',
+              purchaseDate: row['วันที่ซื้อ'] || '',
+              warrantyEndDate: row['วันหมดประกัน'] || '',
+              expense: Number(row['ค่าใช้จ่าย']) || 0
             };
           });
 
@@ -8125,6 +8154,10 @@ function Dashboard() {
             String(asset.user).toLowerCase().includes(assetSearch.toLowerCase()) ||
             String(asset.itemType).toLowerCase().includes(assetSearch.toLowerCase()) ||
             String(asset.deviceSerial).toLowerCase().includes(assetSearch.toLowerCase()) ||
+            String(asset.additionalEquipment || '').toLowerCase().includes(assetSearch.toLowerCase()) ||
+            String(asset.additionalSerial || '').toLowerCase().includes(assetSearch.toLowerCase()) ||
+            String(asset.softwareApp || '').toLowerCase().includes(assetSearch.toLowerCase()) ||
+            String(asset.registeredEmail || '').toLowerCase().includes(assetSearch.toLowerCase()) ||
             String(asset.position).toLowerCase().includes(assetSearch.toLowerCase());
             
           const matchesDept = !assetDeptFilter || asset.position === assetDeptFilter;
@@ -8226,8 +8259,17 @@ function Dashboard() {
                         <th>ตำแหน่ง/แผนก</th>
                         <th>รายการอุปกรณ์หลัก</th>
                         <th>หมายเลขอุปกรณ์ (Serial)</th>
+                        <th>อุปกรณ์เพิ่มเติม</th>
+                        <th>หมายเลขอุปกรณ์เพิ่มเติม</th>
+                        <th>ซอฟต์แวร์ / App</th>
+                        <th>อีเมลที่ลงทะเบียน</th>
+                        <th>กำหนดคืน</th>
                         <th>สถานะ</th>
                         <th>หมายเหตุ</th>
+                        <th>วันที่ตรวจสอบ</th>
+                        <th>วันที่ซื้อ</th>
+                        <th>วันหมดประกัน</th>
+                        <th>ค่าใช้จ่าย</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -8238,8 +8280,13 @@ function Dashboard() {
                             <td>{asset.date || '-'}</td>
                             <td>{asset.user}</td>
                             <td>{asset.position}</td>
-                            <td>{asset.itemType}</td>
+                            <td><AssetTags value={asset.itemType} /></td>
                             <td><strong>{asset.deviceSerial}</strong></td>
+                            <td><AssetTags value={asset.additionalEquipment} /></td>
+                            <td><AssetTags value={asset.additionalSerial} /></td>
+                            <td><AssetTags value={asset.softwareApp} /></td>
+                            <td>{asset.registeredEmail || '-'}</td>
+                            <td>{asset.returnDueDate || '-'}</td>
                             <td>
                               <span 
                                 style={{ 
@@ -8254,11 +8301,15 @@ function Dashboard() {
                               </span>
                             </td>
                             <td>{asset.notes || '-'}</td>
+                            <td>{asset.inspectionDate || '-'}</td>
+                            <td>{asset.purchaseDate || '-'}</td>
+                            <td>{asset.warrantyEndDate || '-'}</td>
+                            <td>{Number(asset.expense || 0).toLocaleString('th-TH')} บาท</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="8" style={{ textAlign: 'center' }}>ไม่พบคลังอุปกรณ์ที่ตรงตามเงื่อนไข</td>
+                          <td colSpan="18" style={{ textAlign: 'center' }}>ไม่พบคลังอุปกรณ์ที่ตรงตามเงื่อนไข</td>
                       </tr>
                     )}
                   </tbody>
