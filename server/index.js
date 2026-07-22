@@ -4,6 +4,9 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as XLSX from 'xlsx/xlsx.mjs';
+import * as fs from 'fs';
+XLSX.set_fs(fs);
 
 dotenv.config();
 
@@ -173,6 +176,23 @@ app.get('/api/db-state', async (req, res) => {
   } catch (err) {
     console.error('Error fetching DB state:', err);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/api/clinic-data', (req, res) => {
+  try {
+    const filePath = path.join(process.cwd(), 'Update', 'fern-clinic-customer-report.xls');
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(sheet);
+    res.json(data);
+  } catch (err) {
+    console.error('Error reading clinic data:', err);
+    res.status(500).json({ error: 'Failed to read clinic data' });
   }
 });
 

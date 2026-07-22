@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
+import ClinicDashboard from './pages/ClinicDashboard';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -7204,10 +7205,7 @@ function Dashboard() {
                 <Database size={16} />
                 ปรับเปลี่ยนข้อมูลทั้งหมด
               </button>
-              <button onClick={() => window.open('/form', '_blank')} className="sidebar-btn" style={{ backgroundColor: '#2563eb', border: 'none', color: 'white' }}>
-                <FileText size={16} />
-                แจ้งซ่อมบำรุง / ปัญหาไอที
-              </button>
+
               <button onClick={() => {
                 setLarkFormType('asset');
                 setLarkTicketRole('user');
@@ -7226,6 +7224,12 @@ function Dashboard() {
               }} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
                 <Wrench size={16} />
                 เมนูปิดงาน (IT Close)
+              </button>
+              <button onClick={() => {
+                navigate('/clinic');
+              }} className="sidebar-btn" style={{ backgroundColor: '#10b981', border: 'none', color: 'white', marginTop: '10px' }}>
+                <Activity size={16} />
+                ดูรายงานคลินิก (Clinic)
               </button>
             </div>
           )}
@@ -8966,6 +8970,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Dashboard />} />
       <Route path="/form" element={<LarkForm />} />
+      <Route path="/clinic" element={<ClinicDashboard />} />
     </Routes>
   );
 }
