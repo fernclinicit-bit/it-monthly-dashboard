@@ -5414,6 +5414,13 @@ function Dashboard() {
       ? 'http://localhost:5000'
       : 'https://it-monthly-dashboard-new.onrender.com');
 
+  useEffect(() => {
+    if (!activeModal) return undefined;
+    setMobileSidebarOpen(false);
+    document.body.classList.add('modal-open');
+    return () => document.body.classList.remove('modal-open');
+  }, [activeModal]);
+
   const requireAdminAccess = async (openMenu) => {
     const password = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT');
     if (password === null) return;
@@ -7565,7 +7572,10 @@ function Dashboard() {
         </div>
 
         <button
-          onClick={() => navigate('/form')}
+          onClick={() => {
+            setMobileSidebarOpen(false);
+            navigate('/form');
+          }}
           className="sidebar-form-btn"
         >
           + กรอกแบบฟอร์ม

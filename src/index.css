@@ -1513,3 +1513,159 @@ body {
     .workflow-form-grid { grid-template-columns: 1fr; }
     .workflow-span-2 { grid-column: span 1; }
 }
+
+/* Stable mobile interaction and full-screen modal behavior */
+body.modal-open { overflow: hidden; }
+
+@media (max-width: 767px) {
+    .sidebar {
+        width: min(86vw, 320px);
+        height: 100dvh;
+        max-height: 100dvh;
+        padding: 16px;
+        gap: 20px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fern-brand-logo {
+        width: 190px;
+        height: 64px;
+    }
+
+    .dashboard-container {
+        width: 100%;
+        padding: 12px;
+        overflow-x: hidden;
+    }
+
+    .dashboard-title h2 {
+        font-size: 1.15rem;
+        line-height: 1.35;
+    }
+
+    .dashboard-header .header-status {
+        display: none !important;
+    }
+
+    .card {
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .card-header {
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .card-title {
+        min-width: 0;
+        font-size: 1rem;
+    }
+
+    .btn-details {
+        min-height: 40px;
+        padding: 7px 9px;
+    }
+
+    .modal-overlay {
+        z-index: 2000;
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .modal,
+    .modal.large,
+    .dashboard-fullscreen-modal,
+    .lark-form-container {
+        width: 100vw;
+        max-width: 100vw;
+        height: 100dvh;
+        max-height: 100dvh;
+        margin: 0;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        overflow: hidden;
+    }
+
+    .modal {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        flex: 0 0 auto;
+        padding: 12px;
+        background: #111827;
+    }
+
+    .modal-header h3 {
+        font-size: 1rem;
+        line-height: 1.35;
+    }
+
+    .modal-close {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .modal-body {
+        min-height: 0;
+        padding: 12px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .workflow-body {
+        display: block;
+    }
+
+    .workflow-request-form,
+    .workflow-list-section {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .workflow-section-heading {
+        flex-direction: column;
+    }
+
+    .workflow-section-heading span {
+        text-align: left;
+    }
+
+    .workflow-requester-search {
+        width: 100%;
+    }
+
+    .workflow-table-wrap {
+        width: 100%;
+        max-height: none;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .workflow-form-grid input,
+    .workflow-form-grid textarea,
+    .workflow-requester-search,
+    .month-selector {
+        font-size: 16px;
+    }
+
+    .sidebar-btn,
+    .sidebar-form-btn,
+    .workflow-primary-btn,
+    .workflow-actions button {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+}
