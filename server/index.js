@@ -120,6 +120,21 @@ async function initDb() {
         )
       `);
 
+      // Workflow is authoritative for assets that are reserved or currently issued.
+      // Reconcile on every deploy so stale dashboard snapshots cannot leave them behind.
+      await client.query(`
+        UPDATE assets a
+        SET status = CASE WHEN r.status = 'approved' THEN 'จอง' ELSE 'ใช้งาน' END,
+            user_name = r.requester,
+            details = a.details || jsonb_build_object(
+              'status', CASE WHEN r.status = 'approved' THEN 'จอง' ELSE 'ใช้งาน' END,
+              'user', r.requester
+            )
+        FROM asset_requests r
+        WHERE r.assigned_asset_sn = a.sn
+          AND r.status IN ('approved', 'issued', 'overdue')
+      `);
+
       console.log('Tables initialized successfully.');
     } finally {
       client.release();
@@ -400,23 +415,45 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query('BEGIN');
 
     await client.query('DELETE FROM monthly_data');
-    await client.query('DELETE FROM assets');
     await client.query('DELETE FROM tickets');
 
+    // Keep workflow-controlled status/user authoritative when a browser sends an
+    // older full asset snapshot during automatic synchronization.
+    const activeAssignmentsResult = await client.query(`
+      SELECT assigned_asset_sn, requester, status
+      FROM asset_requests
+      WHERE assigned_asset_sn IS NOT NULL
+        AND status IN ('approved', 'issued', 'overdue')
+    `);
+    const activeAssignments = new Map(activeAssignmentsResult.rows.map(row => [
+      Number(row.assigned_asset_sn),
+      {
+        requester: row.requester,
+        assetStatus: row.status === 'approved' ? 'จอง' : 'ใช้งาน'
+      }
+    ]));
+
+    await client.query('DELETE FROM assets');
+
     for (const [assetIndex, asset] of assetsList.entries()) {
+      const databaseSn = assetIndex + 1;
+      const workflowAssignment = activeAssignments.get(databaseSn);
+      const synchronizedAsset = workflowAssignment
+        ? { ...asset, status: workflowAssignment.assetStatus, user: workflowAssignment.requester }
+        : asset;
       await client.query(`
         INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       `, [
-        assetIndex + 1,
-        asset.date || '',
-        asset.user || 'ส่วนกลาง',
-        asset.position || '-',
-        asset.itemType || '',
-        asset.deviceSerial || '-',
-        asset.status || 'ใช้งาน',
-        asset.notes || '',
-        JSON.stringify(asset)
+        databaseSn,
+        synchronizedAsset.date || '',
+        synchronizedAsset.user || 'ส่วนกลาง',
+        synchronizedAsset.position || '-',
+        synchronizedAsset.itemType || '',
+        synchronizedAsset.deviceSerial || '-',
+        synchronizedAsset.status || 'ใช้งาน',
+        synchronizedAsset.notes || '',
+        JSON.stringify(synchronizedAsset)
       ]);
     }
 
