@@ -7870,7 +7870,7 @@ function Dashboard() {
                 ซอฟต์แวร์และลิขสิทธิ์ (Software)
               </h3>
               <button 
-                onClick={() => setActiveModal('expiringSoftware')} 
+                onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
                 className="btn-details"
               >
                 ดูรายละเอียด / แก้ไข
