@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
+import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -7553,13 +7554,7 @@ function Dashboard() {
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
       <aside className={`sidebar no-print ${mobileSidebarOpen ? 'mobile-active' : ''}`}>
         <div className="logo-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div className="logo-icon">MD</div>
-            <div className="logo-text">
-              <h1>IT Dashboard</h1>
-              <p>React Executive Report</p>
-            </div>
-          </div>
+          <img className="fern-brand-logo" src={fernAesthetiqueLogo} alt="Fern Aesthetique" />
           <button 
             onClick={() => setMobileSidebarOpen(false)} 
             className="mobile-menu-close"
@@ -7720,7 +7715,7 @@ function Dashboard() {
 
         <div className="org-info">
           <p><strong>หน่วยงาน:</strong> ฝ่ายเทคโนโลยีสารสนเทศ (IT)</p>
-          <p><strong>องค์กร:</strong> Google DeepMind Research</p>
+          <p><strong>องค์กร:</strong> Fern Aesthetique</p>
           <p style={{ marginTop: '8px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
             ปรับปรุงข้อมูลล่าสุด: <br />18 กรกฎาคม 2026
           </p>
