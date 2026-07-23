@@ -1455,12 +1455,18 @@ body {
 }
 
 .asset-workflow-modal .modal-header h3 { margin: 0; }
+.workflow-header-actions { display: flex; align-items: center; gap: 12px; }
+.workflow-role-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border-color); border-radius: 9px; background: #0f172a; }
+.workflow-role-switch button { border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; }
+.workflow-role-switch button.active { color: #fff; background: #7c3aed; }
 .workflow-subtitle { margin: 4px 0 0; color: var(--text-muted); font-size: 0.82rem; }
 .workflow-body { display: grid; grid-template-columns: minmax(320px, 0.72fr) minmax(650px, 1.7fr); gap: 18px; align-items: start; }
+.workflow-body.workflow-role-it { grid-template-columns: 1fr; }
 .workflow-request-form, .workflow-list-section { background: rgba(255,255,255,0.025); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; }
 .workflow-section-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
 .workflow-section-heading h4 { margin: 0; color: #e5e7eb; }
 .workflow-section-heading span { color: var(--text-muted); font-size: 0.74rem; text-align: right; }
+.workflow-requester-search { width: min(320px, 70vw); margin-top: 10px; padding: 9px 11px; border-radius: 7px; border: 1px solid #334155; background: #1e293b; color: #fff; box-sizing: border-box; }
 .workflow-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .workflow-form-grid label { display: flex; flex-direction: column; gap: 5px; color: var(--text-muted); font-size: 0.78rem; }
 .workflow-form-grid input, .workflow-form-grid textarea { width: 100%; padding: 10px 11px; border-radius: 7px; border: 1px solid #334155; background: #1e293b; color: #fff; font: inherit; box-sizing: border-box; }
@@ -1490,6 +1496,9 @@ body {
 }
 
 @media (max-width: 600px) {
+    .asset-workflow-modal .modal-header { align-items: flex-start; }
+    .workflow-header-actions { align-items: flex-end; flex-direction: column-reverse; }
+    .workflow-role-switch button { padding: 6px 8px; font-size: .72rem; }
     .workflow-form-grid { grid-template-columns: 1fr; }
     .workflow-span-2 { grid-column: span 1; }
 }

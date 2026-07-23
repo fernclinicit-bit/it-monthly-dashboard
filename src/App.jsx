@@ -5356,6 +5356,8 @@ function Dashboard() {
   const [assetRequests, setAssetRequests] = useState([]);
   const [assetRequestLoading, setAssetRequestLoading] = useState(false);
   const [assetRequestForm, setAssetRequestForm] = useState({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
+  const [assetWorkflowRole, setAssetWorkflowRole] = useState('requester');
+  const [assetRequesterSearch, setAssetRequesterSearch] = useState('');
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
@@ -7593,9 +7595,19 @@ function Dashboard() {
                 <Laptop size={16} />
                 ลงทะเบียนเครื่องเข้าคลัง
               </button>
-              <button onClick={() => setActiveModal('assetWorkflow')} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
+              <button onClick={() => {
+                setAssetWorkflowRole('requester');
+                setActiveModal('assetWorkflow');
+              }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
                 <Ticket size={16} />
-                เบิก–คืนอุปกรณ์
+                ผู้ขอใช้บริการ
+              </button>
+              <button onClick={() => {
+                setAssetWorkflowRole('it');
+                setActiveModal('assetWorkflow');
+              }} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'white' }}>
+                <ShieldCheck size={16} />
+                IT อนุมัติการใช้งาน
               </button>
               <button onClick={() => {
                 setLarkFormType('ticket');
@@ -7995,18 +8007,28 @@ function Dashboard() {
           pending: 'รออนุมัติ', approved: 'อนุมัติแล้ว', rejected: 'ไม่อนุมัติ',
           issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', returned: 'คืนแล้ว', need_info: 'รอข้อมูลเพิ่ม'
         };
+        const requesterSearch = assetRequesterSearch.trim().toLocaleLowerCase('th-TH');
+        const displayedRequests = assetWorkflowRole === 'it' || !requesterSearch
+          ? assetRequests
+          : assetRequests.filter(request => request.requester?.toLocaleLowerCase('th-TH').includes(requesterSearch));
         return (
           <div className="modal-overlay active">
             <div className="modal large dashboard-fullscreen-modal asset-workflow-modal">
               <header className="modal-header">
                 <div>
-                  <h3>🔄 ระบบเบิก–คืนอุปกรณ์ IT</h3>
-                  <p className="workflow-subtitle">ส่งคำขอ → อนุมัติและจองเครื่อง → ส่งมอบ → รับคืน</p>
+                  <h3>{assetWorkflowRole === 'it' ? '🛡️ IT อนุมัติและจัดการอุปกรณ์' : '🙋 ผู้ขอใช้บริการอุปกรณ์ IT'}</h3>
+                  <p className="workflow-subtitle">{assetWorkflowRole === 'it' ? 'ตรวจสอบคำขอ → อนุมัติและเลือกเครื่อง → ส่งมอบ → รับคืน' : 'ส่งคำขอใหม่และติดตามสถานะการใช้งาน'}</p>
                 </div>
-                <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+                <div className="workflow-header-actions">
+                  <div className="workflow-role-switch">
+                    <button className={assetWorkflowRole === 'requester' ? 'active' : ''} onClick={() => setAssetWorkflowRole('requester')}>ผู้ขอใช้บริการ</button>
+                    <button className={assetWorkflowRole === 'it' ? 'active' : ''} onClick={() => setAssetWorkflowRole('it')}>IT ผู้อนุมัติ</button>
+                  </div>
+                  <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+                </div>
               </header>
-              <div className="modal-body workflow-body">
-                <form className="workflow-request-form" onSubmit={submitAssetRequest}>
+              <div className={`modal-body workflow-body workflow-role-${assetWorkflowRole}`}>
+                {assetWorkflowRole === 'requester' && <form className="workflow-request-form" onSubmit={submitAssetRequest}>
                   <div className="workflow-section-heading">
                     <h4>สร้างคำขอเบิกอุปกรณ์</h4>
                     <span>ผู้ขอไม่ต้องเลือก Serial — เจ้าหน้าที่ IT จะเลือกเครื่องว่างตอนอนุมัติ</span>
@@ -8020,20 +8042,23 @@ function Dashboard() {
                     <label className="workflow-span-2">หมายเหตุ <input value={assetRequestForm.notes} onChange={e => setAssetRequestForm(p => ({ ...p, notes: e.target.value }))} /></label>
                   </div>
                   <button className="workflow-primary-btn" type="submit" disabled={assetRequestLoading}>{assetRequestLoading ? 'กำลังบันทึก...' : 'ส่งคำขอเบิก'}</button>
-                </form>
+                </form>}
 
                 <section className="workflow-list-section">
                   <div className="workflow-section-heading">
-                    <h4>รายการคำขอทั้งหมด</h4>
-                    <span>{assetRequests.length} รายการ · เครื่องว่าง {assetsList.filter(asset => asset.status === 'ว่าง').length} เครื่อง</span>
+                    <div>
+                      <h4>{assetWorkflowRole === 'it' ? 'รายการคำขอทั้งหมดสำหรับ IT' : 'ติดตามคำขอของผู้ใช้บริการ'}</h4>
+                      {assetWorkflowRole === 'requester' && <input className="workflow-requester-search" placeholder="ค้นหาด้วยชื่อผู้ขอ" value={assetRequesterSearch} onChange={event => setAssetRequesterSearch(event.target.value)} />}
+                    </div>
+                    <span>{displayedRequests.length} รายการ{assetWorkflowRole === 'it' ? ` · เครื่องว่าง ${assetsList.filter(asset => asset.status === 'ว่าง').length} เครื่อง` : ''}</span>
                   </div>
                   <div className="workflow-table-wrap">
                     <table className="details-table workflow-table">
-                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th>{assetWorkflowRole === 'it' && <th>จัดการ</th>}</tr></thead>
                       <tbody>
-                        {assetRequests.length === 0 ? (
-                          <tr><td colSpan="7" className="workflow-empty">ยังไม่มีคำขอเบิกอุปกรณ์</td></tr>
-                        ) : assetRequests.map(request => (
+                        {displayedRequests.length === 0 ? (
+                          <tr><td colSpan={assetWorkflowRole === 'it' ? 7 : 6} className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
+                        ) : displayedRequests.map(request => (
                           <tr key={request.id}>
                             <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
                             <td><strong>{request.requester}</strong><small>{request.department}</small></td>
@@ -8041,14 +8066,14 @@ function Dashboard() {
                             <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
                             <td>{request.device_serial ? <><strong>{request.device_serial}</strong><small>{request.assigned_item_type}</small></> : '-'}</td>
                             <td><span className={`workflow-status status-${request.status}`}>{statusLabels[request.status] || request.status}</span></td>
-                            <td>
+                            {assetWorkflowRole === 'it' && <td>
                               <div className="workflow-actions">
                                 {request.status === 'pending' && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
                                 {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
                                 {(request.status === 'issued' || request.status === 'overdue') && <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button>}
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
                               </div>
-                            </td>
+                            </td>}
                           </tr>
                         ))}
                       </tbody>
