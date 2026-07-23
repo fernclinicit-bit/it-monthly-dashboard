@@ -3,6 +3,7 @@ import cors from 'cors';
 import pg from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import * as fs from 'fs';
@@ -18,6 +19,19 @@ app.use(express.json({ limit: '50mb' }));
 
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
+});
+
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH ||
+  '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
+
+app.post('/api/admin/verify', (req, res) => {
+  const password = String(req.body?.password || '');
+  const suppliedHash = crypto.createHash('sha256').update(password).digest('hex');
+  const suppliedBuffer = Buffer.from(suppliedHash, 'hex');
+  const expectedBuffer = Buffer.from(ADMIN_PASSWORD_HASH, 'hex');
+  const valid = suppliedBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(suppliedBuffer, expectedBuffer);
+  res.status(valid ? 200 : 401).json({ valid });
 });
 
 const pool = new pg.Pool({

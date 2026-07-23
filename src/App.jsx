@@ -5413,6 +5413,26 @@ function Dashboard() {
       ? 'http://localhost:5000'
       : 'https://it-monthly-dashboard-new.onrender.com');
 
+  const requireAdminAccess = async (openMenu) => {
+    const password = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT');
+    if (password === null) return;
+    try {
+      const response = await fetch(`${API_BASE}/api/admin/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      if (!response.ok) {
+        alert('รหัสผ่านไม่ถูกต้อง');
+        return;
+      }
+      openMenu();
+    } catch (error) {
+      console.error('Admin verification failed:', error);
+      alert('ไม่สามารถตรวจสอบรหัสผ่านได้ กรุณาลองใหม่');
+    }
+  };
+
   const loadAssetRequests = async () => {
     try {
       const response = await fetch(`${API_BASE}/api/asset-requests`);
@@ -7581,24 +7601,24 @@ function Dashboard() {
           </div>
           {sidebarExpanded.mgmt && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <button onClick={openEditModal} className="sidebar-btn">
+              <button onClick={() => requireAdminAccess(openEditModal)} className="sidebar-btn">
                 <Edit3 size={16} />
                 แก้ไขตัวเลขเดือนนี้
               </button>
-              <button onClick={() => {
+              <button onClick={() => requireAdminAccess(() => {
                 setConsoleMonth(currentMonth);
                 setActiveModal('fullConsole');
-              }} className="sidebar-btn secondary">
+              })} className="sidebar-btn secondary">
                 <Database size={16} />
                 ปรับเปลี่ยนข้อมูลทั้งหมด
               </button>
 
-              <button onClick={() => {
+              <button onClick={() => requireAdminAccess(() => {
                 setLarkFormType('asset');
                 setLarkTicketRole('user');
                 setLarkSubmitted(false);
                 setActiveModal('larkForm');
-              }} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'white' }}>
+              })} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'white' }}>
                 <Laptop size={16} />
                 ลงทะเบียนเครื่องเข้าคลัง
               </button>
@@ -7609,20 +7629,20 @@ function Dashboard() {
                 <Ticket size={16} />
                 ผู้ขอใช้บริการ
               </button>
-              <button onClick={() => {
+              <button onClick={() => requireAdminAccess(() => {
                 setAssetWorkflowRole('it');
                 setActiveModal('assetWorkflow');
-              }} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'white' }}>
+              })} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'white' }}>
                 <ShieldCheck size={16} />
                 IT อนุมัติการใช้งาน
               </button>
-              <button onClick={() => {
+              <button onClick={() => requireAdminAccess(() => {
                 setLarkFormType('ticket');
                 setLarkTicketRole('it');
                 setLarkSubmitted(false);
                 setSelectedPendingTicketSn('');
                 setActiveModal('larkForm');
-              }} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
+              })} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
                 <Wrench size={16} />
                 เมนูปิดงาน (IT Close)
               </button>
@@ -8023,7 +8043,7 @@ function Dashboard() {
                 <div className="workflow-header-actions">
                   <div className="workflow-role-switch">
                     <button className={assetWorkflowRole === 'requester' ? 'active' : ''} onClick={() => setAssetWorkflowRole('requester')}>ผู้ขอใช้บริการ</button>
-                    <button className={assetWorkflowRole === 'it' ? 'active' : ''} onClick={() => setAssetWorkflowRole('it')}>IT ผู้อนุมัติ</button>
+                    <button className={assetWorkflowRole === 'it' ? 'active' : ''} onClick={() => requireAdminAccess(() => setAssetWorkflowRole('it'))}>IT ผู้อนุมัติ</button>
                   </div>
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
                 </div>
