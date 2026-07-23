@@ -7549,6 +7549,13 @@ function Dashboard() {
           </button>
         </div>
 
+        <button
+          onClick={() => navigate('/form')}
+          className="sidebar-form-btn"
+        >
+          + กรอกแบบฟอร์ม
+        </button>
+
         {/* Month Dropdown Selection */}
         <div className="control-group">
           <label className="control-label">เลือกเดือนที่ต้องการรายงาน</label>
@@ -7717,12 +7724,6 @@ function Dashboard() {
             </div>
           </div>
           <div className="header-status status-indicator" style={{ display: 'flex', gap: '15px', alignItems: 'center', background: 'none' }}>
-            <button 
-              onClick={() => navigate('/form')}
-              style={{ padding: '8px 16px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              + กรอกแบบฟอร์ม
-            </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
               <span className="status-dot"></span>
               <span>ระบบรายงานพร้อมทำงาน</span>
