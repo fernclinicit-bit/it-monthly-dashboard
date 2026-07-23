@@ -292,9 +292,9 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
     if (assetStatus && assignedSn) {
       await client.query(`
         UPDATE assets
-        SET status = $1,
-            user_name = CASE WHEN $1 = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2 END,
-            details = details || jsonb_build_object('status', $1, 'user', CASE WHEN $1 = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2 END)
+        SET status = $1::text,
+            user_name = CASE WHEN $1::text = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2::text END,
+            details = details || jsonb_build_object('status', $1::text, 'user', CASE WHEN $1::text = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2::text END)
         WHERE sn = $3
       `, [assetStatus, request.requester, assignedSn]);
     }
