@@ -302,12 +302,12 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
     const event = { status: nextStatus, at: new Date().toISOString(), by: reviewer || request.requester, note: note || '' };
     const updated = await client.query(`
       UPDATE asset_requests
-      SET status = $1,
+      SET status = $1::text,
           assigned_asset_sn = $2,
           reviewer = COALESCE($3, reviewer),
-          issue_date = CASE WHEN $1 = 'issued' THEN NOW() ELSE issue_date END,
-          return_date = CASE WHEN $1 = 'returned' THEN NOW() ELSE return_date END,
-          return_condition = CASE WHEN $1 = 'returned' THEN $4 ELSE return_condition END,
+          issue_date = CASE WHEN $1::text = 'issued' THEN NOW() ELSE issue_date END,
+          return_date = CASE WHEN $1::text = 'returned' THEN NOW() ELSE return_date END,
+          return_condition = CASE WHEN $1::text = 'returned' THEN $4::text ELSE return_condition END,
           notes = CASE WHEN $5 <> '' THEN CONCAT_WS(E'\n', NULLIF(notes, ''), $5) ELSE notes END,
           history = history || $6::jsonb,
           updated_at = NOW()
