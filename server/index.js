@@ -251,6 +251,12 @@ app.post('/api/sync-all', async (req, res) => {
 
   let client;
   try {
+    const finiteNumber = (value, fallback = 0) => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+    const integerNumber = (value, fallback = 0) => Math.trunc(finiteNumber(value, fallback));
+
     client = await pool.connect();
     await client.query('BEGIN');
 
@@ -258,12 +264,12 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query('DELETE FROM assets');
     await client.query('DELETE FROM tickets');
 
-    for (const asset of assetsList) {
+    for (const [assetIndex, asset] of assetsList.entries()) {
       await client.query(`
         INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       `, [
-        Number(asset.sn),
+        assetIndex + 1,
         asset.date || '',
         asset.user || 'ส่วนกลาง',
         asset.position || '-',
@@ -275,6 +281,7 @@ app.post('/api/sync-all', async (req, res) => {
       ]);
     }
 
+    let ticketDbSn = 1;
     for (const [monthKey, monthData] of Object.entries(data)) {
       await client.query(`
         INSERT INTO monthly_data (
@@ -289,28 +296,28 @@ app.post('/api/sync-all', async (req, res) => {
       `, [
         monthKey,
         monthData.monthName,
-        Number(monthData.totalAssets || 0),
-        Number(monthData.assetValue || 0),
-        Number(monthData.assetsExpiring || 0),
-        Number(monthData.assetsBroken || 0),
-        Number(monthData.assetsLost || 0),
-        Number(monthData.assetsVacant || 0),
-        Number(monthData.ticketsCount || 0),
-        Number(monthData.slaPercent || 0),
-        Number(monthData.responseTime || 0),
-        Number(monthData.resolutionTime || 0),
-        Number(monthData.csat || 0),
-        Number(monthData.totalSoftware || 0),
-        Number(monthData.licensesInUse || 0),
-        Number(monthData.licensesVacant || 0),
-        Number(monthData.softwareCost || 0),
-        Number(monthData.softwareExpiring || 0),
-        Number(monthData.backupSuccess || 0),
-        Number(monthData.securityIncidents || 0),
-        Number(monthData.antivirusCoverage || 0),
-        Number(monthData.mfaCoverage || 0),
-        Number(monthData.repairCount || 0),
-        Number(monthData.repairCost || 0),
+        integerNumber(monthData.totalAssets),
+        finiteNumber(monthData.assetValue),
+        integerNumber(monthData.assetsExpiring),
+        integerNumber(monthData.assetsBroken),
+        integerNumber(monthData.assetsLost),
+        integerNumber(monthData.assetsVacant),
+        integerNumber(monthData.ticketsCount),
+        finiteNumber(monthData.slaPercent),
+        integerNumber(monthData.responseTime),
+        finiteNumber(monthData.resolutionTime),
+        finiteNumber(monthData.csat),
+        integerNumber(monthData.totalSoftware),
+        finiteNumber(monthData.licensesInUse),
+        finiteNumber(monthData.licensesVacant),
+        finiteNumber(monthData.softwareCost),
+        integerNumber(monthData.softwareExpiring),
+        finiteNumber(monthData.backupSuccess),
+        integerNumber(monthData.securityIncidents),
+        finiteNumber(monthData.antivirusCoverage),
+        finiteNumber(monthData.mfaCoverage),
+        integerNumber(monthData.repairCount),
+        finiteNumber(monthData.repairCost),
         JSON.stringify(monthData.topBrokenDevices || []),
         JSON.stringify(monthData.deptCosts || {}),
         JSON.stringify(monthData.softwareExpiringDetails || []),
@@ -325,7 +332,7 @@ app.post('/api/sync-all', async (req, res) => {
           INSERT INTO tickets (sn, month_key, date, complainant, email, anydesk, issue, cause, duration, responder, status, cost)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         `, [
-          Number(ticket.sn),
+          ticketDbSn++,
           monthKey,
           ticket.date || '',
           ticket.complainant || 'ไม่ระบุชื่อ',
@@ -336,7 +343,7 @@ app.post('/api/sync-all', async (req, res) => {
           ticket.duration || '-',
           ticket.responder || '-',
           ticket.status || 'กำลังดำเนินการ',
-          Number(ticket.cost || 0)
+          finiteNumber(ticket.cost)
         ]);
       }
     }
