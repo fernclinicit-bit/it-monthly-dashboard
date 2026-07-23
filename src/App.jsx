@@ -5353,6 +5353,9 @@ function Dashboard() {
   const [assetSearch, setAssetSearch] = useState('');
   const [assetDeptFilter, setAssetDeptFilter] = useState('');
   const [assetStatusFilter, setAssetStatusFilter] = useState('');
+  const [assetRequests, setAssetRequests] = useState([]);
+  const [assetRequestLoading, setAssetRequestLoading] = useState(false);
+  const [assetRequestForm, setAssetRequestForm] = useState({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
@@ -5407,6 +5410,96 @@ function Dashboard() {
     (window.location.hostname === 'localhost'
       ? 'http://localhost:5000'
       : 'https://it-monthly-dashboard-new.onrender.com');
+
+  const loadAssetRequests = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/asset-requests`);
+      if (!response.ok) throw new Error(`API ${response.status}`);
+      setAssetRequests(await response.json());
+    } catch (err) {
+      console.error('Failed to load asset requests:', err);
+    }
+  };
+
+  const refreshAssetsFromDb = async () => {
+    const response = await fetch(`${API_BASE}/api/db-state`);
+    if (!response.ok) throw new Error(`API ${response.status}`);
+    const result = await response.json();
+    if (result.assetsList) setAssetsList(result.assetsList);
+  };
+
+  const submitAssetRequest = async (event) => {
+    event.preventDefault();
+    setAssetRequestLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/asset-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(assetRequestForm)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'ส่งคำขอไม่สำเร็จ');
+      setAssetRequestForm({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
+      await loadAssetRequests();
+      alert(`ส่งคำขอเบิกเลขที่ #${result.id} สำเร็จ`);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setAssetRequestLoading(false);
+    }
+  };
+
+  const runAssetRequestAction = async (request, action) => {
+    const payload = { action };
+    if (action === 'approve') {
+      const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
+      if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
+      const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
+      const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
+      if (selected === null) return;
+      if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
+      payload.assetSn = Number(selected);
+      payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
+    } else if (action === 'reject') {
+      const note = window.prompt('ระบุเหตุผลที่ไม่อนุมัติ');
+      if (note === null) return;
+      payload.note = note;
+      payload.reviewer = window.prompt('ชื่อผู้พิจารณา') || 'IT';
+    } else if (action === 'issue') {
+      if (!window.confirm(`ยืนยันส่งมอบอุปกรณ์ให้ ${request.requester}?`)) return;
+      payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ส่งมอบ') || request.reviewer || 'IT';
+    } else if (action === 'return') {
+      const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
+      if (condition === null) return;
+      if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
+      payload.condition = condition;
+      payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
+      payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
+    }
+
+    setAssetRequestLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/asset-requests/${request.id}/action`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'ดำเนินการไม่สำเร็จ');
+      await Promise.all([loadAssetRequests(), refreshAssetsFromDb()]);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setAssetRequestLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeModal !== 'assetWorkflow') return undefined;
+    loadAssetRequests();
+    const timer = setInterval(loadAssetRequests, 3000);
+    return () => clearInterval(timer);
+  }, [activeModal]);
 
   const isPollingUpdateRef = useRef(false);
   const isPendingSyncRef = useRef(false);
@@ -7500,6 +7593,10 @@ function Dashboard() {
                 <Laptop size={16} />
                 ลงทะเบียนเครื่องเข้าคลัง
               </button>
+              <button onClick={() => setActiveModal('assetWorkflow')} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
+                <Ticket size={16} />
+                เบิก–คืนอุปกรณ์
+              </button>
               <button onClick={() => {
                 setLarkFormType('ticket');
                 setLarkTicketRole('it');
@@ -7892,6 +7989,77 @@ function Dashboard() {
           </div>
         </section>
       </main>
+
+      {activeModal === 'assetWorkflow' && (() => {
+        const statusLabels = {
+          pending: 'รออนุมัติ', approved: 'อนุมัติแล้ว', rejected: 'ไม่อนุมัติ',
+          issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', returned: 'คืนแล้ว', need_info: 'รอข้อมูลเพิ่ม'
+        };
+        return (
+          <div className="modal-overlay active">
+            <div className="modal large dashboard-fullscreen-modal asset-workflow-modal">
+              <header className="modal-header">
+                <div>
+                  <h3>🔄 ระบบเบิก–คืนอุปกรณ์ IT</h3>
+                  <p className="workflow-subtitle">ส่งคำขอ → อนุมัติและจองเครื่อง → ส่งมอบ → รับคืน</p>
+                </div>
+                <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+              </header>
+              <div className="modal-body workflow-body">
+                <form className="workflow-request-form" onSubmit={submitAssetRequest}>
+                  <div className="workflow-section-heading">
+                    <h4>สร้างคำขอเบิกอุปกรณ์</h4>
+                    <span>ผู้ขอไม่ต้องเลือก Serial — เจ้าหน้าที่ IT จะเลือกเครื่องว่างตอนอนุมัติ</span>
+                  </div>
+                  <div className="workflow-form-grid">
+                    <label>ชื่อผู้ขอ <input required value={assetRequestForm.requester} onChange={e => setAssetRequestForm(p => ({ ...p, requester: e.target.value }))} /></label>
+                    <label>แผนก <input required value={assetRequestForm.department} onChange={e => setAssetRequestForm(p => ({ ...p, department: e.target.value }))} /></label>
+                    <label>ประเภทอุปกรณ์ <input required placeholder="เช่น Notebook, iPad" value={assetRequestForm.itemType} onChange={e => setAssetRequestForm(p => ({ ...p, itemType: e.target.value }))} /></label>
+                    <label>กำหนดคืน <input type="date" value={assetRequestForm.dueDate} onChange={e => setAssetRequestForm(p => ({ ...p, dueDate: e.target.value }))} /></label>
+                    <label className="workflow-span-2">เหตุผลการใช้งาน <textarea required value={assetRequestForm.purpose} onChange={e => setAssetRequestForm(p => ({ ...p, purpose: e.target.value }))} /></label>
+                    <label className="workflow-span-2">หมายเหตุ <input value={assetRequestForm.notes} onChange={e => setAssetRequestForm(p => ({ ...p, notes: e.target.value }))} /></label>
+                  </div>
+                  <button className="workflow-primary-btn" type="submit" disabled={assetRequestLoading}>{assetRequestLoading ? 'กำลังบันทึก...' : 'ส่งคำขอเบิก'}</button>
+                </form>
+
+                <section className="workflow-list-section">
+                  <div className="workflow-section-heading">
+                    <h4>รายการคำขอทั้งหมด</h4>
+                    <span>{assetRequests.length} รายการ · เครื่องว่าง {assetsList.filter(asset => asset.status === 'ว่าง').length} เครื่อง</span>
+                  </div>
+                  <div className="workflow-table-wrap">
+                    <table className="details-table workflow-table">
+                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+                      <tbody>
+                        {assetRequests.length === 0 ? (
+                          <tr><td colSpan="7" className="workflow-empty">ยังไม่มีคำขอเบิกอุปกรณ์</td></tr>
+                        ) : assetRequests.map(request => (
+                          <tr key={request.id}>
+                            <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
+                            <td><strong>{request.requester}</strong><small>{request.department}</small></td>
+                            <td><strong>{request.item_type}</strong><small>{request.purpose}</small></td>
+                            <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
+                            <td>{request.device_serial ? <><strong>{request.device_serial}</strong><small>{request.assigned_item_type}</small></> : '-'}</td>
+                            <td><span className={`workflow-status status-${request.status}`}>{statusLabels[request.status] || request.status}</span></td>
+                            <td>
+                              <div className="workflow-actions">
+                                {request.status === 'pending' && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
+                                {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
+                                {(request.status === 'issued' || request.status === 'overdue') && <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button>}
+                                {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* MODAL 1: EDIT FORM CONSOLE */}
       {activeModal === 'edit' && (

@@ -98,6 +98,28 @@ async function initDb() {
         )
       `);
 
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS asset_requests (
+          id SERIAL PRIMARY KEY,
+          requester VARCHAR(255) NOT NULL,
+          department VARCHAR(255) NOT NULL,
+          item_type VARCHAR(255) NOT NULL,
+          purpose TEXT NOT NULL,
+          requested_date DATE NOT NULL DEFAULT CURRENT_DATE,
+          due_date DATE,
+          status VARCHAR(50) NOT NULL DEFAULT 'pending',
+          assigned_asset_sn INTEGER,
+          reviewer VARCHAR(255),
+          issue_date TIMESTAMPTZ,
+          return_date TIMESTAMPTZ,
+          return_condition VARCHAR(50),
+          notes TEXT,
+          history JSONB NOT NULL DEFAULT '[]'::jsonb,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `);
+
       console.log('Tables initialized successfully.');
     } finally {
       client.release();
@@ -168,6 +190,7 @@ app.get('/api/db-state', async (req, res) => {
     });
 
     const assetsList = assetsResult.rows.map(row => ({
+      ...(row.details || {}),
       sn: Number(row.sn),
       date: row.date,
       user: row.user_name,
@@ -175,14 +198,130 @@ app.get('/api/db-state', async (req, res) => {
       itemType: row.item_type,
       deviceSerial: row.device_serial,
       status: row.status,
-      notes: row.notes || '',
-      ...(row.details || {})
+      notes: row.notes || ''
     }));
 
     res.json({ data: dataObj, assetsList });
   } catch (err) {
     console.error('Error fetching DB state:', err);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/api/asset-requests', async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT r.*, a.device_serial, a.item_type AS assigned_item_type
+      FROM asset_requests r
+      LEFT JOIN assets a ON a.sn = r.assigned_asset_sn
+      ORDER BY r.created_at DESC, r.id DESC
+    `);
+    res.json(result.rows.map(row => ({
+      ...row,
+      id: Number(row.id),
+      assigned_asset_sn: row.assigned_asset_sn === null ? null : Number(row.assigned_asset_sn)
+    })));
+  } catch (err) {
+    console.error('Error fetching asset requests:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/api/asset-requests', async (req, res) => {
+  const { requester, department, itemType, purpose, dueDate, notes } = req.body;
+  if (!requester || !department || !itemType || !purpose) {
+    return res.status(400).json({ error: 'กรุณากรอกข้อมูลคำขอให้ครบ' });
+  }
+  try {
+    const event = { status: 'pending', at: new Date().toISOString(), by: requester, note: 'ส่งคำขอเบิกอุปกรณ์' };
+    const result = await pool.query(`
+      INSERT INTO asset_requests (requester, department, item_type, purpose, due_date, notes, history)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+    `, [requester, department, itemType, purpose, dueDate || null, notes || '', JSON.stringify([event])]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating asset request:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.patch('/api/asset-requests/:id/action', async (req, res) => {
+  const id = Number(req.params.id);
+  const { action, reviewer, assetSn, condition, note } = req.body;
+  const allowedActions = ['approve', 'reject', 'issue', 'return'];
+  if (!Number.isInteger(id) || !allowedActions.includes(action)) {
+    return res.status(400).json({ error: 'คำสั่งไม่ถูกต้อง' });
+  }
+
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+    const requestResult = await client.query('SELECT * FROM asset_requests WHERE id = $1 FOR UPDATE', [id]);
+    if (requestResult.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'ไม่พบคำขอ' });
+    }
+    const request = requestResult.rows[0];
+    let nextStatus;
+    let assignedSn = request.assigned_asset_sn;
+    let assetStatus = null;
+
+    if (action === 'approve') {
+      if (request.status !== 'pending' && request.status !== 'need_info') throw new Error('คำขอนี้ไม่อยู่ในสถานะรออนุมัติ');
+      assignedSn = Number(assetSn);
+      const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [assignedSn]);
+      if (assetResult.rowCount === 0) throw new Error('ไม่พบอุปกรณ์ที่เลือก');
+      if (assetResult.rows[0].status !== 'ว่าง') throw new Error('อุปกรณ์นี้ไม่ว่างหรือถูกจองแล้ว');
+      nextStatus = 'approved';
+      assetStatus = 'จอง';
+    } else if (action === 'reject') {
+      if (request.status !== 'pending' && request.status !== 'need_info') throw new Error('คำขอนี้ไม่สามารถปฏิเสธได้');
+      nextStatus = 'rejected';
+    } else if (action === 'issue') {
+      if (request.status !== 'approved') throw new Error('ต้องอนุมัติคำขอก่อนส่งมอบ');
+      nextStatus = 'issued';
+      assetStatus = 'ใช้งาน';
+    } else {
+      if (request.status !== 'issued' && request.status !== 'overdue') throw new Error('รายการนี้ยังไม่ได้ส่งมอบ');
+      nextStatus = 'returned';
+      assetStatus = condition === 'ชำรุด' ? 'รอซ่อม' : condition === 'สูญหาย' ? 'สูญหาย' : 'ว่าง';
+    }
+
+    if (assetStatus && assignedSn) {
+      await client.query(`
+        UPDATE assets
+        SET status = $1,
+            user_name = CASE WHEN $1 = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2 END,
+            details = details || jsonb_build_object('status', $1, 'user', CASE WHEN $1 = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2 END)
+        WHERE sn = $3
+      `, [assetStatus, request.requester, assignedSn]);
+    }
+
+    const event = { status: nextStatus, at: new Date().toISOString(), by: reviewer || request.requester, note: note || '' };
+    const updated = await client.query(`
+      UPDATE asset_requests
+      SET status = $1,
+          assigned_asset_sn = $2,
+          reviewer = COALESCE($3, reviewer),
+          issue_date = CASE WHEN $1 = 'issued' THEN NOW() ELSE issue_date END,
+          return_date = CASE WHEN $1 = 'returned' THEN NOW() ELSE return_date END,
+          return_condition = CASE WHEN $1 = 'returned' THEN $4 ELSE return_condition END,
+          notes = CASE WHEN $5 <> '' THEN CONCAT_WS(E'\n', NULLIF(notes, ''), $5) ELSE notes END,
+          history = history || $6::jsonb,
+          updated_at = NOW()
+      WHERE id = $7
+      RETURNING *
+    `, [nextStatus, assignedSn, reviewer || null, condition || null, note || '', JSON.stringify([event]), id]);
+    await client.query('COMMIT');
+    res.json(updated.rows[0]);
+  } catch (err) {
+    if (client) await client.query('ROLLBACK');
+    console.error('Error updating asset request:', err);
+    res.status(400).json({ error: err.message || 'ไม่สามารถดำเนินการได้' });
+  } finally {
+    if (client) client.release();
   }
 });
 
