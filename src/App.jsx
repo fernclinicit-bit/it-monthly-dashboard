@@ -6404,13 +6404,52 @@ function Dashboard() {
     setConsoleSaveMessage('');
     isPendingSyncRef.current = true;
     try {
-      await syncStateToDb(data, assetsList);
+      let assetsToSave = assetsList;
+      let dataToSave = data;
+
+      // If an asset is still open in edit mode, commit the visible form values
+      // before sending the complete dashboard snapshot.
+      if (editingAssetSn !== null && newAssetItemType) {
+        assetsToSave = assetsList.map(asset => asset.sn === editingAssetSn ? {
+          ...asset,
+          user: newAssetUser || 'ส่วนกลาง',
+          position: newAssetPosition || '-',
+          itemType: newAssetItemType,
+          deviceSerial: newAssetSerial || '-',
+          status: newAssetStatus,
+          notes: newAssetNotes
+        } : asset);
+
+        dataToSave = {
+          ...data,
+          [consoleMonth]: {
+            ...data[consoleMonth],
+            totalAssets: assetsToSave.length,
+            assetsBroken: assetsToSave.filter(asset => asset.status === 'รอซ่อม').length,
+            assetsLost: assetsToSave.filter(asset => asset.status === 'สูญหาย').length,
+            assetsVacant: assetsToSave.filter(asset => asset.status === 'ว่าง').length
+          }
+        };
+        setAssetsList(assetsToSave);
+        setData(dataToSave);
+      }
+
+      await syncStateToDb(dataToSave, assetsToSave);
       const response = await fetch(`${API_BASE}/api/db-state`);
       if (!response.ok) throw new Error(`API server returned ${response.status}`);
       const synchronized = await response.json();
       if (synchronized.data) setData(synchronized.data);
       if (synchronized.assetsList) setAssetsList(synchronized.assetsList);
       setCurrentMonth(consoleMonth);
+      if (editingAssetSn !== null) {
+        setEditingAssetSn(null);
+        setNewAssetUser('');
+        setNewAssetPosition('');
+        setNewAssetItemType('');
+        setNewAssetSerial('');
+        setNewAssetStatus('ใช้งาน');
+        setNewAssetNotes('');
+      }
       setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตแดชบอร์ดแล้ว');
     } catch (error) {
       console.error('Failed to save console changes:', error);
