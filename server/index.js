@@ -108,9 +108,11 @@ async function initDb() {
           duration VARCHAR(50) NOT NULL,
           responder VARCHAR(255) NOT NULL,
           status VARCHAR(50) NOT NULL,
-          cost NUMERIC(12, 2) NOT NULL
+          cost NUMERIC(12, 2) NOT NULL,
+          source VARCHAR(50) NOT NULL DEFAULT 'dashboard'
         )
       `);
+      await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS source VARCHAR(50) NOT NULL DEFAULT 'dashboard'`);
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS asset_requests (
@@ -213,7 +215,8 @@ app.get('/api/db-state', async (req, res) => {
           duration: row.duration,
           responder: row.responder,
           status: row.status,
-          cost: Number(row.cost)
+          cost: Number(row.cost),
+          source: row.source
         });
       }
     });
@@ -234,6 +237,55 @@ app.get('/api/db-state', async (req, res) => {
   } catch (err) {
     console.error('Error fetching DB state:', err);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/api/tickets', async (req, res) => {
+  const { name, department, date, deviceType, issue, priority } = req.body || {};
+  if (!name || !department || !date || !deviceType || !issue) {
+    return res.status(400).json({ error: 'กรุณากรอกข้อมูลแจ้งปัญหาให้ครบถ้วน' });
+  }
+
+  const monthKey = String(date).slice(0, 7);
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const monthResult = await client.query(
+      'SELECT month_key FROM monthly_data WHERE month_key = $1 FOR UPDATE',
+      [monthKey]
+    );
+    if (monthResult.rowCount === 0) {
+      throw new Error(`ยังไม่มีข้อมูล Dashboard สำหรับเดือน ${monthKey}`);
+    }
+
+    const snResult = await client.query('SELECT COALESCE(MAX(sn), 0) + 1 AS next_sn FROM tickets');
+    const nextSn = Number(snResult.rows[0].next_sn);
+    const complainant = `${String(name).trim()} (${String(department).trim()})`;
+    const ticketIssue = `[${String(deviceType).trim()}] [${priority || 'medium'}] ${String(issue).trim()}`;
+
+    await client.query(`
+      INSERT INTO tickets (
+        sn, month_key, date, complainant, email, anydesk, issue, cause,
+        duration, responder, status, cost, source
+      ) VALUES ($1, $2, $3, $4, '-', '-', $5, '-', '-', '-', 'กำลังดำเนินการ', 0, 'request_form')
+    `, [nextSn, monthKey, date, complainant, ticketIssue]);
+
+    await client.query(`
+      UPDATE monthly_data
+      SET tickets_count = (SELECT COUNT(*) FROM tickets WHERE month_key = $1)
+      WHERE month_key = $1
+    `, [monthKey]);
+
+    await client.query('COMMIT');
+    res.status(201).json({ success: true, sn: nextSn, monthKey });
+  } catch (err) {
+    if (client) await client.query('ROLLBACK');
+    console.error('Error creating IT request ticket:', err);
+    res.status(err.message.startsWith('ยังไม่มีข้อมูล') ? 400 : 500).json({ error: err.message || 'บันทึกคำร้องไม่สำเร็จ' });
+  } finally {
+    if (client) client.release();
   }
 });
 
@@ -429,7 +481,9 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query('BEGIN');
 
     await client.query('DELETE FROM monthly_data');
-    await client.query('DELETE FROM tickets');
+    // Tickets submitted by the public request form are authoritative and must
+    // survive older dashboard snapshots sent by automatic synchronization.
+    await client.query(`DELETE FROM tickets WHERE source <> 'request_form'`);
 
     // Keep workflow-controlled status/user authoritative when a browser sends an
     // older full asset snapshot during automatic synchronization.
@@ -471,7 +525,6 @@ app.post('/api/sync-all', async (req, res) => {
       ]);
     }
 
-    let ticketDbSn = 1;
     for (const [monthKey, monthData] of Object.entries(data)) {
       await client.query(`
         INSERT INTO monthly_data (
@@ -518,11 +571,26 @@ app.post('/api/sync-all', async (req, res) => {
 
       const ticketsList = monthData.ticketsList || [];
       for (const ticket of ticketsList) {
+        const ticketSn = Number(ticket.sn);
+        if (!Number.isInteger(ticketSn) || ticketSn <= 0) continue;
         await client.query(`
-          INSERT INTO tickets (sn, month_key, date, complainant, email, anydesk, issue, cause, duration, responder, status, cost)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          INSERT INTO tickets (sn, month_key, date, complainant, email, anydesk, issue, cause, duration, responder, status, cost, source)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+          ON CONFLICT (sn) DO UPDATE SET
+            month_key = EXCLUDED.month_key,
+            date = EXCLUDED.date,
+            complainant = EXCLUDED.complainant,
+            email = EXCLUDED.email,
+            anydesk = EXCLUDED.anydesk,
+            issue = EXCLUDED.issue,
+            cause = EXCLUDED.cause,
+            duration = EXCLUDED.duration,
+            responder = EXCLUDED.responder,
+            status = EXCLUDED.status,
+            cost = EXCLUDED.cost,
+            source = CASE WHEN tickets.source = 'request_form' THEN tickets.source ELSE EXCLUDED.source END
         `, [
-          ticketDbSn++,
+          ticketSn,
           monthKey,
           ticket.date || '',
           ticket.complainant || 'ไม่ระบุชื่อ',
@@ -533,10 +601,18 @@ app.post('/api/sync-all', async (req, res) => {
           ticket.duration || '-',
           ticket.responder || '-',
           ticket.status || 'กำลังดำเนินการ',
-          finiteNumber(ticket.cost)
+          finiteNumber(ticket.cost),
+          ticket.source === 'request_form' ? 'request_form' : 'dashboard'
         ]);
       }
     }
+
+    await client.query(`
+      UPDATE monthly_data m
+      SET tickets_count = (
+        SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key
+      )
+    `);
 
     await client.query('COMMIT');
     res.json({ success: true, message: 'All state synchronized successfully' });

@@ -38,58 +38,14 @@ const LarkForm = () => {
     setSubmitting(true);
     try {
       const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://it-monthly-dashboard-new.onrender.com');
-      
-      const res = await fetch(`${API_BASE}/api/db-state`);
-      if (!res.ok) throw new Error('Failed to fetch current state');
-      const result = await res.json();
-      
-      const currentData = result.data || {};
-      const currentAssetsList = result.assetsList || [];
-      
-      let maxSn = 0;
-      for (const month of Object.values(currentData)) {
-        if (month.ticketsList) {
-          for (const t of month.ticketsList) {
-            if (t.sn > maxSn) maxSn = t.sn;
-          }
-        }
-      }
-      const newSn = maxSn + 1;
-      
-      const dateParts = formData.date.split('-');
-      const monthKey = `${dateParts[0]}-${dateParts[1]}`;
-      
-      if (!currentData[monthKey]) {
-        currentData[monthKey] = {
-          monthName: monthKey,
-          ticketsList: []
-        };
-      }
-      if (!currentData[monthKey].ticketsList) {
-        currentData[monthKey].ticketsList = [];
-      }
-      
-      const newTicket = {
-        sn: newSn,
-        date: formData.date,
-        complainant: `${formData.name} (${formData.department})`,
-        email: '-',
-        anydesk: '-',
-        issue: `[${formData.deviceType}] [${formData.priority}] ${formData.issue}`,
-        cause: '-',
-        duration: '-',
-        responder: '-',
-        status: 'กำลังดำเนินการ',
-        cost: 0
-      };
-      
-      currentData[monthKey].ticketsList.push(newTicket);
-      
-      await fetch(`${API_BASE}/api/sync-all`, {
+
+      const response = await fetch(`${API_BASE}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: currentData, assetsList: currentAssetsList })
+        body: JSON.stringify(formData)
       });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'บันทึกคำร้องไม่สำเร็จ');
       
       setSubmitted(true);
       setTimeout(() => {
