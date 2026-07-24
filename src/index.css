@@ -1703,6 +1703,52 @@ body {
     padding: 8px 14px;
 }
 
+.asset-inline-save-status {
+    align-self: end;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 7px 10px;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #a9b5c8;
+    background: #172033;
+    font-size: .78rem;
+}
+
+.asset-inline-save-status.success {
+    color: #34d399;
+    border-color: rgba(52, 211, 153, .45);
+}
+
+.asset-inline-save-status.error {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, .45);
+}
+
+.asset-inline-save-btn {
+    align-self: end;
+    width: 100%;
+    min-width: 230px;
+    min-height: 42px;
+}
+
+@media (max-width: 1200px) {
+    .asset-registry-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .asset-registry-form {
+        grid-template-columns: 1fr !important;
+    }
+
+    .asset-inline-save-btn {
+        min-width: 0;
+    }
+}
+
 @media (max-width: 900px) {
     .full-console-modal .console-layout {
         flex-direction: column;

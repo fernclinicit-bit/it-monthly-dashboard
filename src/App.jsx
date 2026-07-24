@@ -9161,7 +9161,7 @@ function Dashboard() {
                 {consoleTab === 'assets' && (
                   <div className="lark-registry">
                     <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
-                    <div className="console-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+                    <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(130px, 1fr)) minmax(210px, 1.2fr) minmax(250px, 1.45fr)', gap: '10px' }}>
                       <div className="console-field">
                         <span className="console-label">ผู้เบิกใช้งาน</span>
                         <input type="text" value={newAssetUser} onChange={e => setNewAssetUser(e.target.value)} placeholder="เช่น อมร แก้วสด" className="console-input" />
@@ -9191,6 +9191,12 @@ function Dashboard() {
                         <span className="console-label">หมายเหตุ</span>
                         <input type="text" value={newAssetNotes} onChange={e => setNewAssetNotes(e.target.value)} placeholder="รายละเอียด" className="console-input" />
                       </div>
+                      <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}`}>
+                        {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
+                      </div>
+                      <button type="button" className="console-save-dashboard-btn asset-inline-save-btn" onClick={saveConsoleChanges} disabled={consoleSaving}>
+                        {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
+                      </button>
                       {editingAssetSn !== null ? (
                         <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
                           <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
@@ -9443,14 +9449,16 @@ function Dashboard() {
 
               </div>
             </div>
-            <div className="console-save-bar">
-              <span className={consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}>
-                {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
-              </span>
-              <button type="button" className="console-save-dashboard-btn" onClick={saveConsoleChanges} disabled={consoleSaving}>
-                {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
-              </button>
-            </div>
+            {consoleTab !== 'assets' && (
+              <div className="console-save-bar">
+                <span className={consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}>
+                  {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
+                </span>
+                <button type="button" className="console-save-dashboard-btn" onClick={saveConsoleChanges} disabled={consoleSaving}>
+                  {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       );
