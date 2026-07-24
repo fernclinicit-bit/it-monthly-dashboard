@@ -5785,41 +5785,6 @@ function Dashboard() {
     const calculatedResponseTime = Math.max(5, Math.round(resolutionTimeHours * 12));
     const calculatedCsat = Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1));
 
-    // Estimate asset value dynamically based on category
-    const CATEGORY_VALUES = {
-      "Computer (Pc)": 15000,
-      "Ipad": 18000,
-      "Mornitor": 5000,
-      "Notebook Lenovo": 25000,
-      "External HDD": 1500,
-      "Cable HDMI": 500,
-      "Mouse": 1000,
-      "Keyboard": 1500,
-      "Screwdriver": 1200,
-      "Notebook Asus": 20000,
-      "Printer": 7500,
-      "IPhone": 25000,
-      "Apple Pancill": 3900,
-      "Macbook": 45000,
-      "Hub USB-TypeC": 1200,
-      "IMac": 40000,
-      "Hub Lan": 2500,
-      "Notebook Acer, Iphone": 35000,
-      "Adapter Apple": 1200,
-      "Cable Apple": 790,
-      "Notebook HP": 22000,
-      "Samsung": 15000,
-      "Capture Card": 3500,
-      "Reez Live": 15000,
-      "Iphone": 25000
-    };
-
-    let calculatedAssetValue = 0;
-    assets.forEach(asset => {
-      const cat = String(asset.itemType || '').trim();
-      calculatedAssetValue += CATEGORY_VALUES[cat] || 1500;
-    });
-
     const brokenAssetsCount = assets.filter(a => a.status === 'รอซ่อม').length;
     const lostAssetsCount = assets.filter(a => a.status === 'สูญหาย').length;
     const vacantAssetsCount = assets.filter(a => a.status === 'ว่าง').length;
@@ -5830,13 +5795,8 @@ function Dashboard() {
       .slice(0, 10);
 
     const totalAssetsVal = assets.length;
-    const licensesInUseVal = Math.round(totalAssetsVal * 1.5);
-    const licensesVacantVal = Math.round(licensesInUseVal * 0.15);
-    const softwareCostVal = licensesInUseVal * 450;
-
     return {
       totalAssets: totalAssetsVal,
-      assetValue: calculatedAssetValue,
       assetsBroken: brokenAssetsCount,
       assetsLost: lostAssetsCount,
       assetsVacant: vacantAssetsCount,
@@ -5845,9 +5805,6 @@ function Dashboard() {
       resolutionTime: resolutionTimeHours,
       responseTime: calculatedResponseTime,
       csat: calculatedCsat,
-      licensesInUse: licensesInUseVal,
-      licensesVacant: licensesVacantVal,
-      softwareCost: softwareCostVal,
       repairCount: repairCount,
       repairCost: totalCost,
       topBrokenDevices: topBrokenDevices,
