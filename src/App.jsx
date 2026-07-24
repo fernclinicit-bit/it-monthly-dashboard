@@ -9248,7 +9248,12 @@ function Dashboard() {
                 {/* TAB 4: ASSETS INVENTORY EDITOR */}
                 {consoleTab === 'assets' && (
                   <div className="lark-registry">
-                    <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
+                    <div className="asset-registry-heading">
+                      <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
+                      {editingAssetSn === null && (
+                        <button type="button" onClick={handleAddAsset} className="btn-save asset-add-heading-btn">เพิ่มทรัพย์สินเข้าคลัง</button>
+                      )}
+                    </div>
                     <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(130px, 1fr)) minmax(210px, 1.2fr) minmax(250px, 1.45fr)', gap: '10px' }}>
                       <div className="console-field">
                         <span className="console-label">ผู้เบิกใช้งาน</span>
@@ -9294,9 +9299,7 @@ function Dashboard() {
                           <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
                           <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                         </div>
-                      ) : (
-                        <button type="button" onClick={handleAddAsset} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>เพิ่มทรัพย์สินเข้าคลัง</button>
-                      )}
+                      ) : null}
                     </div>
 
                     <div className="lark-registry-toolbar">

@@ -1680,6 +1680,29 @@ body {
     font-size: 1.25rem;
 }
 
+.asset-registry-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.asset-registry-heading .console-title {
+    margin-bottom: 0;
+    border-bottom: 0;
+}
+
+.asset-add-heading-btn {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 250px;
+    min-height: 42px;
+    margin-bottom: 9px;
+    padding: 8px 22px;
+}
+
 .asset-console-mode .console-form {
     padding: 12px;
     margin-bottom: 12px;
@@ -1886,6 +1909,16 @@ body {
     }
 
     .asset-inline-save-btn {
+        min-width: 0;
+    }
+
+    .asset-registry-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .asset-add-heading-btn {
+        width: 100%;
         min-width: 0;
     }
 }
