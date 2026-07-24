@@ -68,7 +68,7 @@ const LarkForm = () => {
   };
 
   return (
-    <div className="lark-form-container">
+    <div className="it-request-page">
       <div className="lark-form-header">
         <button className="back-btn" onClick={() => navigate('/')}>
           <ArrowLeft size={20} />
