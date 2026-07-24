@@ -5366,6 +5366,8 @@ function Dashboard() {
   // Console tab, month selectors, and editing state trackers
   const [consoleTab, setConsoleTab] = useState('months');
   const [consoleMonth, setConsoleMonth] = useState('2026-07');
+  const [consoleSaving, setConsoleSaving] = useState(false);
+  const [consoleSaveMessage, setConsoleSaveMessage] = useState('');
   const [editingAssetSn, setEditingAssetSn] = useState(null);
   const [editingTicketSn, setEditingTicketSn] = useState(null);
   const [editingSoftwareIndex, setEditingSoftwareIndex] = useState(null);
@@ -6381,6 +6383,28 @@ function Dashboard() {
     assetsExpiringDetails: activeDataSource?.assetsExpiringDetails || [],
     softwareExpiringDetails: activeDataSource?.softwareExpiringDetails || [],
     ticketsList: activeDataSource?.ticketsList || [],
+  };
+
+  const saveConsoleChanges = async () => {
+    setConsoleSaving(true);
+    setConsoleSaveMessage('');
+    isPendingSyncRef.current = true;
+    try {
+      await syncStateToDb(data, assetsList);
+      const response = await fetch(`${API_BASE}/api/db-state`);
+      if (!response.ok) throw new Error(`API server returned ${response.status}`);
+      const synchronized = await response.json();
+      if (synchronized.data) setData(synchronized.data);
+      if (synchronized.assetsList) setAssetsList(synchronized.assetsList);
+      setCurrentMonth(consoleMonth);
+      setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตแดชบอร์ดแล้ว');
+    } catch (error) {
+      console.error('Failed to save console changes:', error);
+      setConsoleSaveMessage('บันทึกไม่สำเร็จ กรุณาลองใหม่');
+    } finally {
+      isPendingSyncRef.current = false;
+      setConsoleSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -9332,6 +9356,14 @@ function Dashboard() {
                 )}
 
               </div>
+            </div>
+            <div className="console-save-bar">
+              <span className={consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}>
+                {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
+              </span>
+              <button type="button" className="console-save-dashboard-btn" onClick={saveConsoleChanges} disabled={consoleSaving}>
+                {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
+              </button>
             </div>
           </div>
         </div>
