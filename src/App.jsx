@@ -8996,26 +8996,31 @@ function Dashboard() {
       return (
         <div className="modal-overlay active full-console-overlay">
           <div className={`modal large full-console-modal ${consoleTab === 'assets' ? 'asset-console-mode' : ''}`}>
-            <header className="modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <header className="modal-header console-topbar">
+              <div className="console-topbar-title">
                 <Database size={22} style={{ color: 'var(--primary)' }} />
-                <h3 style={{ margin: 0, fontSize: '1.25rem' }}>ระบบจัดการและปรับเปลี่ยนข้อมูลแดชบอร์ดทั้งหมด</h3>
+                <h3>
+                  {consoleTab === 'assets'
+                    ? <>ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</>
+                    : 'ระบบจัดการและปรับเปลี่ยนข้อมูลแดชบอร์ดทั้งหมด'}
+                </h3>
               </div>
-              <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
-            </header>
-            
-            <div className="console-layout">
-              {/* Left Sidebar Navigation */}
-              <div className="console-sidebar">
+              <nav className="console-topbar-nav" aria-label="เมนูจัดการข้อมูลแดชบอร์ด">
                 <button onClick={() => setConsoleTab('months')} className={`console-tab-btn ${consoleTab === 'months' ? 'active' : ''}`}>📅 จัดการเดือน</button>
                 <button onClick={() => setConsoleTab('kpis')} className={`console-tab-btn ${consoleTab === 'kpis' ? 'active' : ''}`}>📈 ตัวชี้วัด KPIs</button>
                 <button onClick={() => setConsoleTab('projects')} className={`console-tab-btn ${consoleTab === 'projects' ? 'active' : ''}`}>🗒️ โครงการ & ข้อแนะนำ</button>
                 <button onClick={() => setConsoleTab('assets')} className={`console-tab-btn ${consoleTab === 'assets' ? 'active' : ''}`}>💻 คลังทรัพย์สิน IT</button>
                 <button onClick={() => setConsoleTab('tickets')} className={`console-tab-btn ${consoleTab === 'tickets' ? 'active' : ''}`}>🚨 ประวัติงาน Support</button>
-                <button onClick={() => setConsoleTab('backup')} className={`console-tab-btn ${consoleTab === 'backup' ? 'active' : ''}`} style={{ marginTop: 'auto' }}>💾 สำรอง & รีเซ็ตระบบ</button>
-              </div>
+                <button onClick={() => setConsoleTab('backup')} className={`console-tab-btn ${consoleTab === 'backup' ? 'active' : ''}`}>💾 สำรอง & รีเซ็ตระบบ</button>
+              </nav>
+              {consoleTab === 'assets' && editingAssetSn === null && (
+                <button type="button" onClick={handleAddAsset} className="btn-save asset-add-topbar-btn">เพิ่มทรัพย์สินเข้าคลัง</button>
+              )}
+              <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+            </header>
 
-              {/* Right Work Area */}
+            <div className="console-layout">
+              {/* Work Area */}
               <div className="console-content">
                 
                 {/* TAB 1: MONTHS MANAGER */}
@@ -9248,12 +9253,6 @@ function Dashboard() {
                 {/* TAB 4: ASSETS INVENTORY EDITOR */}
                 {consoleTab === 'assets' && (
                   <div className="lark-registry">
-                    <div className="asset-registry-heading">
-                      <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
-                      {editingAssetSn === null && (
-                        <button type="button" onClick={handleAddAsset} className="btn-save asset-add-heading-btn">เพิ่มทรัพย์สินเข้าคลัง</button>
-                      )}
-                    </div>
                     <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(130px, 1fr)) minmax(210px, 1.2fr) minmax(250px, 1.45fr)', gap: '10px' }}>
                       <div className="console-field">
                         <span className="console-label">ผู้เบิกใช้งาน</span>
