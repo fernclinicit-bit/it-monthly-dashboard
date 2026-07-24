@@ -1634,6 +1634,75 @@ body {
 .lark-status-other { color: #cbd5e1; background: #334155; }
 .lark-number { text-align: right; font-variant-numeric: tabular-nums; }
 
+.asset-console-mode .modal-header {
+    min-height: 52px;
+    padding: 10px 16px;
+}
+
+.asset-console-mode .console-layout {
+    flex-direction: column;
+}
+
+.asset-console-mode .console-sidebar {
+    width: 100%;
+    min-height: 52px;
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: 6px;
+    padding: 7px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #0d1422;
+}
+
+.asset-console-mode .console-tab-btn {
+    width: auto;
+    min-width: max-content;
+    padding: 8px 12px;
+}
+
+.asset-console-mode .console-tab-btn:last-child {
+    margin-top: 0 !important;
+    margin-left: auto;
+}
+
+.asset-console-mode .console-content {
+    padding: 12px 14px 8px;
+}
+
+.asset-console-mode .lark-registry {
+    min-height: 0;
+    height: 100%;
+}
+
+.asset-console-mode .console-title {
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+}
+
+.asset-console-mode .console-form {
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.asset-console-mode .lark-registry-scroll {
+    min-height: 260px;
+}
+
+.asset-console-mode .lark-registry-table {
+    font-size: .9rem;
+}
+
+.asset-console-mode .lark-registry-table th,
+.asset-console-mode .lark-registry-table td {
+    padding: 12px 11px;
+}
+
+.asset-console-mode .console-save-bar {
+    min-height: 58px;
+    padding: 8px 14px;
+}
+
 @media (max-width: 900px) {
     .full-console-modal .console-layout {
         flex-direction: column;

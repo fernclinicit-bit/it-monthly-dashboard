@@ -8907,7 +8907,7 @@ function Dashboard() {
       
       return (
         <div className="modal-overlay active full-console-overlay">
-          <div className="modal large full-console-modal">
+          <div className={`modal large full-console-modal ${consoleTab === 'assets' ? 'asset-console-mode' : ''}`}>
             <header className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Database size={22} style={{ color: 'var(--primary)' }} />
