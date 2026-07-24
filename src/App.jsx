@@ -5535,6 +5535,7 @@ function Dashboard() {
 
   const isPollingUpdateRef = useRef(false);
   const isPendingSyncRef = useRef(false);
+  const syncQueueRef = useRef(Promise.resolve());
   const latestDataRef = useRef(data);
   const latestAssetsRef = useRef(assetsList);
   const softwareSeededRef = useRef(false);
@@ -5545,17 +5546,30 @@ function Dashboard() {
   }, [data, assetsList]);
 
   const syncStateToDb = async (updatedData, updatedAssets) => {
-    try {
-      const response = await fetch(`${API_BASE}/api/sync-all`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: updatedData, assetsList: updatedAssets })
-      });
-      if (!response.ok) {
-        throw new Error(`API server returned ${response.status}`);
+    const operation = syncQueueRef.current.catch(() => undefined).then(async () => {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 30000);
+      try {
+        const response = await fetch(`${API_BASE}/api/sync-all`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: updatedData, assetsList: updatedAssets }),
+          signal: controller.signal
+        });
+        if (!response.ok) {
+          throw new Error(`API server returned ${response.status}`);
+        }
+        return response.json();
+      } finally {
+        window.clearTimeout(timeout);
       }
+    });
+    syncQueueRef.current = operation;
+    try {
+      return await operation;
     } catch (err) {
       console.error('Failed to sync state to PostgreSQL database:', err);
+      if (err.name === 'AbortError') throw new Error('เซิร์ฟเวอร์ใช้เวลาบันทึกนานเกิน 30 วินาที กรุณาลองใหม่');
       throw err;
     }
   };

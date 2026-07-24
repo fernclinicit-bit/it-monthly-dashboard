@@ -487,44 +487,41 @@ app.post('/api/sync-all', async (req, res) => {
 
     // Keep workflow-controlled status/user authoritative when a browser sends an
     // older full asset snapshot during automatic synchronization.
-    const activeAssignmentsResult = await client.query(`
-      SELECT assigned_asset_sn, requester, status
-      FROM asset_requests
-      WHERE assigned_asset_sn IS NOT NULL
-        AND status IN ('approved', 'issued', 'overdue')
-    `);
-    const activeAssignments = new Map(activeAssignmentsResult.rows.map(row => [
-      Number(row.assigned_asset_sn),
-      {
-        requester: row.requester,
-        assetStatus: row.status === 'approved' ? 'จอง' : 'ใช้งาน'
-      }
-    ]));
-
     await client.query('DELETE FROM assets');
+    await client.query(`
+      INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
+      SELECT
+        asset_row.ordinality::integer,
+        COALESCE(asset_row.item->>'date', ''),
+        COALESCE(assignment.requester, NULLIF(asset_row.item->>'user', ''), 'ส่วนกลาง'),
+        COALESCE(NULLIF(asset_row.item->>'position', ''), '-'),
+        COALESCE(asset_row.item->>'itemType', ''),
+        COALESCE(NULLIF(asset_row.item->>'deviceSerial', ''), '-'),
+        COALESCE(
+          CASE WHEN assignment.status = 'approved' THEN 'จอง'
+               WHEN assignment.status IN ('issued', 'overdue') THEN 'ใช้งาน'
+          END,
+          NULLIF(asset_row.item->>'status', ''),
+          'ใช้งาน'
+        ),
+        COALESCE(asset_row.item->>'notes', ''),
+        asset_row.item || jsonb_build_object(
+          'user', COALESCE(assignment.requester, NULLIF(asset_row.item->>'user', ''), 'ส่วนกลาง'),
+          'status', COALESCE(
+            CASE WHEN assignment.status = 'approved' THEN 'จอง'
+                 WHEN assignment.status IN ('issued', 'overdue') THEN 'ใช้งาน'
+            END,
+            NULLIF(asset_row.item->>'status', ''),
+            'ใช้งาน'
+          )
+        )
+      FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS asset_row(item, ordinality)
+      LEFT JOIN asset_requests assignment
+        ON assignment.assigned_asset_sn = asset_row.ordinality
+       AND assignment.status IN ('approved', 'issued', 'overdue')
+    `, [JSON.stringify(assetsList)]);
 
-    for (const [assetIndex, asset] of assetsList.entries()) {
-      const databaseSn = assetIndex + 1;
-      const workflowAssignment = activeAssignments.get(databaseSn);
-      const synchronizedAsset = workflowAssignment
-        ? { ...asset, status: workflowAssignment.assetStatus, user: workflowAssignment.requester }
-        : asset;
-      await client.query(`
-        INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      `, [
-        databaseSn,
-        synchronizedAsset.date || '',
-        synchronizedAsset.user || 'ส่วนกลาง',
-        synchronizedAsset.position || '-',
-        synchronizedAsset.itemType || '',
-        synchronizedAsset.deviceSerial || '-',
-        synchronizedAsset.status || 'ใช้งาน',
-        synchronizedAsset.notes || '',
-        JSON.stringify(synchronizedAsset)
-      ]);
-    }
-
+    const ticketPayload = [];
     for (const [monthKey, monthData] of Object.entries(data)) {
       await client.query(`
         INSERT INTO monthly_data (
@@ -573,38 +570,56 @@ app.post('/api/sync-all', async (req, res) => {
       for (const ticket of ticketsList) {
         const ticketSn = Number(ticket.sn);
         if (!Number.isInteger(ticketSn) || ticketSn <= 0) continue;
-        await client.query(`
-          INSERT INTO tickets (sn, month_key, date, complainant, email, anydesk, issue, cause, duration, responder, status, cost, source)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-          ON CONFLICT (sn) DO UPDATE SET
-            month_key = EXCLUDED.month_key,
-            date = EXCLUDED.date,
-            complainant = EXCLUDED.complainant,
-            email = EXCLUDED.email,
-            anydesk = EXCLUDED.anydesk,
-            issue = EXCLUDED.issue,
-            cause = EXCLUDED.cause,
-            duration = EXCLUDED.duration,
-            responder = EXCLUDED.responder,
-            status = EXCLUDED.status,
-            cost = EXCLUDED.cost,
-            source = CASE WHEN tickets.source = 'request_form' THEN tickets.source ELSE EXCLUDED.source END
-        `, [
-          ticketSn,
+        ticketPayload.push({
+          sn: ticketSn,
           monthKey,
-          ticket.date || '',
-          ticket.complainant || 'ไม่ระบุชื่อ',
-          ticket.email || '-',
-          ticket.anydesk || '-',
-          ticket.issue || '',
-          ticket.cause || '-',
-          ticket.duration || '-',
-          ticket.responder || '-',
-          ticket.status || 'กำลังดำเนินการ',
-          finiteNumber(ticket.cost),
-          ticket.source === 'request_form' ? 'request_form' : 'dashboard'
-        ]);
+          date: ticket.date || '',
+          complainant: ticket.complainant || 'ไม่ระบุชื่อ',
+          email: ticket.email || '-',
+          anydesk: ticket.anydesk || '-',
+          issue: ticket.issue || '',
+          cause: ticket.cause || '-',
+          duration: ticket.duration || '-',
+          responder: ticket.responder || '-',
+          status: ticket.status || 'กำลังดำเนินการ',
+          cost: finiteNumber(ticket.cost),
+          source: ticket.source === 'request_form' ? 'request_form' : 'dashboard'
+        });
       }
+    }
+
+    if (ticketPayload.length > 0) {
+      await client.query(`
+        INSERT INTO tickets (sn, month_key, date, complainant, email, anydesk, issue, cause, duration, responder, status, cost, source)
+        SELECT
+          (ticket.item->>'sn')::integer,
+          ticket.item->>'monthKey',
+          COALESCE(ticket.item->>'date', ''),
+          COALESCE(NULLIF(ticket.item->>'complainant', ''), 'ไม่ระบุชื่อ'),
+          COALESCE(NULLIF(ticket.item->>'email', ''), '-'),
+          COALESCE(NULLIF(ticket.item->>'anydesk', ''), '-'),
+          COALESCE(ticket.item->>'issue', ''),
+          COALESCE(NULLIF(ticket.item->>'cause', ''), '-'),
+          COALESCE(NULLIF(ticket.item->>'duration', ''), '-'),
+          COALESCE(NULLIF(ticket.item->>'responder', ''), '-'),
+          COALESCE(NULLIF(ticket.item->>'status', ''), 'กำลังดำเนินการ'),
+          COALESCE((ticket.item->>'cost')::numeric, 0),
+          COALESCE(NULLIF(ticket.item->>'source', ''), 'dashboard')
+        FROM jsonb_array_elements($1::jsonb) AS ticket(item)
+        ON CONFLICT (sn) DO UPDATE SET
+          month_key = EXCLUDED.month_key,
+          date = EXCLUDED.date,
+          complainant = EXCLUDED.complainant,
+          email = EXCLUDED.email,
+          anydesk = EXCLUDED.anydesk,
+          issue = EXCLUDED.issue,
+          cause = EXCLUDED.cause,
+          duration = EXCLUDED.duration,
+          responder = EXCLUDED.responder,
+          status = EXCLUDED.status,
+          cost = EXCLUDED.cost,
+          source = CASE WHEN tickets.source = 'request_form' THEN tickets.source ELSE EXCLUDED.source END
+      `, [JSON.stringify(ticketPayload)]);
     }
 
     await client.query(`
