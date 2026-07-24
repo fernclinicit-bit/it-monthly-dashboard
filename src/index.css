@@ -1630,7 +1630,7 @@ body.modal-open { overflow: hidden; }
     .modal,
     .modal.large,
     .dashboard-fullscreen-modal,
-    .lark-form-container {
+    .modal-overlay .lark-form-container {
         width: 100vw;
         max-width: 100vw;
         height: 100dvh;
