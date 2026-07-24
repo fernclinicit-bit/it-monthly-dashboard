@@ -8929,7 +8929,7 @@ function Dashboard() {
                       {filteredAssetsList.length > 0 ? (
                         filteredAssetsList.map((asset, idx) => (
                           <tr key={idx}>
-                            <td><strong>{asset.sn}</strong></td>
+                            <td><strong>{idx + 1}</strong></td>
                             <td>{asset.date || '-'}</td>
                             <td>{asset.user}</td>
                             <td>{asset.position}</td>
