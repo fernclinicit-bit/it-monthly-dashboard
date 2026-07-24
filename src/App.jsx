@@ -5346,6 +5346,41 @@ const AssetTagEditor = ({ value, onChange, single = false, placeholder = 'พิ
   );
 };
 
+const AssetTagPicker = ({ value, onChange, options, single = false, onClose }) => {
+  const selected = String(value || '').split(/[,\n]+/).map((item) => item.trim()).filter(Boolean);
+  const toggleOption = (option) => {
+    if (single) {
+      onChange(option);
+      return;
+    }
+    onChange((selected.includes(option) ? selected.filter((tag) => tag !== option) : [...selected, option]).join(', '));
+  };
+
+  return (
+    <div className="asset-tag-picker" onClick={(event) => event.stopPropagation()}>
+      <div className="asset-tag-picker-title">เลือก Tag ที่มีอยู่</div>
+      <div className="asset-tag-picker-options">
+        {options.map((option) => (
+          <button
+            type="button"
+            key={option}
+            className={selected.includes(option) ? 'selected' : ''}
+            onClick={() => toggleOption(option)}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+      <div className="asset-tag-picker-title">หรือเพิ่ม Tag ใหม่</div>
+      <AssetTagEditor value={value} onChange={onChange} single={single} />
+      <div className="asset-tag-picker-footer">
+        <span>กดบันทึกด้านบนเพื่อยืนยัน</span>
+        <button type="button" onClick={onClose}>เสร็จสิ้น</button>
+      </div>
+    </div>
+  );
+};
+
 const seedSoftwareLicenses = [
   { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
   { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
@@ -5407,6 +5442,7 @@ function Dashboard() {
   const [consoleSaving, setConsoleSaving] = useState(false);
   const [consoleSaveMessage, setConsoleSaveMessage] = useState('');
   const [consoleAssetSearch, setConsoleAssetSearch] = useState('');
+  const [editingAssetTagField, setEditingAssetTagField] = useState(null);
   const [editingAssetSn, setEditingAssetSn] = useState(null);
   const [editingTicketSn, setEditingTicketSn] = useState(null);
   const [editingSoftwareIndex, setEditingSoftwareIndex] = useState(null);
@@ -6091,6 +6127,7 @@ function Dashboard() {
     setNewAssetSerial('');
     setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
+    setEditingAssetTagField(null);
   };
 
   const handleLoadEditAsset = (asset) => {
@@ -6106,6 +6143,7 @@ function Dashboard() {
 
   const handleCancelEditAsset = () => {
     setEditingAssetSn(null);
+    setEditingAssetTagField(null);
     setNewAssetUser('');
     setNewAssetPosition('');
     setNewAssetItemType('');
@@ -6463,6 +6501,7 @@ function Dashboard() {
       setCurrentMonth(consoleMonth);
       if (editingAssetSn !== null) {
         setEditingAssetSn(null);
+        setEditingAssetTagField(null);
         setNewAssetUser('');
         setNewAssetPosition('');
         setNewAssetItemType('');
@@ -8951,6 +8990,8 @@ function Dashboard() {
         ].some((value) => String(value ?? '').toLocaleLowerCase('th-TH').includes(consoleAssetQuery)))
         .sort((a, b) => String(a.position || '').localeCompare(String(b.position || ''), 'th')
           || Number(a.sn || 0) - Number(b.sn || 0));
+      const primaryTagOptions = [...new Set(assetsList.map((asset) => String(asset.itemType || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'));
+      const additionalTagOptions = [...new Set(assetsList.flatMap((asset) => String(asset.additionalEquipment || '').split(/[,\n]+/).map((tag) => tag.trim()).filter(Boolean)))].sort((a, b) => a.localeCompare(b, 'th'));
       
       return (
         <div className="modal-overlay active full-console-overlay">
@@ -9319,13 +9360,36 @@ function Dashboard() {
                               <td>
                                 <div className="asset-tag-cell">
                                   <span className="lark-pill lark-pill-device">{asset.itemType || '-'}</span>
-                                  <button type="button" onClick={() => handleLoadEditAsset(asset)}>แก้ไข Tag</button>
+                                  <button type="button" onClick={() => {
+                                    handleLoadEditAsset(asset);
+                                    setEditingAssetTagField({ sn: asset.sn, field: 'itemType' });
+                                  }}>แก้ไข Tag</button>
+                                  {editingAssetTagField?.sn === asset.sn && editingAssetTagField?.field === 'itemType' && (
+                                    <AssetTagPicker
+                                      value={newAssetItemType}
+                                      onChange={setNewAssetItemType}
+                                      options={primaryTagOptions}
+                                      single
+                                      onClose={() => setEditingAssetTagField(null)}
+                                    />
+                                  )}
                                 </div>
                               </td>
                               <td>
                                 <div className="asset-tag-cell">
                                   <AssetTags value={asset.additionalEquipment} />
-                                  <button type="button" onClick={() => handleLoadEditAsset(asset)}>แก้ไข Tag</button>
+                                  <button type="button" onClick={() => {
+                                    handleLoadEditAsset(asset);
+                                    setEditingAssetTagField({ sn: asset.sn, field: 'additionalEquipment' });
+                                  }}>แก้ไข Tag</button>
+                                  {editingAssetTagField?.sn === asset.sn && editingAssetTagField?.field === 'additionalEquipment' && (
+                                    <AssetTagPicker
+                                      value={newAssetAdditionalEquipment}
+                                      onChange={setNewAssetAdditionalEquipment}
+                                      options={additionalTagOptions}
+                                      onClose={() => setEditingAssetTagField(null)}
+                                    />
+                                  )}
                                 </div>
                               </td>
                               <td><AssetTags value={asset.softwareApp} /></td>
