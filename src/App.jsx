@@ -6435,6 +6435,22 @@ function Dashboard() {
       }
 
       await syncStateToDb(dataToSave, assetsToSave);
+      if (editingAssetSn !== null && newAssetItemType) {
+        const assetResponse = await fetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user: newAssetUser,
+            position: newAssetPosition,
+            itemType: newAssetItemType,
+            deviceSerial: newAssetSerial,
+            status: newAssetStatus,
+            notes: newAssetNotes
+          })
+        });
+        const assetResult = await assetResponse.json();
+        if (!assetResponse.ok) throw new Error(assetResult.error || 'แก้ไขสถานะทรัพย์สินไม่สำเร็จ');
+      }
       const response = await fetch(`${API_BASE}/api/db-state`);
       if (!response.ok) throw new Error(`API server returned ${response.status}`);
       const synchronized = await response.json();

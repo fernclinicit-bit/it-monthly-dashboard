@@ -289,6 +289,94 @@ app.post('/api/tickets', async (req, res) => {
   }
 });
 
+app.patch('/api/assets/:sn', async (req, res) => {
+  const sn = Number(req.params.sn);
+  const { user, position, itemType, deviceSerial, status, notes } = req.body || {};
+  if (!Number.isInteger(sn) || sn <= 0 || !itemType || !status) {
+    return res.status(400).json({ error: 'ข้อมูลทรัพย์สินไม่ถูกต้อง' });
+  }
+
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+
+    const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [sn]);
+    if (assetResult.rowCount === 0) throw new Error('ไม่พบทรัพย์สินที่ต้องการแก้ไข');
+
+    const details = {
+      ...(assetResult.rows[0].details || {}),
+      user: user || 'ส่วนกลาง',
+      position: position || '-',
+      itemType,
+      deviceSerial: deviceSerial || '-',
+      status,
+      notes: notes || ''
+    };
+    await client.query(`
+      UPDATE assets
+      SET user_name = $1, position = $2, item_type = $3, device_serial = $4,
+          status = $5, notes = $6, details = $7
+      WHERE sn = $8
+    `, [
+      user || 'ส่วนกลาง',
+      position || '-',
+      itemType,
+      deviceSerial || '-',
+      status,
+      notes || '',
+      JSON.stringify(details),
+      sn
+    ]);
+
+    if (['ว่าง', 'รอซ่อม', 'สูญหาย'].includes(status)) {
+      const activeRequests = await client.query(`
+        SELECT id, history FROM asset_requests
+        WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue')
+        FOR UPDATE
+      `, [sn]);
+      for (const request of activeRequests.rows) {
+        const event = {
+          status: 'returned',
+          at: new Date().toISOString(),
+          by: 'IT Asset Registry',
+          note: `เปลี่ยนสถานะทรัพย์สินเป็น ${status} จากหน้าทะเบียน`
+        };
+        await client.query(`
+          UPDATE asset_requests
+          SET status = 'returned',
+              return_date = NOW(),
+              return_condition = $1,
+              history = $2,
+              updated_at = NOW()
+          WHERE id = $3
+        `, [
+          status === 'รอซ่อม' ? 'ชำรุด' : status === 'สูญหาย' ? 'สูญหาย' : 'ปกติ',
+          JSON.stringify([...(request.history || []), event]),
+          request.id
+        ]);
+      }
+    }
+
+    await client.query(`
+      UPDATE monthly_data
+      SET total_assets = (SELECT COUNT(*) FROM assets),
+          assets_broken = (SELECT COUNT(*) FROM assets WHERE status = 'รอซ่อม'),
+          assets_lost = (SELECT COUNT(*) FROM assets WHERE status = 'สูญหาย'),
+          assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง')
+    `);
+
+    await client.query('COMMIT');
+    res.json({ success: true, sn, status });
+  } catch (err) {
+    if (client) await client.query('ROLLBACK');
+    console.error('Error updating asset directly:', err);
+    res.status(err.message.startsWith('ไม่พบ') ? 404 : 500).json({ error: err.message || 'แก้ไขทรัพย์สินไม่สำเร็จ' });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 app.get('/api/asset-requests', async (_req, res) => {
   try {
     const result = await pool.query(`
