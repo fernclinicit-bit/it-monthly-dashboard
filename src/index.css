@@ -1388,16 +1388,31 @@ body {
         left: 0;
         top: 0;
         bottom: 0;
+        width: min(88vw, 320px);
         height: 100vh;
+        height: 100dvh;
+        max-height: 100dvh;
+        min-height: 0;
+        padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
         z-index: 1200;
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
         background-color: #111827; /* Solid color to prevent transparent overlap */
+        overflow-x: hidden;
+        overflow-y: scroll;
+        overscroll-behavior-y: contain;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-gutter: stable;
     }
 
     .sidebar.mobile-active {
         transform: translateX(0);
+    }
+
+    .sidebar > * {
+        flex-shrink: 0;
     }
 
     .mobile-menu-toggle {
@@ -1523,10 +1538,8 @@ body.modal-open { overflow: hidden; }
         height: 100dvh;
         max-height: 100dvh;
         padding: 16px;
+        padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
         gap: 20px;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
     }
 
     .fern-brand-logo {
