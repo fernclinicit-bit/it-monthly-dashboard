@@ -9351,7 +9351,7 @@ function Dashboard() {
                                 </tr>
                               )}
                             <tr>
-                              <td>{asset.sn}</td>
+                              <td>{idx + 1}</td>
                               <td>{asset.submittedOn || '-'}</td>
                               <td>{asset.respondent || '-'}</td>
                               <td>{asset.date || '-'}</td>
