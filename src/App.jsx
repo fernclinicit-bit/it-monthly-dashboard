@@ -5308,6 +5308,44 @@ const AssetTags = ({ value, empty = '-' }) => {
   );
 };
 
+const AssetTagEditor = ({ value, onChange, single = false, placeholder = 'พิมพ์ Tag แล้วกด Enter' }) => {
+  const [draft, setDraft] = useState('');
+  const tags = String(value || '').split(/[,\n]+/).map((item) => item.trim()).filter(Boolean);
+
+  const addDraft = () => {
+    const nextTag = draft.trim();
+    if (!nextTag) return;
+    onChange((single ? [nextTag] : [...new Set([...tags, nextTag])]).join(', '));
+    setDraft('');
+  };
+
+  return (
+    <div className="asset-tag-editor">
+      <div className="asset-tag-editor-tags">
+        {tags.map((tag, index) => (
+          <span key={`${tag}-${index}`} className={`asset-tag asset-tag-${[...tag].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 6}`}>
+            {tag}
+            <button type="button" onClick={() => onChange(tags.filter((_, tagIndex) => tagIndex !== index).join(', '))} aria-label={`ลบ Tag ${tag}`}>×</button>
+          </span>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ',') {
+            event.preventDefault();
+            addDraft();
+          }
+        }}
+        onBlur={addDraft}
+        placeholder={tags.length ? 'เพิ่ม Tag...' : placeholder}
+      />
+    </div>
+  );
+};
+
 const seedSoftwareLicenses = [
   { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
   { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
@@ -5696,6 +5734,7 @@ function Dashboard() {
   const [newAssetUser, setNewAssetUser] = useState('');
   const [newAssetPosition, setNewAssetPosition] = useState('');
   const [newAssetItemType, setNewAssetItemType] = useState('');
+  const [newAssetAdditionalEquipment, setNewAssetAdditionalEquipment] = useState('');
   const [newAssetSerial, setNewAssetSerial] = useState('');
   const [newAssetStatus, setNewAssetStatus] = useState('ใช้งาน');
   const [newAssetNotes, setNewAssetNotes] = useState('');
@@ -6014,6 +6053,7 @@ function Dashboard() {
           user: newAssetUser || 'ส่วนกลาง',
           position: newAssetPosition || '-',
           itemType: newAssetItemType,
+          additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
           status: newAssetStatus,
           notes: newAssetNotes
@@ -6031,6 +6071,7 @@ function Dashboard() {
         user: newAssetUser || 'ส่วนกลาง',
         position: newAssetPosition || '-',
         itemType: newAssetItemType,
+        additionalEquipment: newAssetAdditionalEquipment,
         deviceSerial: newAssetSerial || '-',
         status: newAssetStatus,
         notes: newAssetNotes
@@ -6046,6 +6087,7 @@ function Dashboard() {
     setNewAssetUser('');
     setNewAssetPosition('');
     setNewAssetItemType('');
+    setNewAssetAdditionalEquipment('');
     setNewAssetSerial('');
     setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
@@ -6056,6 +6098,7 @@ function Dashboard() {
     setNewAssetUser(asset.user);
     setNewAssetPosition(asset.position);
     setNewAssetItemType(asset.itemType);
+    setNewAssetAdditionalEquipment(asset.additionalEquipment || '');
     setNewAssetSerial(asset.deviceSerial);
     setNewAssetStatus(asset.status);
     setNewAssetNotes(asset.notes || '');
@@ -6066,6 +6109,7 @@ function Dashboard() {
     setNewAssetUser('');
     setNewAssetPosition('');
     setNewAssetItemType('');
+    setNewAssetAdditionalEquipment('');
     setNewAssetSerial('');
     setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
@@ -6373,6 +6417,7 @@ function Dashboard() {
           user: newAssetUser || 'ส่วนกลาง',
           position: newAssetPosition || '-',
           itemType: newAssetItemType,
+          additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
           status: newAssetStatus,
           notes: newAssetNotes
@@ -6401,6 +6446,7 @@ function Dashboard() {
             user: newAssetUser,
             position: newAssetPosition,
             itemType: newAssetItemType,
+            additionalEquipment: newAssetAdditionalEquipment,
             deviceSerial: newAssetSerial,
             status: newAssetStatus,
             notes: newAssetNotes
@@ -6420,6 +6466,7 @@ function Dashboard() {
         setNewAssetUser('');
         setNewAssetPosition('');
         setNewAssetItemType('');
+        setNewAssetAdditionalEquipment('');
         setNewAssetSerial('');
         setNewAssetStatus('ใช้งาน');
         setNewAssetNotes('');
@@ -9161,7 +9208,7 @@ function Dashboard() {
                 {consoleTab === 'assets' && (
                   <div className="lark-registry">
                     <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
-                    <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(130px, 1fr)) minmax(210px, 1.2fr) minmax(250px, 1.45fr)', gap: '10px' }}>
+                    <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(130px, 1fr)) minmax(210px, 1.2fr) minmax(250px, 1.45fr)', gap: '10px' }}>
                       <div className="console-field">
                         <span className="console-label">ผู้เบิกใช้งาน</span>
                         <input type="text" value={newAssetUser} onChange={e => setNewAssetUser(e.target.value)} placeholder="เช่น อมร แก้วสด" className="console-input" />
@@ -9171,8 +9218,12 @@ function Dashboard() {
                         <input type="text" value={newAssetPosition} onChange={e => setNewAssetPosition(e.target.value)} placeholder="เช่น Marketing" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">ประเภทอุปกรณ์หลัก*</span>
-                        <input type="text" value={newAssetItemType} onChange={e => setNewAssetItemType(e.target.value)} placeholder="เช่น Notebook Lenovo" className="console-input" />
+                        <span className="console-label">รายการอุปกรณ์หลัก (Tag)*</span>
+                        <AssetTagEditor value={newAssetItemType} onChange={setNewAssetItemType} single placeholder="เช่น Notebook Lenovo" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">อุปกรณ์เพิ่มเติม (Tags)</span>
+                        <AssetTagEditor value={newAssetAdditionalEquipment} onChange={setNewAssetAdditionalEquipment} placeholder="เช่น สาย HDMI" />
                       </div>
                       <div className="console-field">
                         <span className="console-label">หมายเลขซีเรียล</span>
@@ -9265,8 +9316,18 @@ function Dashboard() {
                               <td>{asset.date || '-'}</td>
                               <td>{asset.user}</td>
                               <td>{asset.position}</td>
-                              <td><span className="lark-pill lark-pill-device">{asset.itemType || '-'}</span></td>
-                              <td><AssetTags value={asset.additionalEquipment} /></td>
+                              <td>
+                                <div className="asset-tag-cell">
+                                  <span className="lark-pill lark-pill-device">{asset.itemType || '-'}</span>
+                                  <button type="button" onClick={() => handleLoadEditAsset(asset)}>แก้ไข Tag</button>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="asset-tag-cell">
+                                  <AssetTags value={asset.additionalEquipment} />
+                                  <button type="button" onClick={() => handleLoadEditAsset(asset)}>แก้ไข Tag</button>
+                                </div>
+                              </td>
                               <td><AssetTags value={asset.softwareApp} /></td>
                               <td>{asset.registeredEmail || '-'}</td>
                               <td><strong>{asset.deviceSerial}</strong></td>

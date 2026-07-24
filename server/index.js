@@ -291,7 +291,7 @@ app.post('/api/tickets', async (req, res) => {
 
 app.patch('/api/assets/:sn', async (req, res) => {
   const sn = Number(req.params.sn);
-  const { user, position, itemType, deviceSerial, status, notes } = req.body || {};
+  const { user, position, itemType, additionalEquipment, deviceSerial, status, notes } = req.body || {};
   if (!Number.isInteger(sn) || sn <= 0 || !itemType || !status) {
     return res.status(400).json({ error: 'ข้อมูลทรัพย์สินไม่ถูกต้อง' });
   }
@@ -309,6 +309,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
       user: user || 'ส่วนกลาง',
       position: position || '-',
       itemType,
+      additionalEquipment: additionalEquipment || '',
       deviceSerial: deviceSerial || '-',
       status,
       notes: notes || ''
