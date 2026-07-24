@@ -579,7 +579,7 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query(`
       INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
       SELECT
-        asset_row.ordinality::integer,
+        COALESCE(NULLIF(asset_row.item->>'sn', '')::integer, asset_row.ordinality::integer),
         COALESCE(asset_row.item->>'date', ''),
         COALESCE(assignment.requester, NULLIF(asset_row.item->>'user', ''), 'ส่วนกลาง'),
         COALESCE(NULLIF(asset_row.item->>'position', ''), '-'),
@@ -605,7 +605,7 @@ app.post('/api/sync-all', async (req, res) => {
         )
       FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS asset_row(item, ordinality)
       LEFT JOIN asset_requests assignment
-        ON assignment.assigned_asset_sn = asset_row.ordinality
+        ON assignment.assigned_asset_sn = COALESCE(NULLIF(asset_row.item->>'sn', '')::integer, asset_row.ordinality::integer)
        AND assignment.status IN ('approved', 'issued', 'overdue')
     `, [JSON.stringify(assetsList)]);
 

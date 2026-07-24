@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
 import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
@@ -5368,6 +5368,7 @@ function Dashboard() {
   const [consoleMonth, setConsoleMonth] = useState('2026-07');
   const [consoleSaving, setConsoleSaving] = useState(false);
   const [consoleSaveMessage, setConsoleSaveMessage] = useState('');
+  const [consoleAssetSearch, setConsoleAssetSearch] = useState('');
   const [editingAssetSn, setEditingAssetSn] = useState(null);
   const [editingTicketSn, setEditingTicketSn] = useState(null);
   const [editingSoftwareIndex, setEditingSoftwareIndex] = useState(null);
@@ -8936,11 +8937,20 @@ function Dashboard() {
     {/* MODAL 7: FULL ADMINISTRATIVE DATA CUSTOMIZER PANEL */}
     {activeModal === 'fullConsole' && (() => {
       const consoleMonthData = data[consoleMonth] || {};
-      const uniquePositions = Array.from(new Set(assetsList.map(a => a.position).filter(Boolean))).sort();
+      const consoleAssetQuery = consoleAssetSearch.trim().toLocaleLowerCase('th-TH');
+      const consoleAssets = assetsList
+        .filter((asset) => !consoleAssetQuery || [
+          asset.sn, asset.submittedOn, asset.respondent, asset.date, asset.user, asset.position,
+          asset.itemType, asset.additionalEquipment, asset.softwareApp, asset.registeredEmail,
+          asset.deviceSerial, asset.additionalSerial, asset.returnDueDate, asset.status,
+          asset.notes, asset.inspectionDate, asset.purchaseDate, asset.warrantyEndDate, asset.expense
+        ].some((value) => String(value ?? '').toLocaleLowerCase('th-TH').includes(consoleAssetQuery)))
+        .sort((a, b) => String(a.position || '').localeCompare(String(b.position || ''), 'th')
+          || Number(a.sn || 0) - Number(b.sn || 0));
       
       return (
-        <div className="modal-overlay active">
-          <div className="modal large" style={{ maxWidth: '95%', width: '1300px', height: '90vh', display: 'flex', flexDirection: 'column', backgroundColor: '#111827', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div className="modal-overlay active full-console-overlay">
+          <div className="modal large full-console-modal">
             <header className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Database size={22} style={{ color: 'var(--primary)' }} />
@@ -9192,7 +9202,7 @@ function Dashboard() {
 
                 {/* TAB 4: ASSETS INVENTORY EDITOR */}
                 {consoleTab === 'assets' && (
-                  <div>
+                  <div className="lark-registry">
                     <h4 className="console-title">💻 ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
                     <div className="console-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
                       <div className="console-field">
@@ -9234,32 +9244,81 @@ function Dashboard() {
                       )}
                     </div>
 
-                    <div className="console-table-scroll">
-                      <table className="details-table">
+                    <div className="lark-registry-toolbar">
+                      <input
+                        type="search"
+                        value={consoleAssetSearch}
+                        onChange={(event) => setConsoleAssetSearch(event.target.value)}
+                        placeholder="ค้นหาเลขรายการ ชื่อ แผนก อุปกรณ์ หมายเลขเครื่อง หรือสถานะ..."
+                        aria-label="ค้นหาทะเบียนทรัพย์สิน"
+                      />
+                      <span>แสดง {consoleAssets.length} จาก {assetsList.length} รายการ · จัดกลุ่มตามแผนก</span>
+                    </div>
+
+                    <div className="console-table-scroll lark-registry-scroll">
+                      <table className="details-table lark-registry-table">
                         <thead>
                           <tr>
-                            <th>รหัส</th>
-                            <th>ชื่อผู้เบิก</th>
-                            <th>แผนก</th>
-                            <th>ประเภทอุปกรณ์</th>
-                            <th>ซีเรียล</th>
+                            <th>Number</th>
+                            <th>Submitted on</th>
+                            <th>Respondents</th>
+                            <th>วันที่เบิกใช้งาน</th>
+                            <th>บุคคลเบิกใช้อุปกรณ์</th>
+                            <th>ตำแหน่ง</th>
+                            <th>รายการอุปกรณ์หลัก</th>
+                            <th>อุปกรณ์เพิ่มเติมที่ต้องการเบิก</th>
+                            <th>ซอฟต์แวร์ / App</th>
+                            <th>เมลที่ลงทะเบียน</th>
+                            <th>หมายเลขอุปกรณ์</th>
+                            <th>หมายเลขอุปกรณ์เพิ่มเติม</th>
+                            <th>กำหนดคืนอุปกรณ์</th>
                             <th>สถานะ</th>
+                            <th>หมายเหตุ</th>
+                            <th>วันที่ตรวจสอบ</th>
+                            <th>วันที่ซื้อ</th>
+                            <th>วันหมดประกัน</th>
+                            <th>ค่าใช้จ่าย</th>
                             <th>จัดการ</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {assetsList.map((asset, idx) => (
-                            <tr key={idx}>
+                          {consoleAssets.map((asset, idx) => {
+                            const previous = consoleAssets[idx - 1];
+                            const showGroup = !previous || String(previous.position || '-') !== String(asset.position || '-');
+                            return (
+                            <Fragment key={asset.sn ?? idx}>
+                              {showGroup && (
+                                <tr className="lark-group-row">
+                                  <td colSpan="20">
+                                    <span>{asset.position || 'ไม่ระบุแผนก'}</span>
+                                    <small>{consoleAssets.filter((row) => String(row.position || '-') === String(asset.position || '-')).length} รายการ</small>
+                                  </td>
+                                </tr>
+                              )}
+                            <tr>
                               <td>{asset.sn}</td>
+                              <td>{asset.submittedOn || '-'}</td>
+                              <td>{asset.respondent || '-'}</td>
+                              <td>{asset.date || '-'}</td>
                               <td>{asset.user}</td>
                               <td>{asset.position}</td>
-                              <td>{asset.itemType}</td>
+                              <td><span className="lark-pill lark-pill-device">{asset.itemType || '-'}</span></td>
+                              <td><AssetTags value={asset.additionalEquipment} /></td>
+                              <td><AssetTags value={asset.softwareApp} /></td>
+                              <td>{asset.registeredEmail || '-'}</td>
                               <td><strong>{asset.deviceSerial}</strong></td>
+                              <td>{asset.additionalSerial || '-'}</td>
+                              <td>{asset.returnDueDate || '-'}</td>
                               <td>
-                                <span style={{ color: asset.status === 'ใช้งาน' ? 'var(--success)' : asset.status === 'รอซ่อม' ? 'red' : 'var(--warning)', fontWeight: 'bold' }}>
-                                  {asset.status}
+                                <span className={`lark-status lark-status-${asset.status === 'ใช้งาน' ? 'active' : asset.status === 'รอซ่อม' ? 'repair' : asset.status === 'ว่าง' ? 'vacant' : 'other'}`}>
+                                  {asset.status || '-'}
                                 </span>
                               </td>
+                              <td>{asset.notes || '-'}</td>
+                              <td>{asset.inspectionDate || '-'}</td>
+                              <td>{asset.purchaseDate || '-'}</td>
+                              <td>{asset.warrantyEndDate || '-'}</td>
+                              <td className="lark-number">{Number(asset.expense || 0).toLocaleString('th-TH')}</td>
                               <td>
                                 <div style={{ display: 'flex', gap: '6px' }}>
                                   <button onClick={() => handleLoadEditAsset(asset)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>แก้ไข</button>
@@ -9267,7 +9326,8 @@ function Dashboard() {
                                 </div>
                               </td>
                             </tr>
-                          ))}
+                            </Fragment>
+                          )})}
                         </tbody>
                       </table>
                     </div>
