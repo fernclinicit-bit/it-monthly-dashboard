@@ -5481,7 +5481,7 @@ function Dashboard() {
   const [larkTicketRole, setLarkTicketRole] = useState('user'); // 'user' | 'it'
   const [selectedPendingTicketSn, setSelectedPendingTicketSn] = useState('');
   const [sidebarExpanded, setSidebarExpanded] = useState({
-    mgmt: true,
+    mgmt: false,
     excel: false,
     export: false
   });
