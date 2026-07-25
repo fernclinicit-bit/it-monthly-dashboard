@@ -7726,15 +7726,25 @@ function Dashboard() {
           </button>
         </div>
 
-        <button
-          onClick={() => {
+        <div className="sidebar-primary-actions">
+          <button
+            onClick={() => {
+              setMobileSidebarOpen(false);
+              navigate('/form');
+            }}
+            className="sidebar-form-btn"
+          >
+            + กรอกแบบฟอร์ม
+          </button>
+          <button onClick={() => {
+            setAssetWorkflowRole('requester');
             setMobileSidebarOpen(false);
-            navigate('/form');
-          }}
-          className="sidebar-form-btn"
-        >
-          + กรอกแบบฟอร์ม
-        </button>
+            setActiveModal('assetWorkflow');
+          }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
+            <Ticket size={16} />
+            ผู้ขอใช้บริการ
+          </button>
+        </div>
 
         {/* Month Dropdown Selection */}
         <div className="control-group">
@@ -7781,14 +7791,6 @@ function Dashboard() {
               })} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'white' }}>
                 <Laptop size={16} />
                 ลงทะเบียนเครื่องเข้าคลัง
-              </button>
-              <button onClick={() => {
-                setAssetWorkflowRole('requester');
-                setMobileSidebarOpen(false);
-                setActiveModal('assetWorkflow');
-              }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
-                <Ticket size={16} />
-                ผู้ขอใช้บริการ
               </button>
               <button onClick={() => requireAdminAccess(() => {
                 setAssetWorkflowRole('it');
