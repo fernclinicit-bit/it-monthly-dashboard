@@ -18,6 +18,7 @@ const LarkForm = () => {
     department: '',
     date: new Date().toISOString().split('T')[0],
     deviceType: '',
+    assetSerial: '',
     issue: '',
     priority: 'medium'
   });
@@ -55,6 +56,7 @@ const LarkForm = () => {
           department: '',
           date: new Date().toISOString().split('T')[0],
           deviceType: '',
+          assetSerial: '',
           issue: '',
           priority: 'medium'
         });
@@ -169,6 +171,22 @@ const LarkForm = () => {
                     <option value="Other">อื่นๆ</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="assetSerial">
+                  <Monitor size={16} />
+                  หมายเลขเครื่องจากทะเบียน (ถ้ามี)
+                </label>
+                <input
+                  type="text"
+                  id="assetSerial"
+                  name="assetSerial"
+                  value={formData.assetSerial}
+                  onChange={handleChange}
+                  placeholder="เช่น ASUS-019, MC-002"
+                />
+                <small>เมื่อระบุหมายเลขเครื่อง ระบบจะเปลี่ยนสถานะเครื่องเป็น “รอซ่อม” และซิงค์กับทะเบียนอัตโนมัติ</small>
               </div>
 
               <div className="form-group full-width">

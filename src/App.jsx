@@ -5462,6 +5462,7 @@ function Dashboard() {
   const [larkTicketComplainant, setLarkTicketComplainant] = useState('');
   const [larkTicketEmail, setLarkTicketEmail] = useState('');
   const [larkTicketAnydesk, setLarkTicketAnydesk] = useState('');
+  const [larkTicketAssetSerial, setLarkTicketAssetSerial] = useState('');
   const [larkTicketIssue, setLarkTicketIssue] = useState('');
   const [larkTicketCause, setLarkTicketCause] = useState('');
   const [larkTicketDuration, setLarkTicketDuration] = useState('00:30');
@@ -5528,10 +5529,12 @@ function Dashboard() {
     }
   };
 
-  const refreshAssetsFromDb = async () => {
+  const refreshOperationalStateFromDb = async () => {
     const response = await fetch(`${API_BASE}/api/db-state`);
     if (!response.ok) throw new Error(`API ${response.status}`);
     const result = await response.json();
+    isPollingUpdateRef.current = true;
+    if (result.data) setData(result.data);
     if (result.assetsList) setAssetsList(result.assetsList);
   };
 
@@ -5593,7 +5596,7 @@ function Dashboard() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'ดำเนินการไม่สำเร็จ');
-      await Promise.all([loadAssetRequests(), refreshAssetsFromDb()]);
+      await Promise.all([loadAssetRequests(), refreshOperationalStateFromDb()]);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -6311,7 +6314,7 @@ function Dashboard() {
     }
   };
 
-  const handleLarkSubmit = (e) => {
+  const handleLarkSubmit = async (e) => {
     e.preventDefault();
     if (larkFormType === 'ticket') {
       const tickets = data[currentMonth]?.ticketsList || [];
@@ -6350,27 +6353,42 @@ function Dashboard() {
           alert('กรุณากรอกอาการเสีย/ปัญหา');
           return;
         }
-        const newTicket = {
-          sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
-          date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
-          complainant: larkTicketComplainant || 'ไม่ระบุชื่อ',
-          email: larkTicketEmail || '-',
-          anydesk: larkTicketAnydesk || '-',
-          issue: larkTicketIssue,
-          cause: '-',
-          duration: '-',
-          responder: '-',
-          status: 'กำลังดำเนินการ',
-          cost: 0
-        };
+        const linkedAsset = larkTicketAssetSerial
+          ? assetsList.find(asset => String(asset.deviceSerial || '').toLocaleLowerCase('th-TH') === larkTicketAssetSerial.trim().toLocaleLowerCase('th-TH'))
+          : null;
+        if (larkTicketAssetSerial && !linkedAsset) {
+          alert('ไม่พบหมายเลขเครื่องนี้ในทะเบียนทรัพย์สิน');
+          return;
+        }
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: larkTicketComplainant || 'ไม่ระบุชื่อ',
+              department: linkedAsset?.position || 'ไม่ระบุ',
+              date: `${currentMonth}-01`,
+              deviceType: linkedAsset?.itemType || 'Other',
+              assetSerial: larkTicketAssetSerial.trim(),
+              issue: larkTicketIssue,
+              priority: 'medium',
+              email: larkTicketEmail,
+              anydesk: larkTicketAnydesk
+            })
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || 'บันทึกคำร้องไม่สำเร็จ');
+          await Promise.all([refreshOperationalStateFromDb(), loadAssetRequests()]);
+        } catch (error) {
+          alert(error.message);
+          return;
+        }
 
-        const updatedTickets = [...tickets, newTicket];
-        runRecalculation(currentMonth, updatedTickets, assetsList);
-        
         // Clear inputs
         setLarkTicketComplainant('');
         setLarkTicketEmail('');
         setLarkTicketAnydesk('');
+        setLarkTicketAssetSerial('');
         setLarkTicketIssue('');
         setLarkSubmitted(true);
       }
@@ -8232,7 +8250,7 @@ function Dashboard() {
                             <td><span className={`workflow-status status-${request.status}`}>{statusLabels[request.status] || request.status}</span></td>
                             {assetWorkflowRole === 'it' && <td>
                               <div className="workflow-actions">
-                                {request.status === 'pending' && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
+                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
                                 {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
                                 {(request.status === 'issued' || request.status === 'overdue') && <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button>}
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
@@ -9659,6 +9677,18 @@ function Dashboard() {
                             <label>AnyDesk ID</label>
                             <input type="text" className="lark-input" placeholder="เช่น 1 234 567" value={larkTicketAnydesk} onChange={e => setLarkTicketAnydesk(e.target.value)} />
                           </div>
+                        </div>
+
+                        <div className="lark-field-group">
+                          <label>หมายเลขเครื่องจากทะเบียน (ถ้ามี)</label>
+                          <input
+                            type="text"
+                            className="lark-input"
+                            placeholder="เช่น ASUS-019, MC-002"
+                            value={larkTicketAssetSerial}
+                            onChange={e => setLarkTicketAssetSerial(e.target.value)}
+                          />
+                          <small style={{ color: '#64748b' }}>เมื่อระบุหมายเลขเครื่อง ระบบจะเปลี่ยนสถานะเป็น “รอซ่อม” และปิดรายการเบิกของเครื่องนั้นอัตโนมัติ</small>
                         </div>
 
                         <div className="lark-field-group">

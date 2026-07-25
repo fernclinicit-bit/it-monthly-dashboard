@@ -39,6 +39,18 @@ const pool = new pg.Pool({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
+async function refreshOperationalCounters(client) {
+  await client.query(`
+    UPDATE monthly_data m
+    SET total_assets = (SELECT COUNT(*) FROM assets),
+        assets_broken = (SELECT COUNT(*) FROM assets WHERE status = 'รอซ่อม'),
+        assets_lost = (SELECT COUNT(*) FROM assets WHERE status = 'สูญหาย'),
+        assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง'),
+        tickets_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key),
+        repair_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key)
+  `);
+}
+
 async function initDb() {
   try {
     const client = await pool.connect();
@@ -151,6 +163,24 @@ async function initDb() {
           AND r.status IN ('approved', 'issued', 'overdue')
       `);
 
+      // An active request must never point to a deleted asset. Return a dangling
+      // request to the approval queue instead of showing conflicting statuses.
+      await client.query(`
+        UPDATE asset_requests r
+        SET status = 'need_info',
+            assigned_asset_sn = NULL,
+            history = r.history || jsonb_build_array(jsonb_build_object(
+              'status', 'need_info',
+              'at', NOW(),
+              'by', 'System',
+              'note', 'ยกเลิกการจัดสรรอัตโนมัติ เนื่องจากไม่พบอุปกรณ์ในทะเบียน'
+            )),
+            updated_at = NOW()
+        WHERE r.status IN ('approved', 'issued', 'overdue')
+          AND NOT EXISTS (SELECT 1 FROM assets a WHERE a.sn = r.assigned_asset_sn)
+      `);
+
+      await refreshOperationalCounters(client);
       console.log('Tables initialized successfully.');
     } finally {
       client.release();
@@ -241,7 +271,7 @@ app.get('/api/db-state', async (req, res) => {
 });
 
 app.post('/api/tickets', async (req, res) => {
-  const { name, department, date, deviceType, issue, priority } = req.body || {};
+  const { name, department, date, deviceType, issue, priority, assetSerial, email, anydesk } = req.body || {};
   if (!name || !department || !date || !deviceType || !issue) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลแจ้งปัญหาให้ครบถ้วน' });
   }
@@ -260,6 +290,7 @@ app.post('/api/tickets', async (req, res) => {
       throw new Error(`ยังไม่มีข้อมูล Dashboard สำหรับเดือน ${monthKey}`);
     }
 
+    await client.query('SELECT pg_advisory_xact_lock(42001)');
     const snResult = await client.query('SELECT COALESCE(MAX(sn), 0) + 1 AS next_sn FROM tickets');
     const nextSn = Number(snResult.rows[0].next_sn);
     const complainant = `${String(name).trim()} (${String(department).trim()})`;
@@ -269,21 +300,59 @@ app.post('/api/tickets', async (req, res) => {
       INSERT INTO tickets (
         sn, month_key, date, complainant, email, anydesk, issue, cause,
         duration, responder, status, cost, source
-      ) VALUES ($1, $2, $3, $4, '-', '-', $5, '-', '-', '-', 'กำลังดำเนินการ', 0, 'request_form')
-    `, [nextSn, monthKey, date, complainant, ticketIssue]);
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, '-', '-', '-', 'กำลังดำเนินการ', 0, 'request_form')
+    `, [nextSn, monthKey, date, complainant, email || '-', anydesk || '-', ticketIssue]);
 
-    await client.query(`
-      UPDATE monthly_data
-      SET tickets_count = (SELECT COUNT(*) FROM tickets WHERE month_key = $1)
-      WHERE month_key = $1
-    `, [monthKey]);
+    let linkedAssetSn = null;
+    if (String(assetSerial || '').trim()) {
+      const assetResult = await client.query(
+        'SELECT sn, details FROM assets WHERE LOWER(device_serial) = LOWER($1) FOR UPDATE',
+        [String(assetSerial).trim()]
+      );
+      if (assetResult.rowCount === 0) {
+        throw new Error(`ไม่พบหมายเลขเครื่อง ${String(assetSerial).trim()} ในทะเบียนทรัพย์สิน`);
+      }
+      linkedAssetSn = Number(assetResult.rows[0].sn);
+      await client.query(`
+        UPDATE assets
+        SET status = 'รอซ่อม',
+            details = details || jsonb_build_object('status', 'รอซ่อม')
+        WHERE sn = $1
+      `, [linkedAssetSn]);
+
+      const activeRequests = await client.query(`
+        SELECT id, history FROM asset_requests
+        WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue')
+        FOR UPDATE
+      `, [linkedAssetSn]);
+      for (const request of activeRequests.rows) {
+        const event = {
+          status: 'returned',
+          at: new Date().toISOString(),
+          by: String(name).trim(),
+          note: `ส่งเครื่องเข้าซ่อมจากใบแจ้งปัญหา #${nextSn}`
+        };
+        await client.query(`
+          UPDATE asset_requests
+          SET status = 'returned',
+              return_date = NOW(),
+              return_condition = 'ชำรุด',
+              history = $1,
+              updated_at = NOW()
+          WHERE id = $2
+        `, [JSON.stringify([...(request.history || []), event]), request.id]);
+      }
+    }
+
+    await refreshOperationalCounters(client);
 
     await client.query('COMMIT');
-    res.status(201).json({ success: true, sn: nextSn, monthKey });
+    res.status(201).json({ success: true, sn: nextSn, monthKey, linkedAssetSn });
   } catch (err) {
     if (client) await client.query('ROLLBACK');
     console.error('Error creating IT request ticket:', err);
-    res.status(err.message.startsWith('ยังไม่มีข้อมูล') ? 400 : 500).json({ error: err.message || 'บันทึกคำร้องไม่สำเร็จ' });
+    const isValidationError = err.message.startsWith('ยังไม่มีข้อมูล') || err.message.startsWith('ไม่พบหมายเลขเครื่อง');
+    res.status(isValidationError ? 400 : 500).json({ error: err.message || 'บันทึกคำร้องไม่สำเร็จ' });
   } finally {
     if (client) client.release();
   }
@@ -469,6 +538,36 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       `, [assetStatus, request.requester, assignedSn]);
     }
 
+    if (action === 'return' && condition === 'ชำรุด' && assignedSn) {
+      const monthResult = await client.query(`
+        SELECT month_key
+        FROM monthly_data
+        ORDER BY (month_key = TO_CHAR(CURRENT_DATE, 'YYYY-MM')) DESC, month_key DESC
+        LIMIT 1
+      `);
+      if (monthResult.rowCount > 0) {
+        const repairMonthKey = monthResult.rows[0].month_key;
+        await client.query('SELECT pg_advisory_xact_lock(42001)');
+        const snResult = await client.query('SELECT COALESCE(MAX(sn), 0) + 1 AS next_sn FROM tickets');
+        const nextTicketSn = Number(snResult.rows[0].next_sn);
+        const assetResult = await client.query('SELECT device_serial, item_type FROM assets WHERE sn = $1', [assignedSn]);
+        const asset = assetResult.rows[0] || {};
+        await client.query(`
+          INSERT INTO tickets (
+            sn, month_key, date, complainant, email, anydesk, issue, cause,
+            duration, responder, status, cost, source
+          ) VALUES ($1, $2, TO_CHAR(NOW(), 'YYYY-MM-DD HH24:MI'), $3, '-', '-', $4, '-',
+                    '-', $5, 'กำลังดำเนินการ', 0, 'asset_workflow')
+        `, [
+          nextTicketSn,
+          repairMonthKey,
+          `${request.requester} (${request.department})`,
+          `[${asset.item_type || request.item_type}] เครื่อง ${asset.device_serial || assignedSn} ชำรุดจากการรับคืน`,
+          reviewer || 'IT'
+        ]);
+      }
+    }
+
     const event = { status: nextStatus, at: new Date().toISOString(), by: reviewer || request.requester, note: note || '' };
     const updated = await client.query(`
       UPDATE asset_requests
@@ -484,6 +583,7 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       WHERE id = $7
       RETURNING *
     `, [nextStatus, assignedSn, reviewer || null, condition || null, note || '', JSON.stringify([event]), id]);
+    await refreshOperationalCounters(client);
     await client.query('COMMIT');
     res.json(updated.rows[0]);
   } catch (err) {
@@ -570,9 +670,19 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query('BEGIN');
 
     await client.query('DELETE FROM monthly_data');
-    // Tickets submitted by the public request form are authoritative and must
-    // survive older dashboard snapshots sent by automatic synchronization.
-    await client.query(`DELETE FROM tickets WHERE source <> 'request_form'`);
+    // Tickets created by API workflows are authoritative and must survive older
+    // dashboard snapshots sent by automatic synchronization.
+    await client.query(`DELETE FROM tickets WHERE source = 'dashboard'`);
+
+    // Keep assets assigned to active requests even if an older browser snapshot
+    // does not contain them. This prevents dangling issue/return workflows.
+    await client.query(`
+      CREATE TEMP TABLE preserved_workflow_assets ON COMMIT DROP AS
+      SELECT a.*
+      FROM assets a
+      JOIN asset_requests r ON r.assigned_asset_sn = a.sn
+      WHERE r.status IN ('approved', 'issued', 'overdue')
+    `);
 
     // Keep workflow-controlled status/user authoritative when a browser sends an
     // older full asset snapshot during automatic synchronization.
@@ -609,6 +719,13 @@ app.post('/api/sync-all', async (req, res) => {
         ON assignment.assigned_asset_sn = COALESCE(NULLIF(asset_row.item->>'sn', '')::integer, asset_row.ordinality::integer)
        AND assignment.status IN ('approved', 'issued', 'overdue')
     `, [JSON.stringify(assetsList)]);
+
+    await client.query(`
+      INSERT INTO assets (sn, date, user_name, position, item_type, device_serial, status, notes, details)
+      SELECT sn, date, user_name, position, item_type, device_serial, status, notes, details
+      FROM preserved_workflow_assets preserved
+      WHERE NOT EXISTS (SELECT 1 FROM assets current_asset WHERE current_asset.sn = preserved.sn)
+    `);
 
     const ticketPayload = [];
     for (const [monthKey, monthData] of Object.entries(data)) {
@@ -711,12 +828,7 @@ app.post('/api/sync-all', async (req, res) => {
       `, [JSON.stringify(ticketPayload)]);
     }
 
-    await client.query(`
-      UPDATE monthly_data m
-      SET tickets_count = (
-        SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key
-      )
-    `);
+    await refreshOperationalCounters(client);
 
     await client.query('COMMIT');
     res.json({ success: true, message: 'All state synchronized successfully' });
