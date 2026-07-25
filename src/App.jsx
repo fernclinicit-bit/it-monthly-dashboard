@@ -7831,11 +7831,11 @@ function Dashboard() {
                 style={{ display: 'none' }}
                 onChange={handleImportXlsx}
               />
-              <button onClick={() => fileInputRef.current?.click()} className="sidebar-btn" style={{ backgroundColor: '#059669' }}>
+              <button onClick={() => requireAdminAccess(() => fileInputRef.current?.click())} className="sidebar-btn" style={{ backgroundColor: '#059669' }}>
                 <Upload size={16} />
                 นำเข้าข้อมูลจาก Excel
               </button>
-              <button onClick={exportToXlsx} className="sidebar-btn secondary">
+              <button onClick={() => requireAdminAccess(exportToXlsx)} className="sidebar-btn secondary">
                 <Download size={16} />
                 ส่งออกข้อมูลเป็น Excel
               </button>
