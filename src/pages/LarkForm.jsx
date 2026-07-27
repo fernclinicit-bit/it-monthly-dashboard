@@ -194,7 +194,7 @@ const LarkForm = () => {
               <div className="form-group full-width">
                 <label htmlFor="anydesk">
                   <Monitor size={16} />
-                  เลขที่ AnyDesk (ถ้ามี)
+                  เลขที่ AnyDesk หากไม่มีกรุณา Download
                   <a
                     className="anydesk-download-link"
                     href="https://anydesk.com/en/downloads/thank-you?dv=win_exe"
