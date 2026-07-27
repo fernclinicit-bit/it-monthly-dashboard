@@ -194,6 +194,7 @@ async function initDb() {
 
 app.get('/api/db-state', async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     const monthsResult = await pool.query('SELECT * FROM monthly_data');
     const assetsResult = await pool.query('SELECT * FROM assets ORDER BY sn ASC');
     const ticketsResult = await pool.query('SELECT * FROM tickets ORDER BY sn ASC');
@@ -891,7 +892,10 @@ app.post('/api/sync-all', async (req, res) => {
       `, [JSON.stringify(ticketPayload)]);
     }
 
-    await refreshOperationalCounters(client);
+    // Preserve the values entered in the full dashboard editor. Operational
+    // workflow endpoints recalculate their own counters when a ticket or asset
+    // request changes; recalculating here would immediately overwrite a manual
+    // dashboard update after it was saved.
 
     await client.query('COMMIT');
     res.json({ success: true, message: 'All state synchronized successfully' });

@@ -5530,7 +5530,7 @@ function Dashboard() {
   };
 
   const refreshOperationalStateFromDb = async () => {
-    const response = await fetch(`${API_BASE}/api/db-state`);
+    const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`API ${response.status}`);
     const result = await response.json();
     isPollingUpdateRef.current = true;
@@ -5656,7 +5656,7 @@ function Dashboard() {
   useEffect(() => {
     async function loadDbState() {
       try {
-        const res = await fetch(`${API_BASE}/api/db-state`);
+        const res = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!res.ok) throw new Error('API server returned error');
         const result = await res.json();
         
@@ -5697,7 +5697,7 @@ function Dashboard() {
       }
 
       try {
-        const res = await fetch(`${API_BASE}/api/db-state`);
+        const res = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!res.ok) return;
         const result = await res.json();
 
@@ -6519,7 +6519,7 @@ function Dashboard() {
         const assetResult = await assetResponse.json();
         if (!assetResponse.ok) throw new Error(assetResult.error || 'แก้ไขสถานะทรัพย์สินไม่สำเร็จ');
       }
-      const response = await fetch(`${API_BASE}/api/db-state`);
+      const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
       if (!response.ok) throw new Error(`API server returned ${response.status}`);
       const synchronized = await response.json();
       if (synchronized.data) setData(synchronized.data);
