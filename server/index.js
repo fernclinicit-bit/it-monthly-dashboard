@@ -312,12 +312,16 @@ app.get('/api/tickets/:sn/attachment', async (req, res) => {
     );
     if (!match) return res.status(415).json({ error: 'รูปแนบไม่ถูกต้อง' });
 
-    const fileName = String(result.rows[0].attachment_name || `ticket-${req.params.sn}`)
-      .replace(/[\r\n"]/g, '')
-      .slice(0, 255);
+    const extensionByType = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif'
+    };
+    const safeFileName = `ticket-${Number(req.params.sn)}.${extensionByType[match[1]] || 'img'}`;
     res.set('Cache-Control', 'private, max-age=3600');
     res.set('Content-Type', match[1]);
-    res.set('Content-Disposition', `inline; filename="${fileName}"`);
+    res.set('Content-Disposition', `inline; filename="${safeFileName}"`);
     return res.send(Buffer.from(match[2], 'base64'));
   } catch (err) {
     console.error('Error fetching ticket attachment:', err);
