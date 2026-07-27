@@ -6317,8 +6317,6 @@ function Dashboard() {
   const handleLarkSubmit = async (e) => {
     e.preventDefault();
     if (larkFormType === 'ticket') {
-      const tickets = data[currentMonth]?.ticketsList || [];
-
       if (larkTicketRole === 'it') {
         if (!selectedPendingTicketSn) {
           alert('กรุณาเลือกใบงานที่ต้องการปิดงาน');
@@ -6329,17 +6327,27 @@ function Dashboard() {
           return;
         }
         
-        // IT Close work mode
-        const updatedTickets = tickets.map(t => Number(t.sn) === Number(selectedPendingTicketSn) ? {
-          ...t,
-          responder: larkTicketResponder,
-          duration: larkTicketDuration || '00:30',
-          cause: larkTicketCause || '-',
-          cost: Number(larkTicketCost) || 0,
-          status: larkTicketStatus
-        } : t);
+        // IT Close work mode - persist through the API before removing it from the queue.
+        try {
+          const response = await fetch(`${API_BASE}/api/tickets/${selectedPendingTicketSn}/close`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              responder: larkTicketResponder,
+              duration: larkTicketDuration || '00:30',
+              cause: larkTicketCause || '-',
+              cost: Number(larkTicketCost) || 0,
+              status: larkTicketStatus
+            })
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || 'ปิดงานไม่สำเร็จ');
+          await refreshOperationalStateFromDb();
+        } catch (error) {
+          alert(error.message);
+          return;
+        }
 
-        runRecalculation(currentMonth, updatedTickets, assetsList);
         setSelectedPendingTicketSn('');
         setLarkTicketResponder('');
         setLarkTicketDuration('00:30');

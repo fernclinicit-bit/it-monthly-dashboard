@@ -121,10 +121,12 @@ async function initDb() {
           responder VARCHAR(255) NOT NULL,
           status VARCHAR(50) NOT NULL,
           cost NUMERIC(12, 2) NOT NULL,
+          asset_sn INTEGER,
           source VARCHAR(50) NOT NULL DEFAULT 'dashboard'
         )
       `);
       await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS source VARCHAR(50) NOT NULL DEFAULT 'dashboard'`);
+      await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS asset_sn INTEGER`);
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS asset_requests (
@@ -246,6 +248,7 @@ app.get('/api/db-state', async (req, res) => {
           responder: row.responder,
           status: row.status,
           cost: Number(row.cost),
+          assetSn: row.asset_sn === null ? null : Number(row.asset_sn),
           source: row.source
         });
       }
@@ -313,6 +316,7 @@ app.post('/api/tickets', async (req, res) => {
         throw new Error(`ไม่พบหมายเลขเครื่อง ${String(assetSerial).trim()} ในทะเบียนทรัพย์สิน`);
       }
       linkedAssetSn = Number(assetResult.rows[0].sn);
+      await client.query('UPDATE tickets SET asset_sn = $1 WHERE sn = $2', [linkedAssetSn, nextSn]);
       await client.query(`
         UPDATE assets
         SET status = 'รอซ่อม',
@@ -353,6 +357,64 @@ app.post('/api/tickets', async (req, res) => {
     console.error('Error creating IT request ticket:', err);
     const isValidationError = err.message.startsWith('ยังไม่มีข้อมูล') || err.message.startsWith('ไม่พบหมายเลขเครื่อง');
     res.status(isValidationError ? 400 : 500).json({ error: err.message || 'บันทึกคำร้องไม่สำเร็จ' });
+  } finally {
+    if (client) client.release();
+  }
+});
+
+app.patch('/api/tickets/:sn/close', async (req, res) => {
+  const sn = Number(req.params.sn);
+  const { responder, duration, cause, status, cost } = req.body || {};
+  if (!Number.isInteger(sn) || sn <= 0 || !String(responder || '').trim()) {
+    return res.status(400).json({ error: 'กรุณาระบุใบงานและชื่อผู้ดำเนินงานให้ถูกต้อง' });
+  }
+  if (!['เสร็จสิ้น', 'จ่ายเงินแล้ว'].includes(status)) {
+    return res.status(400).json({ error: 'สถานะปิดงานไม่ถูกต้อง' });
+  }
+
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+    const ticketResult = await client.query('SELECT * FROM tickets WHERE sn = $1 FOR UPDATE', [sn]);
+    if (ticketResult.rowCount === 0) throw new Error('ไม่พบใบงานที่ต้องการปิด');
+    const ticket = ticketResult.rows[0];
+    if (ticket.status !== 'กำลังดำเนินการ') throw new Error('ใบงานนี้ถูกปิดหรืออัปเดตไปแล้ว');
+
+    await client.query(`
+      UPDATE tickets
+      SET responder = $1,
+          duration = $2,
+          cause = $3,
+          status = $4,
+          cost = $5
+      WHERE sn = $6
+    `, [
+      String(responder).trim(),
+      duration || '00:30',
+      cause || '-',
+      status,
+      Number(cost) || 0,
+      sn
+    ]);
+
+    if (ticket.asset_sn) {
+      await client.query(`
+        UPDATE assets
+        SET status = 'ว่าง',
+            user_name = 'ส่วนกลาง',
+            details = details || jsonb_build_object('status', 'ว่าง', 'user', 'ส่วนกลาง')
+        WHERE sn = $1 AND status = 'รอซ่อม'
+      `, [ticket.asset_sn]);
+    }
+
+    await refreshOperationalCounters(client);
+    await client.query('COMMIT');
+    res.json({ success: true, sn, status, assetSn: ticket.asset_sn ? Number(ticket.asset_sn) : null });
+  } catch (err) {
+    if (client) await client.query('ROLLBACK');
+    console.error('Error closing ticket:', err);
+    res.status(err.message.startsWith('ไม่พบ') ? 404 : 400).json({ error: err.message || 'ปิดงานไม่สำเร็จ' });
   } finally {
     if (client) client.release();
   }
@@ -555,15 +617,16 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
         await client.query(`
           INSERT INTO tickets (
             sn, month_key, date, complainant, email, anydesk, issue, cause,
-            duration, responder, status, cost, source
+            duration, responder, status, cost, asset_sn, source
           ) VALUES ($1, $2, TO_CHAR(NOW(), 'YYYY-MM-DD HH24:MI'), $3, '-', '-', $4, '-',
-                    '-', $5, 'กำลังดำเนินการ', 0, 'asset_workflow')
+                    '-', $5, 'กำลังดำเนินการ', 0, $6, 'asset_workflow')
         `, [
           nextTicketSn,
           repairMonthKey,
           `${request.requester} (${request.department})`,
           `[${asset.item_type || request.item_type}] เครื่อง ${asset.device_serial || assignedSn} ชำรุดจากการรับคืน`,
-          reviewer || 'IT'
+          reviewer || 'IT',
+          assignedSn
         ]);
       }
     }
