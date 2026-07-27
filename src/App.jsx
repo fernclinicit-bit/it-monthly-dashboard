@@ -5559,7 +5559,7 @@ function Dashboard() {
     }
   };
 
-  const runAssetRequestAction = async (request, action) => {
+  const runAssetRequestAction = async (request, action, requestedByUser = false) => {
     const payload = { action };
     if (action === 'approve') {
       const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
@@ -5579,12 +5579,19 @@ function Dashboard() {
       if (!window.confirm(`ยืนยันส่งมอบอุปกรณ์ให้ ${request.requester}?`)) return;
       payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ส่งมอบ') || request.reviewer || 'IT';
     } else if (action === 'return') {
-      const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
-      if (condition === null) return;
-      if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
-      payload.condition = condition;
-      payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
-      payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
+      if (requestedByUser) {
+        if (!window.confirm(`ยืนยันส่งคืนอุปกรณ์ ${request.device_serial || request.item_type} เข้าคลังใช่หรือไม่?`)) return;
+        payload.condition = 'ปกติ';
+        payload.reviewer = request.requester;
+        payload.note = 'ผู้ใช้งานยืนยันส่งคืนอุปกรณ์เข้าคลัง';
+      } else {
+        const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
+        if (condition === null) return;
+        if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
+        payload.condition = condition;
+        payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
+        payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
+      }
     }
 
     setAssetRequestLoading(true);
@@ -5597,6 +5604,11 @@ function Dashboard() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'ดำเนินการไม่สำเร็จ');
       await Promise.all([loadAssetRequests(), refreshOperationalStateFromDb()]);
+      if (action === 'return') {
+        alert(requestedByUser
+          ? 'ส่งคืนอุปกรณ์สำเร็จ เครื่องถูกนำออกจากผู้ใช้งานและคืนเข้าคลังแล้ว'
+          : 'รับคืนอุปกรณ์และอัปเดตคลังสำเร็จ');
+      }
     } catch (err) {
       alert(err.message);
     } finally {
@@ -8262,10 +8274,10 @@ function Dashboard() {
                   </div>
                   <div className="workflow-table-wrap">
                     <table className="details-table workflow-table">
-                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th>{assetWorkflowRole === 'it' && <th>จัดการ</th>}</tr></thead>
+                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
                       <tbody>
                         {displayedRequests.length === 0 ? (
-                          <tr><td colSpan={assetWorkflowRole === 'it' ? 7 : 6} className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
+                          <tr><td colSpan="7" className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
                         ) : displayedRequests.map(request => (
                           <tr key={request.id}>
                             <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
@@ -8274,14 +8286,28 @@ function Dashboard() {
                             <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
                             <td>{request.device_serial ? <><strong>{request.device_serial}</strong><small>{request.assigned_item_type}</small></> : '-'}</td>
                             <td><span className={`workflow-status status-${request.status}`}>{statusLabels[request.status] || request.status}</span></td>
-                            {assetWorkflowRole === 'it' && <td>
+                            <td>
+                              {assetWorkflowRole === 'requester' ? (
+                                <div className="workflow-actions">
+                                  {(request.status === 'issued' || request.status === 'overdue') ? (
+                                    <button
+                                      className="return"
+                                      onClick={() => runAssetRequestAction(request, 'return', true)}
+                                      disabled={assetRequestLoading}
+                                    >
+                                      ส่งคืนอุปกรณ์
+                                    </button>
+                                  ) : <span className="workflow-done">-</span>}
+                                </div>
+                              ) : (
                               <div className="workflow-actions">
                                 {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
                                 {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
                                 {(request.status === 'issued' || request.status === 'overdue') && <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button>}
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
                               </div>
-                            </td>}
+                              )}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
