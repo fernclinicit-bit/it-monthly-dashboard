@@ -426,6 +426,29 @@ body {
     font-size: 1.05rem;
 }
 
+.vacant-assets-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 3px;
+    max-width: 150px;
+    margin-top: 5px;
+}
+
+.vacant-assets-breakdown span {
+    padding: 2px 5px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+    font-size: 0.58rem;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.vacant-assets-breakdown strong {
+    color: #34d399;
+}
+
 .main-asset-count {
     display: flex;
     align-items: center;

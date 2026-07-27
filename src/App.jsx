@@ -6569,6 +6569,15 @@ function Dashboard() {
     return asset.status === 'ว่าง' && mainAssetCategories.some((category) => category.match(type));
   }).length;
 
+  const vacantMainAssetBreakdown = mainAssetCategories
+    .map((category) => ({
+      label: category.label,
+      count: assetsList.filter((asset) =>
+        asset.status === 'ว่าง' && category.match(String(asset.itemType || ''))
+      ).length,
+    }))
+    .filter((asset) => asset.count > 0);
+
   const parseAssetDate = (value) => {
     if (!value) return null;
     const text = String(value).trim();
@@ -7956,6 +7965,13 @@ function Dashboard() {
                   <div className="asset-vacant-summary">
                     <div className="metric-label">เครื่องว่าง</div>
                     <div className="metric-value highlight-success">{primaryVacantAssets} เครื่อง</div>
+                    <div className="vacant-assets-breakdown">
+                      {vacantMainAssetBreakdown.length > 0 ? vacantMainAssetBreakdown.map((asset) => (
+                        <span key={asset.label}>{asset.label} <strong>{asset.count}</strong></span>
+                      )) : (
+                        <span>ไม่มีเครื่องว่าง</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="main-assets-breakdown">
