@@ -144,6 +144,86 @@
   color: #1d4ed8;
 }
 
+.attachment-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.attachment-picker {
+  display: flex !important;
+  min-height: 92px;
+  align-items: center !important;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.35rem !important;
+  padding: 1rem;
+  border: 1.5px dashed #9db5d8;
+  border-radius: 10px;
+  background: #f7faff;
+  color: #2563eb;
+  cursor: pointer;
+  text-align: center;
+}
+
+.attachment-picker:hover {
+  border-color: #3b82f6;
+  background: #eef5ff;
+}
+
+.attachment-picker small {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.attachment-preview {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #d7e1ef;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.attachment-preview img {
+  width: 92px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.attachment-preview > div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.attachment-preview strong {
+  overflow: hidden;
+  color: #334155;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-preview button {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .form-group input[type="text"],
 .form-group input[type="date"],
 .form-group select,

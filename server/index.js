@@ -39,6 +39,23 @@ const pool = new pg.Pool({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
+function normalizeImageAttachment(data, name) {
+  if (!data) return { data: null, name: null };
+  const value = String(data);
+  if (!/^data:image\/(?:jpeg|png|webp|gif);base64,[A-Za-z0-9+/=\s]+$/.test(value)) {
+    throw new Error('ไฟล์แนบต้องเป็นรูป JPG, PNG, WEBP หรือ GIF เท่านั้น');
+  }
+  const encoded = value.slice(value.indexOf(',') + 1).replace(/\s/g, '');
+  const byteLength = Math.floor((encoded.length * 3) / 4);
+  if (byteLength > 5 * 1024 * 1024) {
+    throw new Error('ไฟล์แนบมีขนาดเกิน 5 MB');
+  }
+  return {
+    data: value,
+    name: String(name || 'attachment').slice(0, 255)
+  };
+}
+
 async function refreshOperationalCounters(client) {
   await client.query(`
     UPDATE monthly_data m
@@ -122,11 +139,15 @@ async function initDb() {
           status VARCHAR(50) NOT NULL,
           cost NUMERIC(12, 2) NOT NULL,
           asset_sn INTEGER,
-          source VARCHAR(50) NOT NULL DEFAULT 'dashboard'
+          source VARCHAR(50) NOT NULL DEFAULT 'dashboard',
+          attachment_data TEXT,
+          attachment_name VARCHAR(255)
         )
       `);
       await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS source VARCHAR(50) NOT NULL DEFAULT 'dashboard'`);
       await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS asset_sn INTEGER`);
+      await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS attachment_data TEXT`);
+      await client.query(`ALTER TABLE tickets ADD COLUMN IF NOT EXISTS attachment_name VARCHAR(255)`);
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS asset_requests (
@@ -250,7 +271,9 @@ app.get('/api/db-state', async (req, res) => {
           status: row.status,
           cost: Number(row.cost),
           assetSn: row.asset_sn === null ? null : Number(row.asset_sn),
-          source: row.source
+          source: row.source,
+          hasAttachment: Boolean(row.attachment_data),
+          attachmentName: row.attachment_name || ''
         });
       }
     });
@@ -274,8 +297,36 @@ app.get('/api/db-state', async (req, res) => {
   }
 });
 
+app.get('/api/tickets/:sn/attachment', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT attachment_data, attachment_name FROM tickets WHERE sn = $1',
+      [Number(req.params.sn)]
+    );
+    if (result.rowCount === 0 || !result.rows[0].attachment_data) {
+      return res.status(404).json({ error: 'ไม่พบรูปแนบ' });
+    }
+
+    const match = String(result.rows[0].attachment_data).match(
+      /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/
+    );
+    if (!match) return res.status(415).json({ error: 'รูปแนบไม่ถูกต้อง' });
+
+    const fileName = String(result.rows[0].attachment_name || `ticket-${req.params.sn}`)
+      .replace(/[\r\n"]/g, '')
+      .slice(0, 255);
+    res.set('Cache-Control', 'private, max-age=3600');
+    res.set('Content-Type', match[1]);
+    res.set('Content-Disposition', `inline; filename="${fileName}"`);
+    return res.send(Buffer.from(match[2], 'base64'));
+  } catch (err) {
+    console.error('Error fetching ticket attachment:', err);
+    return res.status(500).json({ error: 'ไม่สามารถเปิดรูปแนบได้' });
+  }
+});
+
 app.post('/api/tickets', async (req, res) => {
-  const { name, department, date, deviceType, issue, priority, assetSerial, email, anydesk } = req.body || {};
+  const { name, department, date, deviceType, issue, priority, assetSerial, email, anydesk, attachmentData, attachmentName } = req.body || {};
   if (!name || !department || !date || !deviceType || !issue) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลแจ้งปัญหาให้ครบถ้วน' });
   }
@@ -299,13 +350,14 @@ app.post('/api/tickets', async (req, res) => {
     const nextSn = Number(snResult.rows[0].next_sn);
     const complainant = `${String(name).trim()} (${String(department).trim()})`;
     const ticketIssue = `[${String(deviceType).trim()}] [${priority || 'medium'}] ${String(issue).trim()}`;
+    const attachment = normalizeImageAttachment(attachmentData, attachmentName);
 
     await client.query(`
       INSERT INTO tickets (
         sn, month_key, date, complainant, email, anydesk, issue, cause,
-        duration, responder, status, cost, source
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, '-', '-', '-', 'กำลังดำเนินการ', 0, 'request_form')
-    `, [nextSn, monthKey, date, complainant, email || '-', anydesk || '-', ticketIssue]);
+        duration, responder, status, cost, source, attachment_data, attachment_name
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, '-', '-', '-', 'กำลังดำเนินการ', 0, 'request_form', $8, $9)
+    `, [nextSn, monthKey, date, complainant, email || '-', anydesk || '-', ticketIssue, attachment.data, attachment.name]);
 
     let linkedAssetSn = null;
     if (String(assetSerial || '').trim()) {
@@ -356,7 +408,9 @@ app.post('/api/tickets', async (req, res) => {
   } catch (err) {
     if (client) await client.query('ROLLBACK');
     console.error('Error creating IT request ticket:', err);
-    const isValidationError = err.message.startsWith('ยังไม่มีข้อมูล') || err.message.startsWith('ไม่พบหมายเลขเครื่อง');
+    const isValidationError = err.message.startsWith('ยังไม่มีข้อมูล') ||
+      err.message.startsWith('ไม่พบหมายเลขเครื่อง') ||
+      err.message.startsWith('ไฟล์แนบ');
     res.status(isValidationError ? 400 : 500).json({ error: err.message || 'บันทึกคำร้องไม่สำเร็จ' });
   } finally {
     if (client) client.release();
@@ -853,14 +907,19 @@ app.post('/api/sync-all', async (req, res) => {
           responder: ticket.responder || '-',
           status: ticket.status || 'กำลังดำเนินการ',
           cost: finiteNumber(ticket.cost),
-          source: ticket.source === 'request_form' ? 'request_form' : 'dashboard'
+          source: ticket.source === 'request_form' ? 'request_form' : 'dashboard',
+          attachmentData: ticket.attachmentData || null,
+          attachmentName: ticket.attachmentName || null
         });
       }
     }
 
     if (ticketPayload.length > 0) {
       await client.query(`
-        INSERT INTO tickets (sn, month_key, date, complainant, email, anydesk, issue, cause, duration, responder, status, cost, source)
+        INSERT INTO tickets (
+          sn, month_key, date, complainant, email, anydesk, issue, cause,
+          duration, responder, status, cost, source, attachment_data, attachment_name
+        )
         SELECT
           (ticket.item->>'sn')::integer,
           ticket.item->>'monthKey',
@@ -874,7 +933,9 @@ app.post('/api/sync-all', async (req, res) => {
           COALESCE(NULLIF(ticket.item->>'responder', ''), '-'),
           COALESCE(NULLIF(ticket.item->>'status', ''), 'กำลังดำเนินการ'),
           COALESCE((ticket.item->>'cost')::numeric, 0),
-          COALESCE(NULLIF(ticket.item->>'source', ''), 'dashboard')
+          COALESCE(NULLIF(ticket.item->>'source', ''), 'dashboard'),
+          NULLIF(ticket.item->>'attachmentData', ''),
+          NULLIF(ticket.item->>'attachmentName', '')
         FROM jsonb_array_elements($1::jsonb) AS ticket(item)
         ON CONFLICT (sn) DO UPDATE SET
           month_key = EXCLUDED.month_key,
@@ -888,7 +949,9 @@ app.post('/api/sync-all', async (req, res) => {
           responder = EXCLUDED.responder,
           status = EXCLUDED.status,
           cost = EXCLUDED.cost,
-          source = CASE WHEN tickets.source = 'request_form' THEN tickets.source ELSE EXCLUDED.source END
+          source = CASE WHEN tickets.source = 'request_form' THEN tickets.source ELSE EXCLUDED.source END,
+          attachment_data = COALESCE(EXCLUDED.attachment_data, tickets.attachment_data),
+          attachment_name = COALESCE(EXCLUDED.attachment_name, tickets.attachment_name)
       `, [JSON.stringify(ticketPayload)]);
     }
 

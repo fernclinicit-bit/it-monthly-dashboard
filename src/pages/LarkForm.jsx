@@ -7,7 +7,9 @@ import {
   AlertCircle, 
   User, 
   Briefcase, 
-  Calendar 
+  Calendar,
+  ImagePlus,
+  X
 } from 'lucide-react';
 import './LarkForm.css';
 
@@ -21,7 +23,9 @@ const LarkForm = () => {
     assetSerial: '',
     anydesk: '',
     issue: '',
-    priority: 'medium'
+    priority: 'medium',
+    attachmentData: '',
+    attachmentName: ''
   });
   
   const [submitted, setSubmitted] = useState(false);
@@ -32,6 +36,41 @@ const LarkForm = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleAttachmentChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('รองรับเฉพาะไฟล์รูป JPG, PNG, WEBP และ GIF');
+      event.target.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('กรุณาแนบรูปขนาดไม่เกิน 5 MB');
+      event.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormData((previous) => ({
+        ...previous,
+        attachmentData: String(reader.result || ''),
+        attachmentName: file.name
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeAttachment = () => {
+    setFormData((previous) => ({
+      ...previous,
+      attachmentData: '',
+      attachmentName: ''
     }));
   };
 
@@ -60,7 +99,9 @@ const LarkForm = () => {
           assetSerial: '',
           anydesk: '',
           issue: '',
-          priority: 'medium'
+          priority: 'medium',
+          attachmentData: '',
+          attachmentName: ''
         });
       }, 3000);
     } catch (error) {
@@ -226,6 +267,37 @@ const LarkForm = () => {
                   placeholder="อธิบายปัญหาที่พบ เช่น เปิดเครื่องไม่ติด, ปริ้นไม่ออก..." 
                   required
                 ></textarea>
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="attachment">
+                  <ImagePlus size={16} />
+                  แนบรูปปัญหา (ถ้ามี)
+                </label>
+                <label className="attachment-picker" htmlFor="attachment">
+                  <ImagePlus size={22} />
+                  <span>เลือกรูปจากเครื่องหรือโทรศัพท์</span>
+                  <small>JPG, PNG, WEBP หรือ GIF ขนาดไม่เกิน 5 MB</small>
+                </label>
+                <input
+                  className="attachment-input"
+                  type="file"
+                  id="attachment"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleAttachmentChange}
+                />
+                {formData.attachmentData && (
+                  <div className="attachment-preview">
+                    <img src={formData.attachmentData} alt="ตัวอย่างรูปที่แนบ" />
+                    <div>
+                      <strong>{formData.attachmentName}</strong>
+                      <button type="button" onClick={removeAttachment}>
+                        <X size={15} />
+                        ลบรูป
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="form-group full-width">

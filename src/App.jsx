@@ -8798,6 +8798,7 @@ function Dashboard() {
                       <th>เวลาทำงาน</th>
                       <th>สถานะ</th>
                       <th>ค่าใช้จ่าย (บาท)</th>
+                      <th>รูปแนบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -8826,11 +8827,28 @@ function Dashboard() {
                             </span>
                           </td>
                           <td>{ticket.cost > 0 ? formatThaiBaht(ticket.cost) : '-'}</td>
+                          <td>
+                            {(ticket.hasAttachment || ticket.attachmentData) ? (
+                              <a
+                                className="ticket-attachment-link"
+                                href={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={ticket.attachmentName || 'เปิดรูปแนบ'}
+                              >
+                                <img
+                                  src={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment`}
+                                  alt={ticket.attachmentName || `รูปแนบ Ticket ${ticket.sn}`}
+                                />
+                                <span>ดูรูป</span>
+                              </a>
+                            ) : '-'}
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="9" style={{ textAlign: 'center' }}>ไม่มีข้อมูลประวัติประวัติงานซ่อมสำหรับเดือนนี้</td>
+                        <td colSpan="10" style={{ textAlign: 'center' }}>ไม่มีข้อมูลประวัติประวัติงานซ่อมสำหรับเดือนนี้</td>
                       </tr>
                     )}
                   </tbody>
