@@ -319,7 +319,7 @@ app.get('/api/tickets/:sn/attachment', async (req, res) => {
       'image/gif': 'gif'
     };
     const safeFileName = `ticket-${Number(req.params.sn)}.${extensionByType[match[1]] || 'img'}`;
-    res.set('Cache-Control', 'private, max-age=3600');
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.set('Content-Type', match[1]);
     res.set('Content-Disposition', `inline; filename="${safeFileName}"`);
     return res.send(Buffer.from(match[2], 'base64'));

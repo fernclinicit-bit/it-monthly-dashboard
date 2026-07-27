@@ -8831,13 +8831,13 @@ function Dashboard() {
                             {(ticket.hasAttachment || ticket.attachmentData) ? (
                               <a
                                 className="ticket-attachment-link"
-                                href={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment`}
+                                href={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title={ticket.attachmentName || 'เปิดรูปแนบ'}
                               >
                                 <img
-                                  src={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment`}
+                                  src={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2`}
                                   alt={ticket.attachmentName || `รูปแนบ Ticket ${ticket.sn}`}
                                 />
                                 <span>ดูรูป</span>
