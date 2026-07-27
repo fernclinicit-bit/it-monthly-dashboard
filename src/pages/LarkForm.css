@@ -127,6 +127,23 @@
   color: #ef4444;
 }
 
+.anydesk-download-link {
+  margin-left: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #e0ecff;
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.anydesk-download-link:hover {
+  background: #cfe0ff;
+  color: #1d4ed8;
+}
+
 .form-group input[type="text"],
 .form-group input[type="date"],
 .form-group select,

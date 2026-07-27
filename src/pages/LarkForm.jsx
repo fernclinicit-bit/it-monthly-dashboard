@@ -195,6 +195,14 @@ const LarkForm = () => {
                 <label htmlFor="anydesk">
                   <Monitor size={16} />
                   เลขที่ AnyDesk (ถ้ามี)
+                  <a
+                    className="anydesk-download-link"
+                    href="https://anydesk.com/en/downloads/thank-you?dv=win_exe"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ดาวน์โหลด AnyDesk
+                  </a>
                 </label>
                 <input
                   type="text"
