@@ -19,6 +19,7 @@ const LarkForm = () => {
     date: new Date().toISOString().split('T')[0],
     deviceType: '',
     assetSerial: '',
+    anydesk: '',
     issue: '',
     priority: 'medium'
   });
@@ -57,6 +58,7 @@ const LarkForm = () => {
           date: new Date().toISOString().split('T')[0],
           deviceType: '',
           assetSerial: '',
+          anydesk: '',
           issue: '',
           priority: 'medium'
         });
@@ -187,6 +189,22 @@ const LarkForm = () => {
                   placeholder="เช่น ASUS-019, MC-002"
                 />
                 <small>เมื่อระบุหมายเลขเครื่อง ระบบจะเปลี่ยนสถานะเครื่องเป็น “รอซ่อม” และซิงค์กับทะเบียนอัตโนมัติ</small>
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="anydesk">
+                  <Monitor size={16} />
+                  เลขที่ AnyDesk (ถ้ามี)
+                </label>
+                <input
+                  type="text"
+                  id="anydesk"
+                  name="anydesk"
+                  value={formData.anydesk}
+                  onChange={handleChange}
+                  placeholder="เช่น 123 456 789"
+                  inputMode="numeric"
+                />
               </div>
 
               <div className="form-group full-width">
