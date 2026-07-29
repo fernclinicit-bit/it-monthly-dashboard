@@ -5491,6 +5491,15 @@ function Dashboard() {
     (window.location.hostname === 'localhost'
       ? 'http://localhost:5000'
       : 'https://it-monthly-dashboard-new.onrender.com');
+  const ADMIN_PASSWORD_HASH = '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
+
+  const verifyAdminPasswordLocally = async (password) => {
+    const encodedPassword = new TextEncoder().encode(password);
+    const digest = await window.crypto.subtle.digest('SHA-256', encodedPassword);
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('') === ADMIN_PASSWORD_HASH;
+  };
 
   useEffect(() => {
     if (!activeModal) return undefined;
@@ -5502,11 +5511,14 @@ function Dashboard() {
   const requireAdminAccess = async (openMenu) => {
     const password = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT');
     if (password === null) return;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 12000);
     try {
       const response = await fetch(`${API_BASE}/api/admin/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
+        body: JSON.stringify({ password }),
+        signal: controller.signal
       });
       if (!response.ok) {
         alert('รหัสผ่านไม่ถูกต้อง');
@@ -5515,7 +5527,13 @@ function Dashboard() {
       openMenu();
     } catch (error) {
       console.error('Admin verification failed:', error);
-      alert('ไม่สามารถตรวจสอบรหัสผ่านได้ กรุณาลองใหม่');
+      if (await verifyAdminPasswordLocally(password)) {
+        openMenu();
+        return;
+      }
+      alert('รหัสผ่านไม่ถูกต้อง');
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   };
 
