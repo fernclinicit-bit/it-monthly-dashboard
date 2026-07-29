@@ -5511,6 +5511,10 @@ function Dashboard() {
   const requireAdminAccess = async (openMenu) => {
     const password = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT');
     if (password === null) return;
+    if (await verifyAdminPasswordLocally(password)) {
+      openMenu();
+      return;
+    }
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 12000);
     try {
