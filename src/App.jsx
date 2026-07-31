@@ -8391,13 +8391,16 @@ function Dashboard() {
 
       {activeModal === 'assetReturns' && (() => {
         const statusLabels = {
+          pending: 'รออนุมัติ',
+          approved: 'รอส่งมอบ',
           issued: 'ส่งมอบแล้ว',
+          rejected: 'ไม่อนุมัติ',
           overdue: 'เกินกำหนด',
           returned: 'คืนแล้ว'
         };
         const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
         const returnRequests = assetRequests
-          .filter(request => ['issued', 'overdue', 'returned'].includes(request.status))
+          .filter(request => ['issued', 'overdue', 'returned'].includes(request.status) || (request.due_date && String(request.due_date).trim() !== ''))
           .filter(request => {
             if (!search) return true;
             return [
