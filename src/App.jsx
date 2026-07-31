@@ -5642,6 +5642,36 @@ function Dashboard() {
       if (!window.confirm(`ยืนยันส่งมอบอุปกรณ์ให้ ${request.requester}?`)) return;
       payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ส่งมอบ') || request.reviewer || 'IT';
     } else if (action === 'return') {
+      if (request.is_direct_asset) {
+        let condition = 'ปกติ';
+        if (requestedByUser) {
+          if (!window.confirm(`ยืนยันส่งคืนอุปกรณ์ ${request.device_serial || request.item_type} เข้าคลังใช่หรือไม่?`)) return;
+        } else {
+          condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
+          if (condition === null) return;
+          if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
+        }
+
+        setAssetRequestLoading(true);
+        try {
+          const updatedAssets = assetsList.map(a => {
+            if (a.sn === request.asset_sn) {
+              const newStatus = condition === 'ชำรุด' ? 'ส่งซ่อม' : (condition === 'สูญหาย' ? 'แทงจำหน่าย' : 'ว่าง');
+              return { ...a, status: newStatus, assignedTo: '', department: '' };
+            }
+            return a;
+          });
+          await syncStateToDb(data, updatedAssets);
+          setAssetsList(updatedAssets);
+          alert(requestedByUser ? 'ส่งคืนอุปกรณ์สำเร็จ' : 'รับคืนอุปกรณ์และอัปเดตคลังสำเร็จ');
+        } catch (err) {
+          alert(err.message);
+        } finally {
+          setAssetRequestLoading(false);
+        }
+        return;
+      }
+
       if (requestedByUser) {
         if (!window.confirm(`ยืนยันส่งคืนอุปกรณ์ ${request.device_serial || request.item_type} เข้าคลังใช่หรือไม่?`)) return;
         payload.condition = 'ปกติ';
@@ -8399,8 +8429,33 @@ function Dashboard() {
           returned: 'คืนแล้ว'
         };
         const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
-        const returnRequests = assetRequests
-          .filter(request => ['issued', 'overdue', 'returned'].includes(request.status) || (request.due_date && String(request.due_date).trim() !== ''))
+        const inUseDirectAssets = assetsList
+          .filter(asset => asset.status === 'ใช้งาน')
+          .filter(asset => {
+            const existingRequest = assetRequests.find(r => 
+              ['issued', 'overdue'].includes(r.status) && 
+              r.device_serial && 
+              asset.serialNumber && 
+              r.device_serial.toLowerCase() === asset.serialNumber.toLowerCase()
+            );
+            return !existingRequest;
+          })
+          .map(asset => ({
+            id: `ASSET-${asset.sn}`,
+            is_direct_asset: true,
+            asset_sn: asset.sn,
+            requester: asset.assignedTo || 'ไม่ระบุ',
+            department: asset.department || '-',
+            item_type: asset.itemType || asset.type || '-',
+            device_serial: asset.serialNumber || '-',
+            assigned_item_type: asset.itemType || asset.type || '-',
+            due_date: asset.returnDueDate || '',
+            status: 'issued',
+            created_at: asset.purchaseDate || ''
+          }));
+
+        const returnRequests = [...assetRequests
+          .filter(request => ['issued', 'overdue', 'returned'].includes(request.status) || (request.due_date && String(request.due_date).trim() !== '')), ...inUseDirectAssets]
           .filter(request => {
             if (!search) return true;
             return [
