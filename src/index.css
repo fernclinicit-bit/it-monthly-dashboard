@@ -2156,6 +2156,15 @@ body {
 .asset-returns-modal .modal-body { display: block; }
 .asset-returns-modal .workflow-list-section { min-height: calc(100vh - 125px); }
 .asset-return-table { min-width: 850px; }
+.return-view-switch { display: flex; gap: 5px; padding: 4px; border: 1px solid var(--border-color); border-radius: 9px; background: #0f172a; }
+.return-view-switch button { border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; }
+.return-view-switch button.active { color: #fff; background: #059669; }
+.return-registry-filters { display: flex; justify-content: flex-end; gap: 10px; margin: -58px 0 16px auto; }
+.return-registry-filters select { min-width: 170px; padding: 9px 11px; border: 1px solid #334155; border-radius: 7px; background: #1e293b; color: #fff; }
+.return-registry-table-wrap { max-height: calc(100vh - 245px); }
+.return-registry-table { min-width: 2400px; }
+.return-registry-table th { position: sticky; top: 0; z-index: 1; background: #172033; }
+.registry-status { display: inline-block; padding: 4px 8px; border-radius: 5px; color: #fbbf24; background: rgba(245,158,11,.12); font-weight: 700; white-space: nowrap; }
 
 @media (max-width: 1050px) {
     .workflow-body { grid-template-columns: 1fr; }
@@ -2168,6 +2177,10 @@ body {
     .workflow-role-switch button { padding: 6px 8px; font-size: .72rem; }
     .workflow-form-grid { grid-template-columns: 1fr; }
     .workflow-span-2 { grid-column: span 1; }
+    .return-view-switch { width: 100%; }
+    .return-view-switch button { flex: 1; font-size: .7rem; padding: 7px 5px; }
+    .return-registry-filters { margin: 0 0 12px; flex-direction: column; }
+    .return-registry-filters select { width: 100%; }
 }
 
 /* Stable mobile interaction and full-screen modal behavior */

@@ -5434,6 +5434,7 @@ function Dashboard() {
   const [assetWorkflowRole, setAssetWorkflowRole] = useState('requester');
   const [assetRequesterSearch, setAssetRequesterSearch] = useState('');
   const [assetReturnSearch, setAssetReturnSearch] = useState('');
+  const [assetReturnView, setAssetReturnView] = useState('returns');
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
@@ -7837,6 +7838,7 @@ function Dashboard() {
           </button>
           <button onClick={() => {
             setMobileSidebarOpen(false);
+            setAssetReturnView('returns');
             setActiveModal('assetReturns');
           }} className="sidebar-btn asset-return-menu-btn">
             <RotateCcw size={16} />
@@ -8412,6 +8414,33 @@ function Dashboard() {
             return aDone - bDone;
           });
         const waitingCount = returnRequests.filter(request => ['issued', 'overdue'].includes(request.status)).length;
+        const uniquePositions = Array.from(new Set(assetsList.map(asset => asset.position).filter(Boolean))).sort();
+        const uniqueStatuses = Array.from(new Set(assetsList.map(asset => asset.status).filter(Boolean))).sort();
+        const registryAssets = assetsList.filter(asset => {
+          const query = assetSearch.toLocaleLowerCase('th-TH');
+          const matchesSearch = [
+            asset.sn,
+            asset.date,
+            asset.user,
+            asset.position,
+            asset.itemType,
+            asset.deviceSerial,
+            asset.additionalEquipment,
+            asset.additionalSerial,
+            asset.softwareApp,
+            asset.registeredEmail,
+            asset.returnDueDate,
+            asset.status,
+            asset.notes,
+            asset.inspectionDate,
+            asset.purchaseDate,
+            asset.warrantyEndDate,
+            asset.expense
+          ].some(value => String(value || '').toLocaleLowerCase('th-TH').includes(query));
+          return matchesSearch
+            && (!assetDeptFilter || asset.position === assetDeptFilter)
+            && (!assetStatusFilter || asset.status === assetStatusFilter);
+        });
 
         return (
           <div className="modal-overlay active">
@@ -8421,10 +8450,16 @@ function Dashboard() {
                   <h3>↩️ คืนอุปกรณ์</h3>
                   <p className="workflow-subtitle">ค้นหาอุปกรณ์ที่รับไปแล้ว ยืนยันการส่งคืน และตรวจสอบประวัติการคืน</p>
                 </div>
-                <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+                <div className="workflow-header-actions">
+                  <div className="return-view-switch">
+                    <button className={assetReturnView === 'returns' ? 'active' : ''} onClick={() => setAssetReturnView('returns')}>รายการคืนอุปกรณ์</button>
+                    <button className={assetReturnView === 'registry' ? 'active' : ''} onClick={() => setAssetReturnView('registry')}>ทะเบียนทรัพย์สินทั้งหมด</button>
+                  </div>
+                  <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+                </div>
               </header>
               <div className="modal-body">
-                <section className="workflow-list-section">
+                {assetReturnView === 'returns' && <section className="workflow-list-section">
                   <div className="workflow-section-heading">
                     <div>
                       <h4>รายการอุปกรณ์สำหรับส่งคืน</h4>
@@ -8487,7 +8522,82 @@ function Dashboard() {
                       </tbody>
                     </table>
                   </div>
-                </section>
+                </section>}
+
+                {assetReturnView === 'registry' && <section className="workflow-list-section return-registry-section">
+                  <div className="workflow-section-heading">
+                    <div>
+                      <h4>ทะเบียนคลังทรัพย์สินและอุปกรณ์ IT (Asset Registry)</h4>
+                      <input
+                        className="workflow-requester-search"
+                        placeholder="ค้นหาอุปกรณ์ ชื่อผู้ใช้ แผนก หรือหมายเลขเครื่อง"
+                        value={assetSearch}
+                        onChange={event => setAssetSearch(event.target.value)}
+                      />
+                    </div>
+                    <span>แสดง {registryAssets.length} จากทั้งหมด {assetsList.length} อุปกรณ์</span>
+                  </div>
+                  <div className="return-registry-filters">
+                    <select value={assetDeptFilter} onChange={event => setAssetDeptFilter(event.target.value)}>
+                      <option value="">ทั้งหมดแผนก</option>
+                      {uniquePositions.map(position => <option key={position} value={position}>{position}</option>)}
+                    </select>
+                    <select value={assetStatusFilter} onChange={event => setAssetStatusFilter(event.target.value)}>
+                      <option value="">ทั้งหมดสถานะ</option>
+                      {uniqueStatuses.map(status => <option key={status} value={status}>{status}</option>)}
+                    </select>
+                  </div>
+                  <div className="workflow-table-wrap return-registry-table-wrap">
+                    <table className="details-table return-registry-table">
+                      <thead>
+                        <tr>
+                          <th>ลำดับที่</th>
+                          <th>วันที่เบิกใช้งาน</th>
+                          <th>ผู้เบิกใช้งาน</th>
+                          <th>ตำแหน่ง/แผนก</th>
+                          <th>รายการอุปกรณ์หลัก</th>
+                          <th>หมายเลขอุปกรณ์ (Serial)</th>
+                          <th>อุปกรณ์เพิ่มเติม</th>
+                          <th>หมายเลขอุปกรณ์เพิ่มเติม</th>
+                          <th>ซอฟต์แวร์ / App</th>
+                          <th>อีเมลที่ลงทะเบียน</th>
+                          <th>กำหนดคืน</th>
+                          <th>สถานะ</th>
+                          <th>หมายเหตุ</th>
+                          <th>วันที่ตรวจสอบ</th>
+                          <th>วันที่ซื้อ</th>
+                          <th>วันหมดประกัน</th>
+                          <th>ค่าใช้จ่าย</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {registryAssets.length === 0 ? (
+                          <tr><td colSpan="17" className="workflow-empty">ไม่พบอุปกรณ์ที่ตรงตามเงื่อนไข</td></tr>
+                        ) : registryAssets.map((asset, index) => (
+                          <tr key={asset.sn ?? index}>
+                            <td><strong>{index + 1}</strong></td>
+                            <td>{asset.date || '-'}</td>
+                            <td>{asset.user || '-'}</td>
+                            <td>{asset.position || '-'}</td>
+                            <td><AssetTags value={asset.itemType} /></td>
+                            <td><strong>{asset.deviceSerial || '-'}</strong></td>
+                            <td><AssetTags value={asset.additionalEquipment} /></td>
+                            <td><AssetTags value={asset.additionalSerial} /></td>
+                            <td><AssetTags value={asset.softwareApp} /></td>
+                            <td>{asset.registeredEmail || '-'}</td>
+                            <td>{asset.returnDueDate || '-'}</td>
+                            <td><span className="registry-status">{asset.status || '-'}</span></td>
+                            <td>{asset.notes || '-'}</td>
+                            <td>{asset.inspectionDate || '-'}</td>
+                            <td>{asset.purchaseDate || '-'}</td>
+                            <td>{asset.warrantyEndDate || '-'}</td>
+                            <td>{Number(asset.expense || 0).toLocaleString('th-TH')} บาท</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>}
               </div>
             </div>
           </div>
