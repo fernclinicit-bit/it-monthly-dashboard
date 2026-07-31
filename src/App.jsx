@@ -7870,7 +7870,7 @@ function Dashboard() {
             setActiveModal('assetWorkflow');
           }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
             <Ticket size={16} />
-            ขอเบิกอุปกรณ์
+            ขอเบิกอุปกรณ์-คืนอุปกรณ์
           </button>
 
         </div>
