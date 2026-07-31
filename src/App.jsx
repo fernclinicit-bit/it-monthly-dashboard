@@ -7831,7 +7831,7 @@ function Dashboard() {
             setActiveModal('assetWorkflow');
           }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
             <Ticket size={16} />
-            ผู้ขอใช้บริการ
+            ขอเบิกอุปกรณ์
           </button>
         </div>
 
