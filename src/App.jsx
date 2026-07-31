@@ -8454,10 +8454,7 @@ function Dashboard() {
                   <p className="workflow-subtitle">ค้นหาอุปกรณ์ที่รับไปแล้ว ยืนยันการส่งคืน และตรวจสอบประวัติการคืน</p>
                 </div>
                 <div className="workflow-header-actions">
-                  <div className="return-view-switch">
-                    <button className={assetReturnView === 'returns' ? 'active' : ''} onClick={() => setAssetReturnView('returns')}>รายการคืนอุปกรณ์</button>
-                    <button className={assetReturnView === 'registry' ? 'active' : ''} onClick={() => setAssetReturnView('registry')}>ทะเบียนทรัพย์สินทั้งหมด</button>
-                  </div>
+
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
                 </div>
               </header>
