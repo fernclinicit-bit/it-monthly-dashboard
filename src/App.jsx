@@ -8264,7 +8264,6 @@ function Dashboard() {
                 <div className="workflow-header-actions">
                   <div className="workflow-role-switch">
                     <button className={assetWorkflowRole === 'requester' ? 'active' : ''} onClick={() => setAssetWorkflowRole('requester')}>ผู้ขอใช้บริการ</button>
-                    <button className={assetWorkflowRole === 'it' ? 'active' : ''} onClick={() => requireAdminAccess(() => setAssetWorkflowRole('it'))}>IT ผู้อนุมัติ</button>
                   </div>
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
                 </div>
