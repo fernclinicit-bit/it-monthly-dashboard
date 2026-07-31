@@ -2,30 +2,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
 
 :root {
-    /* Theme Colors - Modern Pastel */
-    --bg-main: #fcfdfe; /* Very soft baby blue/white */
-    --bg-sidebar: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.9);
-    --border-color: rgba(167, 199, 231, 0.3); /* Pastel Blue border */
-    --border-hover: rgba(167, 199, 231, 0.8);
+    /* Theme Colors - Premium Dark Mode */
+    --bg-main: #000000;      /* Pure OLED Black */
+    --bg-sidebar: #0a0a0a;   /* Extremely dark grey */
+    --bg-card: rgba(18, 18, 18, 0.75); /* Vercel-like card background */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(59, 130, 246, 0.5);
     
-    /* Brand & Accent Colors (Pastel Palette) */
-    --primary: #a7c7e7;      /* Pastel Blue */
-    --secondary: #ffb7b2;    /* Pastel Peach */
-    --success: #b5ead7;      /* Pastel Mint Green */
-    --warning: #ffdac1;      /* Pastel Apricot */
-    --danger: #ff9aa2;       /* Pastel Rose */
-    --violet: #c7ceea;       /* Pastel Lavender */
+    /* Brand & Accent Colors - Neon Tech */
+    --primary: #3b82f6;      /* Electric Blue */
+    --secondary: #2dd4bf;    /* Teal/Cyan */
+    --success: #10b981;      /* Emerald Green */
+    --warning: #f59e0b;      /* Amber Orange */
+    --danger: #ef4444;       /* Rose Red */
+    --violet: #8b5cf6;       /* Violet Tech */
     
     /* Text Colors */
-    --text-primary: #4a4e69; /* Soft Dark Purple/Grey for readability */
-    --text-muted: #9ca3af;
-    --text-dark: #22223b;    /* Deeper contrast for headings */
+    --text-primary: #ffffff;
+    --text-muted: #a1a1aa;
+    --text-dark: #000000;
     
     /* Shadows & Effects */
-    --shadow-sm: 0 2px 5px rgba(167, 199, 231, 0.15);
-    --shadow-md: 0 8px 20px rgba(167, 199, 231, 0.2);
-    --shadow-glow: 0 0 20px rgba(255, 183, 178, 0.25);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 25px rgba(59, 130, 246, 0.25);
     --radius: 12px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -125,7 +125,7 @@ body {
 .month-selector {
     width: 100%;
     padding: 12px;
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
@@ -170,13 +170,13 @@ body {
 }
 
 .sidebar-btn.secondary {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
 }
 
 .sidebar-btn.secondary:hover {
-    background-color: rgba(0, 0, 0, 0.06);
+    background-color: rgba(255, 255, 255, 0.1);
     border-color: var(--text-muted);
 }
 
@@ -334,7 +334,7 @@ body {
 
 .card-header .btn-details:hover {
     color: var(--primary);
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Metric Display styles */
@@ -345,8 +345,8 @@ body {
 }
 
 .metric-item {
-    background-color: rgba(0, 0, 0, 0.02);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
     border-radius: 8px;
     padding: 12px;
     display: flex;
@@ -487,8 +487,8 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.02);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
     padding: 10px;
     border-radius: 8px;
 }
@@ -508,7 +508,7 @@ body {
 
 .gauge-bg {
     fill: none;
-    stroke: rgba(0, 0, 0, 0.03);
+    stroke: rgba(255, 255, 255, 0.05);
     stroke-width: 6;
 }
 
@@ -543,7 +543,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 8px;
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(255, 255, 255, 0.02);
     border-radius: 6px;
     font-size: 0.8rem;
 }
@@ -575,7 +575,7 @@ body {
 .project-item {
     padding: 8px;
     border-left: 2px solid var(--danger);
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(255, 255, 255, 0.02);
     border-radius: 0 6px 6px 0;
 }
 
@@ -772,7 +772,7 @@ body {
 
 .form-group input, .form-group textarea {
     padding: 10px 12px;
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     color: white;
@@ -784,7 +784,7 @@ body {
 
 .form-group input:focus, .form-group textarea:focus {
     border-color: var(--primary);
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .modal .form-group input,
@@ -830,7 +830,7 @@ body {
 }
 
 .details-table tr:hover {
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
 .asset-tags { display: flex; flex-wrap: wrap; gap: 5px; min-width: 110px; }
@@ -1136,7 +1136,7 @@ body {
 .console-sidebar {
     width: 250px;
     background-color: rgba(0, 0, 0, 0.2);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -1162,7 +1162,7 @@ body {
 }
 
 .console-tab-btn:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(255, 255, 255, 0.04);
     color: white;
 }
 
@@ -1185,14 +1185,14 @@ body {
     font-size: 1.15rem;
     font-weight: 600;
     color: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 8px;
 }
 
 .console-form {
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(255, 255, 255, 0.02);
     padding: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 8px;
     margin-bottom: 20px;
 }
@@ -1246,13 +1246,13 @@ body {
     overflow-x: auto;
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 6px;
 }
 
 .console-card {
-    background-color: rgba(0, 0, 0, 0.02);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
@@ -1309,7 +1309,7 @@ body {
 .lark-form-header p {
     margin: 6px 0 0 0;
     font-size: 0.825rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .lark-type-tabs {
@@ -1457,7 +1457,7 @@ body {
         align-items: center;
         justify-content: center;
         padding: 8px;
-        background-color: rgba(0, 0, 0, 0.03) !important;
+        background-color: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid var(--border-color) !important;
         border-radius: 8px;
     }
@@ -2055,7 +2055,7 @@ body {
     justify-content: flex-end;
     gap: 16px;
     padding: 12px 18px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     background: #111827;
 }
 

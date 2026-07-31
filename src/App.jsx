@@ -7832,7 +7832,7 @@ function Dashboard() {
             setAssetWorkflowRole('requester');
             setMobileSidebarOpen(false);
             setActiveModal('assetWorkflow');
-          }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'var(--text-primary)' }}>
+          }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
             <Ticket size={16} />
             ขอเบิกอุปกรณ์
           </button>
@@ -7888,14 +7888,14 @@ function Dashboard() {
                 setLarkTicketRole('user');
                 setLarkSubmitted(false);
                 setActiveModal('larkForm');
-              })} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'var(--text-primary)' }}>
+              })} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'white' }}>
                 <Laptop size={16} />
                 ลงทะเบียนเครื่องเข้าคลัง
               </button>
               <button onClick={() => requireAdminAccess(() => {
                 setAssetWorkflowRole('it');
                 setActiveModal('assetWorkflow');
-              })} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'var(--text-primary)' }}>
+              })} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'white' }}>
                 <ShieldCheck size={16} />
                 IT อนุมัติการใช้งาน
               </button>
@@ -7905,7 +7905,7 @@ function Dashboard() {
                 setLarkSubmitted(false);
                 setSelectedPendingTicketSn('');
                 setActiveModal('larkForm');
-              })} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'var(--text-primary)' }}>
+              })} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
                 <Wrench size={16} />
                 เมนูปิดงาน (IT Close)
               </button>
@@ -7997,7 +7997,7 @@ function Dashboard() {
             <button 
               onClick={() => setMobileSidebarOpen(true)} 
               className="mobile-menu-toggle"
-              style={{ display: 'none', background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '4px' }}
+              style={{ display: 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
             >
               <Menu size={24} />
             </button>
@@ -8007,7 +8007,7 @@ function Dashboard() {
             </div>
           </div>
           <div className="header-status status-indicator" style={{ display: 'flex', gap: '15px', alignItems: 'center', background: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0, 0, 0, 0.06)', padding: '5px 12px', borderRadius: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
               <span className="status-dot"></span>
               <span>ระบบรายงานพร้อมทำงาน</span>
             </div>
@@ -8275,8 +8275,8 @@ function Dashboard() {
 
         {/* BOTTOM SECTION: RECOMMENDATIONS */}
         <section className="card recommendation-card">
-          <h3 className="card-title" style={{ color: 'var(--text-primary)', marginBottom: '12px' }}>
-            <span className="card-icon"><Lightbulb size={18} style={{ color: 'var(--text-primary)' }} /></span>
+          <h3 className="card-title" style={{ color: 'white', marginBottom: '12px' }}>
+            <span className="card-icon"><Lightbulb size={18} style={{ color: '#fff' }} /></span>
             ข้อเสนอแนะและแนวทางปฏิบัติ (Recommendation)
           </h3>
           <div className="recommendation-content">
@@ -9210,10 +9210,10 @@ function Dashboard() {
                   gap: '12px',
                   marginBottom: '16px',
                   flexWrap: 'wrap',
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   padding: '12px',
                   borderRadius: '8px',
-                  border: '1px solid rgba(0, 0, 0, 0.05)'
+                  border: '1px solid rgba(255, 255, 255, 0.08)'
                 }}>
                   <div style={{ flex: '1', minWidth: '200px' }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>ค้นหาอุปกรณ์ / ชื่อผู้เบิก / หมายเลขเครื่อง</label>
@@ -9226,9 +9226,9 @@ function Dashboard() {
                         width: '100%',
                         padding: '8px 12px',
                         borderRadius: '6px',
-                        border: '1px solid rgba(0, 0, 0, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
                         backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                        color: 'var(--text-primary)'
+                        color: 'white'
                       }}
                     />
                   </div>
@@ -9241,9 +9241,9 @@ function Dashboard() {
                         width: '100%',
                         padding: '8px 12px',
                         borderRadius: '6px',
-                        border: '1px solid rgba(0, 0, 0, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
                         backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                        color: 'var(--text-primary)'
+                        color: 'white'
                       }}
                     >
                       <option value="">ทั้งหมดแผนก</option>
@@ -9261,9 +9261,9 @@ function Dashboard() {
                         width: '100%',
                         padding: '8px 12px',
                         borderRadius: '6px',
-                        border: '1px solid rgba(0, 0, 0, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
                         backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                        color: 'var(--text-primary)'
+                        color: 'white'
                       }}
                     >
                       <option value="">ทั้งหมดสถานะ</option>
@@ -9447,7 +9447,7 @@ function Dashboard() {
                       <h4 style={{ margin: 0, fontSize: '1.15rem' }}>📈 ปรับเปลี่ยนค่าตัวชี้วัด KPIs ประจำเดือน</h4>
                       <div>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะแก้ไข:</span>
-                        <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                        <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                           {Object.keys(data).map(key => (
                             <option key={key} value={key}>{data[key].monthName}</option>
                           ))}
@@ -9566,7 +9566,7 @@ function Dashboard() {
                       <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🗒️ จัดการโครงการ & ข้อเสนอแนะสำหรับพัฒนา</h4>
                       <div>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือน:</span>
-                        <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                        <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                           {Object.keys(data).map(key => (
                             <option key={key} value={key}>{data[key].monthName}</option>
                           ))}
@@ -9668,7 +9668,7 @@ function Dashboard() {
                       {editingAssetSn !== null ? (
                         <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
                           <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
-                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'var(--text-primary)' }}>ยกเลิก</button>
+                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                         </div>
                       ) : null}
                     </div>
@@ -9805,7 +9805,7 @@ function Dashboard() {
                         <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🚨 ประวัติรับเคสแจ้งซ่อม Support - {editingTicketSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingTicketSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
                         <div>
                           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะจัดการ:</span>
-                          <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                          <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                             {Object.keys(data).map(key => (
                               <option key={key} value={key}>{data[key].monthName}</option>
                             ))}
@@ -9857,7 +9857,7 @@ function Dashboard() {
                         {editingTicketSn !== null ? (
                           <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button type="button" onClick={handleAddTicket} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
-                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'var(--text-primary)' }}>ยกเลิก</button>
+                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                           </div>
                         ) : (
                           <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>บันทึกเคสแจ้งซ่อม</button>
@@ -9938,7 +9938,7 @@ function Dashboard() {
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
                           ลบข้อมูลที่ถูกแก้ไขในเว็บเบราว์เซอร์ทั้งหมด และย้อนกลับไปใช้ข้อมูลประวัติดั้งเดิมจากไฟล์ Excel ในโฟลเดอร์ Update
                         </p>
-                        <button type="button" onClick={handleResetToDefault} className="sidebar-btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'rgb(239, 68, 68)', border: 'none', color: 'var(--text-primary)' }}>
+                        <button type="button" onClick={handleResetToDefault} className="sidebar-btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'rgb(239, 68, 68)', border: 'none', color: 'white' }}>
                           ล้างข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น
                         </button>
                       </div>
@@ -9987,7 +9987,7 @@ function Dashboard() {
                     <p>แจ้งปัญหาขัดข้องของอุปกรณ์หรือระบบไอทีเพื่อประสานช่างเข้าแก้ไข ประจำเดือน {data[currentMonth]?.monthName}</p>
                   </div>
                 )}
-                <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}><X size={24} /></button>
+                <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer', padding: 0 }}><X size={24} /></button>
               </div>
             </header>
 
@@ -10090,7 +10090,7 @@ function Dashboard() {
                                       setLarkTicketCause('');
                                       setLarkTicketCost('0');
                                       setLarkTicketStatus('เสร็จสิ้น');
-                                    }} style={{ padding: '6px 12px', fontSize: '0.75rem', backgroundColor: '#2563eb', color: 'var(--text-primary)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                                    }} style={{ padding: '6px 12px', fontSize: '0.75rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                                       เลือกและปิดงาน
                                     </button>
                                   </div>

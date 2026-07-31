@@ -111,11 +111,11 @@ const ClinicDashboard = () => {
     }
   };
 
-  if (loading) return <div style={{ color: 'var(--text-primary)', padding: '20px' }}>กำลังโหลดข้อมูล...</div>;
+  if (loading) return <div style={{ color: 'white', padding: '20px' }}>กำลังโหลดข้อมูล...</div>;
   if (error) return <div style={{ color: 'red', padding: '20px' }}>เกิดข้อผิดพลาด: {error}</div>;
 
   return (
-    <div style={{ backgroundColor: '#111827', minHeight: '100vh', color: 'var(--text-primary)', padding: '20px' }}>
+    <div style={{ backgroundColor: '#111827', minHeight: '100vh', color: 'white', padding: '20px' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
@@ -128,7 +128,7 @@ const ClinicDashboard = () => {
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-        <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '12px', backgroundColor: 'rgba(59, 130, 246, 0.2)', borderRadius: '50%', color: '#3b82f6' }}>
             <Users size={24} />
           </div>
@@ -137,7 +137,7 @@ const ClinicDashboard = () => {
             <h3 style={{ margin: 0, fontSize: '24px', color: '#f3f4f6' }}>{totalLeads} คน</h3>
           </div>
         </div>
-        <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '12px', backgroundColor: 'rgba(16, 185, 129, 0.2)', borderRadius: '50%', color: '#10b981' }}>
             <DollarSign size={24} />
           </div>
@@ -146,7 +146,7 @@ const ClinicDashboard = () => {
             <h3 style={{ margin: 0, fontSize: '24px', color: '#f3f4f6' }}>฿{totalBookings.toLocaleString()}</h3>
           </div>
         </div>
-        <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '12px', backgroundColor: 'rgba(245, 158, 11, 0.2)', borderRadius: '50%', color: '#f59e0b' }}>
             <TrendingUp size={24} />
           </div>
@@ -159,7 +159,7 @@ const ClinicDashboard = () => {
 
       {/* Charts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '20px' }}>
-        <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px' }}>
+        <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px' }}>
           <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <PieChart size={18} color="#3b82f6" /> สัดส่วนลูกค้าตามช่องทาง
           </h3>
@@ -168,7 +168,7 @@ const ClinicDashboard = () => {
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px' }}>
+        <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px' }}>
           <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Activity size={18} color="#10b981" /> ความสนใจของลูกค้า
           </h3>
@@ -177,7 +177,7 @@ const ClinicDashboard = () => {
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px' }}>
+        <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px' }}>
           <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <TrendingUp size={18} color="#f59e0b" /> สถานะการติดตาม
           </h3>
@@ -188,7 +188,7 @@ const ClinicDashboard = () => {
       </div>
 
       {/* Data Table */}
-      <div style={{ backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '12px', overflowX: 'auto' }}>
+      <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', overflowX: 'auto' }}>
         <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb' }}>ตารางข้อมูลลูกค้าล่าสุด</h3>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
