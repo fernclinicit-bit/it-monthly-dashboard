@@ -702,7 +702,13 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       nextStatus = 'issued';
       assetStatus = 'ใช้งาน';
     } else {
-      if (request.status !== 'issued' && request.status !== 'overdue') throw new Error('รายการนี้ยังไม่ได้ส่งมอบ');
+      // return action
+      const validStatuses = ['issued', 'overdue'];
+      // Allow return from 'approved' if the request has a due_date (return request, no need to issue/deliver)
+      if (request.due_date && String(request.due_date).trim() !== '') {
+        validStatuses.push('approved');
+      }
+      if (!validStatuses.includes(request.status)) throw new Error('รายการนี้ยังไม่ได้ส่งมอบ');
       nextStatus = 'returned';
       assetStatus = condition === 'ชำรุด' ? 'รอซ่อม' : condition === 'สูญหาย' ? 'สูญหาย' : 'ว่าง';
     }

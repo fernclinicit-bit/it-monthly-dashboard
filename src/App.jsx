@@ -8390,8 +8390,8 @@ function Dashboard() {
                                 <span className="workflow-done">-</span>
                               ) : (
                               <div className="workflow-actions">
-                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
-                                {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
+                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>{request.due_date && String(request.due_date).trim() !== '' ? 'อนุมัติ' : 'อนุมัติ/เลือกเครื่อง'}</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
+                                {request.status === 'approved' && request.due_date && String(request.due_date).trim() !== '' ? <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button> : request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
                                 {(request.status === 'issued' || request.status === 'overdue') && <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button>}
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
                               </div>
