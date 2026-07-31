@@ -1,0 +1,10 @@
+import * as XLSX from 'xlsx/xlsx.mjs';
+import * as fs from 'fs';
+XLSX.set_fs(fs);
+const file='D:/แดชบอร์ด/Update/Inventory_Inventory_Results.xlsx';
+const wb=XLSX.readFile(file,{cellDates:true});
+const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+const required=['Nember','Submitted on','Respondents','วันที่เบิกใช้งาน','บุคคลเบิกใช้อุปกรณ์','ตำแหน่ง','รายการอุปกรณ์หลัก','อุปกรณ์เพิ่มเติมที่ต้องการเบิก','ซอต์ฟแวร์/ App','เมลที่ลงทะเบียน','หมายเลขอุปกรณ์ (เช่น  Ipad 016)','หมายเลขอุปกรณ์ เพิ่มเติม  (เช่น  สาย อะเเดปเตอร์ ipad-011))','กำหนดคืนอุปกรณ์','สถานะ','หมายเหตุ','วันที่ตรวจสอบ','วันที่ซื้อ','วันหมดประกัน','ค่าใช้จ่าย'];
+const missing=required.filter(k=>!Object.prototype.hasOwnProperty.call(rows[0],k));
+console.log(JSON.stringify({rows:rows.length,columns:required.length,missing,first:rows[0]['หมายเลขอุปกรณ์ (เช่น  Ipad 016)'],last:rows.at(-1)['หมายเลขอุปกรณ์ (เช่น  Ipad 016)']}));
+if(rows.length!==162||missing.length)process.exit(1);
