@@ -8435,8 +8435,8 @@ function Dashboard() {
             const existingRequest = assetRequests.find(r => 
               ['issued', 'overdue'].includes(r.status) && 
               r.device_serial && 
-              asset.serialNumber && 
-              r.device_serial.toLowerCase() === asset.serialNumber.toLowerCase()
+              asset.deviceSerial && 
+              String(r.device_serial).toLowerCase() === String(asset.deviceSerial).toLowerCase()
             );
             return !existingRequest;
           })
@@ -8444,11 +8444,11 @@ function Dashboard() {
             id: `ASSET-${asset.sn}`,
             is_direct_asset: true,
             asset_sn: asset.sn,
-            requester: asset.assignedTo || 'ไม่ระบุ',
-            department: asset.department || '-',
-            item_type: asset.itemType || asset.type || '-',
-            device_serial: asset.serialNumber || '-',
-            assigned_item_type: asset.itemType || asset.type || '-',
+            requester: asset.user || 'ไม่ระบุ',
+            department: asset.position || '-',
+            item_type: asset.itemType || '-',
+            device_serial: asset.deviceSerial || '-',
+            assigned_item_type: asset.additionalEquipment || asset.itemType || '-',
             due_date: asset.returnDueDate || '',
             status: 'issued',
             created_at: asset.purchaseDate || ''
