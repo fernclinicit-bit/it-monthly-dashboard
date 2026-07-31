@@ -606,6 +606,60 @@ app.post('/api/asset-requests', async (req, res) => {
   }
 });
 
+app.patch('/api/asset-requests/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  const { requester, department, itemType, purpose, dueDate, notes } = req.body;
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'เลขที่คำขอไม่ถูกต้อง' });
+  }
+  if (![requester, department, itemType, purpose].every(value => typeof value === 'string' && value.trim())) {
+    return res.status(400).json({ error: 'กรุณากรอกข้อมูลคำขอที่จำเป็นให้ครบ' });
+  }
+  if (dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
+    return res.status(400).json({ error: 'รูปแบบกำหนดคืนต้องเป็น YYYY-MM-DD' });
+  }
+
+  try {
+    const current = await pool.query('SELECT history FROM asset_requests WHERE id = $1', [id]);
+    if (current.rowCount === 0) {
+      return res.status(404).json({ error: 'ไม่พบคำขอ' });
+    }
+    const event = {
+      status: 'edited',
+      at: new Date().toISOString(),
+      by: requester.trim(),
+      note: 'แก้ไขรายละเอียดคำขอ'
+    };
+    const history = [...(current.rows[0].history || []), event];
+    const result = await pool.query(`
+      UPDATE asset_requests
+      SET requester = $1,
+          department = $2,
+          item_type = $3,
+          purpose = $4,
+          due_date = $5,
+          notes = $6,
+          history = $7,
+          updated_at = NOW()
+      WHERE id = $8
+      RETURNING *
+    `, [
+      requester.trim(),
+      department.trim(),
+      itemType.trim(),
+      purpose.trim(),
+      dueDate || null,
+      typeof notes === 'string' ? notes.trim() : '',
+      JSON.stringify(history),
+      id
+    ]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error editing asset request:', err);
+    res.status(500).json({ error: 'แก้ไขคำขอไม่สำเร็จ' });
+  }
+});
+
 app.patch('/api/asset-requests/:id/action', async (req, res) => {
   const id = Number(req.params.id);
   const { action, reviewer, assetSn, condition, note } = req.body;

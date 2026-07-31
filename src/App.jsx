@@ -5581,6 +5581,44 @@ function Dashboard() {
     }
   };
 
+  const editAssetRequest = async (request) => {
+    const requester = window.prompt('ชื่อผู้ขอ', request.requester || '');
+    if (requester === null) return;
+    const department = window.prompt('แผนก', request.department || '');
+    if (department === null) return;
+    const itemType = window.prompt('ประเภทอุปกรณ์', request.item_type || '');
+    if (itemType === null) return;
+    const purpose = window.prompt('เหตุผลการใช้งาน', request.purpose || '');
+    if (purpose === null) return;
+    const dueDate = window.prompt('กำหนดคืน (YYYY-MM-DD หรือเว้นว่าง)', request.due_date ? String(request.due_date).slice(0, 10) : '');
+    if (dueDate === null) return;
+    const notes = window.prompt('หมายเหตุ', request.notes || '');
+    if (notes === null) return;
+
+    if (![requester, department, itemType, purpose].every(value => value.trim())) {
+      alert('กรุณากรอกชื่อผู้ขอ แผนก ประเภทอุปกรณ์ และเหตุผลให้ครบ');
+      return;
+    }
+    if (!window.confirm(`ยืนยันบันทึกการแก้ไขคำขอ #${request.id} หรือไม่?`)) return;
+
+    setAssetRequestLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}/api/asset-requests/${request.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requester, department, itemType, purpose, dueDate, notes })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'แก้ไขคำขอไม่สำเร็จ');
+      await loadAssetRequests();
+      alert(`แก้ไขคำขอ #${request.id} สำเร็จ`);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setAssetRequestLoading(false);
+    }
+  };
+
   const runAssetRequestAction = async (request, action, requestedByUser = false) => {
     const payload = { action };
     if (action === 'approve') {
@@ -8295,10 +8333,10 @@ function Dashboard() {
                   </div>
                   <div className="workflow-table-wrap">
                     <table className="details-table workflow-table">
-                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th><th>จัดการ</th><th>แก้ไข</th></tr></thead>
                       <tbody>
                         {displayedRequests.length === 0 ? (
-                          <tr><td colSpan="7" className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
+                          <tr><td colSpan="8" className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
                         ) : displayedRequests.map(request => (
                           <tr key={request.id}>
                             <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
@@ -8328,6 +8366,15 @@ function Dashboard() {
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
                               </div>
                               )}
+                            </td>
+                            <td>
+                              <button
+                                className="workflow-edit-btn"
+                                onClick={() => editAssetRequest(request)}
+                                disabled={assetRequestLoading}
+                              >
+                                Edit
+                              </button>
                             </td>
                           </tr>
                         ))}

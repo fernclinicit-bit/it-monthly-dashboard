@@ -2146,6 +2146,9 @@ body {
 .workflow-actions button.danger { border-color: #ef4444; color: #fca5a5; background: rgba(239,68,68,.1); }
 .workflow-actions button.return { border-color: #10b981; color: #6ee7b7; background: rgba(16,185,129,.12); }
 .workflow-actions button:disabled { opacity: .5; }
+.workflow-edit-btn { border: 1px solid #f59e0b; background: rgba(245,158,11,.12); color: #fbbf24; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-weight: 700; white-space: nowrap; }
+.workflow-edit-btn:hover { background: rgba(245,158,11,.22); }
+.workflow-edit-btn:disabled { opacity: .5; cursor: wait; }
 .workflow-done { color: var(--text-muted); font-size: .75rem; }
 .workflow-empty { text-align: center; color: var(--text-muted); padding: 30px !important; }
 
