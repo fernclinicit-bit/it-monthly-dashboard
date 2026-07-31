@@ -7884,7 +7884,7 @@ function Dashboard() {
             value={currentMonth}
             onChange={(e) => setCurrentMonth(e.target.value)}
           >
-            {Object.keys(data).map(key => (
+            {Object.keys(data).sort((a, b) => b.localeCompare(a)).map(key => (
               <option key={key} value={key}>{data[key].monthName}</option>
             ))}
           </select>
