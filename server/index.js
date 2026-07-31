@@ -662,7 +662,7 @@ app.patch('/api/asset-requests/:id', async (req, res) => {
 
 app.patch('/api/asset-requests/:id/action', async (req, res) => {
   const id = Number(req.params.id);
-  const { action, reviewer, assetSn, condition, note } = req.body;
+  const { action, reviewer, assetSn, condition, note, isReturnRequest } = req.body;
   const allowedActions = ['approve', 'reject', 'issue', 'return'];
   if (!Number.isInteger(id) || !allowedActions.includes(action)) {
     return res.status(400).json({ error: 'คำสั่งไม่ถูกต้อง' });
@@ -684,12 +684,16 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
 
     if (action === 'approve') {
       if (request.status !== 'pending' && request.status !== 'need_info') throw new Error('คำขอนี้ไม่อยู่ในสถานะรออนุมัติ');
-      assignedSn = Number(assetSn);
-      const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [assignedSn]);
-      if (assetResult.rowCount === 0) throw new Error('ไม่พบอุปกรณ์ที่เลือก');
-      if (assetResult.rows[0].status !== 'ว่าง') throw new Error('อุปกรณ์นี้ไม่ว่างหรือถูกจองแล้ว');
-      nextStatus = 'approved';
-      assetStatus = 'จอง';
+      if (isReturnRequest) {
+        nextStatus = 'approved';
+      } else {
+        assignedSn = Number(assetSn);
+        const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [assignedSn]);
+        if (assetResult.rowCount === 0) throw new Error('ไม่พบอุปกรณ์ที่เลือก');
+        if (assetResult.rows[0].status !== 'ว่าง') throw new Error('อุปกรณ์นี้ไม่ว่างหรือถูกจองแล้ว');
+        nextStatus = 'approved';
+        assetStatus = 'จอง';
+      }
     } else if (action === 'reject') {
       if (request.status !== 'pending' && request.status !== 'need_info') throw new Error('คำขอนี้ไม่สามารถปฏิเสธได้');
       nextStatus = 'rejected';

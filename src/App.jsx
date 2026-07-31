@@ -5625,14 +5625,20 @@ function Dashboard() {
   const runAssetRequestAction = async (request, action, requestedByUser = false) => {
     const payload = { action };
     if (action === 'approve') {
-      const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
-      if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
-      const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
-      const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
-      if (selected === null) return;
-      if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
-      payload.assetSn = Number(selected);
-      payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
+      if (request.due_date && String(request.due_date).trim() !== '') {
+        if (!window.confirm('คำขอนี้มีการระบุกำหนดคืน (เป็นการคืนอุปกรณ์) ยืนยันอนุมัติโดยไม่จัดสรรเครื่องใหม่หรือไม่?')) return;
+        payload.isReturnRequest = true;
+        payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
+      } else {
+        const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
+        if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
+        const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
+        const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
+        if (selected === null) return;
+        if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
+        payload.assetSn = Number(selected);
+        payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
+      }
     } else if (action === 'reject') {
       const note = window.prompt('ระบุเหตุผลที่ไม่อนุมัติ');
       if (note === null) return;
