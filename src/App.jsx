@@ -8444,11 +8444,11 @@ function Dashboard() {
             id: `ASSET-${asset.sn}`,
             is_direct_asset: true,
             asset_sn: asset.sn,
-            requester: asset.user || 'ไม่ระบุ',
-            department: asset.position || '-',
-            item_type: asset.itemType || '-',
-            device_serial: asset.deviceSerial || '-',
-            assigned_item_type: asset.additionalEquipment || asset.itemType || '-',
+            requester: asset.user && asset.user !== '-' ? asset.user : 'ไม่ระบุ',
+            department: asset.position && asset.position !== '-' ? asset.position : '',
+            item_type: asset.itemType && asset.itemType !== '-' ? asset.itemType : '',
+            device_serial: asset.deviceSerial && asset.deviceSerial !== '-' ? asset.deviceSerial : '',
+            assigned_item_type: asset.additionalEquipment && asset.additionalEquipment !== '-' ? asset.additionalEquipment : '',
             due_date: asset.returnDueDate || '',
             status: 'issued',
             created_at: asset.purchaseDate || ''
@@ -8550,7 +8550,7 @@ function Dashboard() {
                             </td>
                             <td><strong>{request.requester}</strong><small>{request.department}</small></td>
                             <td>
-                              <strong>{request.device_serial || request.item_type}</strong>
+                              <strong>{request.item_type} {request.device_serial ? `(${request.device_serial})` : ''}</strong>
                               <small>{request.assigned_item_type || request.purpose}</small>
                             </td>
                             <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
