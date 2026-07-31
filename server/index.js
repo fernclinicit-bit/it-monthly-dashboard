@@ -713,6 +713,17 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       assetStatus = condition === 'ชำรุด' ? 'รอซ่อม' : condition === 'สูญหาย' ? 'สูญหาย' : 'ว่าง';
     }
 
+    // For return requests without assigned asset, find the asset by device_serial
+    if (action === 'return' && assetStatus && !assignedSn && request.device_serial) {
+      const matchResult = await client.query(
+        `SELECT sn FROM assets WHERE device_serial ILIKE $1 LIMIT 1`,
+        [String(request.device_serial).trim()]
+      );
+      if (matchResult.rowCount > 0) {
+        assignedSn = matchResult.rows[0].sn;
+      }
+    }
+
     if (assetStatus && assignedSn) {
       await client.query(`
         UPDATE assets
