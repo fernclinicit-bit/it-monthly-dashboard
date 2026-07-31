@@ -5663,7 +5663,7 @@ function Dashboard() {
           const updatedAssets = assetsList.map(a => {
             if (a.sn === request.asset_sn) {
               const newStatus = condition === 'ชำรุด' ? 'ส่งซ่อม' : (condition === 'สูญหาย' ? 'แทงจำหน่าย' : 'ว่าง');
-              return { ...a, status: newStatus, assignedTo: '', department: '' };
+              return { ...a, status: newStatus, user: 'ส่วนกลาง/ไม่ระบุ', position: '-' };
             }
             return a;
           });
@@ -8433,9 +8433,10 @@ function Dashboard() {
           .filter(asset => {
             const existingRequest = assetRequests.find(r => 
               ['issued', 'overdue'].includes(r.status) && 
-              r.device_serial && 
-              asset.deviceSerial && 
-              String(r.device_serial).toLowerCase() === String(asset.deviceSerial).toLowerCase()
+              (
+                r.assigned_asset_sn === asset.sn ||
+                (r.device_serial && asset.deviceSerial && String(r.device_serial).toLowerCase() === String(asset.deviceSerial).toLowerCase())
+              )
             );
             return !existingRequest;
           })
