@@ -33,7 +33,8 @@ import {
   Laptop,
   FileCode,
   ShieldCheck,
-  Wrench
+  Wrench,
+  RotateCcw
 } from 'lucide-react';
 
 // Initial blank data - use Excel import to load real data
@@ -5432,6 +5433,7 @@ function Dashboard() {
   const [assetRequestForm, setAssetRequestForm] = useState({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
   const [assetWorkflowRole, setAssetWorkflowRole] = useState('requester');
   const [assetRequesterSearch, setAssetRequesterSearch] = useState('');
+  const [assetReturnSearch, setAssetReturnSearch] = useState('');
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
@@ -5677,7 +5679,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (activeModal !== 'assetWorkflow') return undefined;
+    if (!['assetWorkflow', 'assetReturns'].includes(activeModal)) return undefined;
     loadAssetRequests();
     const timer = setInterval(loadAssetRequests, 3000);
     return () => clearInterval(timer);
@@ -7833,6 +7835,13 @@ function Dashboard() {
             <Ticket size={16} />
             ขอเบิกอุปกรณ์
           </button>
+          <button onClick={() => {
+            setMobileSidebarOpen(false);
+            setActiveModal('assetReturns');
+          }} className="sidebar-btn asset-return-menu-btn">
+            <RotateCcw size={16} />
+            คืนอุปกรณ์
+          </button>
         </div>
 
         {/* Month Dropdown Selection */}
@@ -8347,17 +8356,7 @@ function Dashboard() {
                             <td><span className={`workflow-status status-${request.status}`}>{statusLabels[request.status] || request.status}</span></td>
                             <td>
                               {assetWorkflowRole === 'requester' ? (
-                                <div className="workflow-actions">
-                                  {(request.status === 'issued' || request.status === 'overdue') ? (
-                                    <button
-                                      className="return"
-                                      onClick={() => runAssetRequestAction(request, 'return', true)}
-                                      disabled={assetRequestLoading}
-                                    >
-                                      ส่งคืนอุปกรณ์
-                                    </button>
-                                  ) : <span className="workflow-done">-</span>}
-                                </div>
+                                <span className="workflow-done">-</span>
                               ) : (
                               <div className="workflow-actions">
                                 {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
@@ -8375,6 +8374,113 @@ function Dashboard() {
                               >
                                 Edit
                               </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {activeModal === 'assetReturns' && (() => {
+        const statusLabels = {
+          issued: 'ส่งมอบแล้ว',
+          overdue: 'เกินกำหนด',
+          returned: 'คืนแล้ว'
+        };
+        const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
+        const returnRequests = assetRequests
+          .filter(request => ['issued', 'overdue', 'returned'].includes(request.status))
+          .filter(request => {
+            if (!search) return true;
+            return [
+              request.requester,
+              request.department,
+              request.item_type,
+              request.device_serial,
+              request.assigned_item_type
+            ].some(value => String(value || '').toLocaleLowerCase('th-TH').includes(search));
+          })
+          .sort((a, b) => {
+            const aDone = a.status === 'returned' ? 1 : 0;
+            const bDone = b.status === 'returned' ? 1 : 0;
+            return aDone - bDone;
+          });
+        const waitingCount = returnRequests.filter(request => ['issued', 'overdue'].includes(request.status)).length;
+
+        return (
+          <div className="modal-overlay active">
+            <div className="modal large dashboard-fullscreen-modal asset-workflow-modal asset-returns-modal">
+              <header className="modal-header">
+                <div>
+                  <h3>↩️ คืนอุปกรณ์</h3>
+                  <p className="workflow-subtitle">ค้นหาอุปกรณ์ที่รับไปแล้ว ยืนยันการส่งคืน และตรวจสอบประวัติการคืน</p>
+                </div>
+                <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+              </header>
+              <div className="modal-body">
+                <section className="workflow-list-section">
+                  <div className="workflow-section-heading">
+                    <div>
+                      <h4>รายการอุปกรณ์สำหรับส่งคืน</h4>
+                      <input
+                        className="workflow-requester-search"
+                        placeholder="ค้นหาชื่อผู้ขอ แผนก หรือหมายเลขเครื่อง"
+                        value={assetReturnSearch}
+                        onChange={event => setAssetReturnSearch(event.target.value)}
+                      />
+                    </div>
+                    <span>รอคืน {waitingCount} รายการ · ทั้งหมด {returnRequests.length} รายการ</span>
+                  </div>
+                  <div className="workflow-table-wrap">
+                    <table className="details-table workflow-table asset-return-table">
+                      <thead>
+                        <tr>
+                          <th>เลขที่</th>
+                          <th>ผู้ขอ/แผนก</th>
+                          <th>อุปกรณ์ที่รับไป</th>
+                          <th>กำหนดคืน</th>
+                          <th>สถานะ</th>
+                          <th>จัดการคืน</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {returnRequests.length === 0 ? (
+                          <tr><td colSpan="6" className="workflow-empty">ไม่พบอุปกรณ์ที่อยู่ในขั้นตอนการคืน</td></tr>
+                        ) : returnRequests.map(request => (
+                          <tr key={request.id}>
+                            <td>
+                              <strong>#{request.id}</strong>
+                              <small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small>
+                            </td>
+                            <td><strong>{request.requester}</strong><small>{request.department}</small></td>
+                            <td>
+                              <strong>{request.device_serial || request.item_type}</strong>
+                              <small>{request.assigned_item_type || request.purpose}</small>
+                            </td>
+                            <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
+                            <td><span className={`workflow-status status-${request.status}`}>{statusLabels[request.status]}</span></td>
+                            <td>
+                              {['issued', 'overdue'].includes(request.status) ? (
+                                <div className="workflow-actions">
+                                  <button
+                                    className="return"
+                                    onClick={() => runAssetRequestAction(request, 'return', true)}
+                                    disabled={assetRequestLoading}
+                                  >
+                                    ยืนยันส่งคืนอุปกรณ์
+                                  </button>
+                                </div>
+                              ) : (
+                                <span className="workflow-done">
+                                  คืนเมื่อ {request.return_date ? new Date(request.return_date).toLocaleDateString('th-TH') : '-'}
+                                </span>
+                              )}
                             </td>
                           </tr>
                         ))}

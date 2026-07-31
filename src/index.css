@@ -2113,6 +2113,8 @@ body {
 .sidebar-form-btn:hover { background: #2563eb; }
 .sidebar-primary-actions { display: flex; flex-direction: column; gap: 8px; }
 .sidebar-primary-actions .sidebar-form-btn { margin: 0; }
+.asset-return-menu-btn { border: 0 !important; background: #059669 !important; color: #fff !important; }
+.asset-return-menu-btn:hover { background: #047857 !important; }
 .workflow-header-actions { display: flex; align-items: center; gap: 12px; }
 .workflow-role-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border-color); border-radius: 9px; background: #0f172a; }
 .workflow-role-switch button { border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; }
@@ -2151,6 +2153,9 @@ body {
 .workflow-edit-btn:disabled { opacity: .5; cursor: wait; }
 .workflow-done { color: var(--text-muted); font-size: .75rem; }
 .workflow-empty { text-align: center; color: var(--text-muted); padding: 30px !important; }
+.asset-returns-modal .modal-body { display: block; }
+.asset-returns-modal .workflow-list-section { min-height: calc(100vh - 125px); }
+.asset-return-table { min-width: 850px; }
 
 @media (max-width: 1050px) {
     .workflow-body { grid-template-columns: 1fr; }
