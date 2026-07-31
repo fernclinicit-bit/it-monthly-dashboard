@@ -716,27 +716,32 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
     // For return requests without assigned asset, find the asset by matching requester + item_type
     if (action === 'return' && assetStatus && !assignedSn) {
       let matchResult;
-      // First try: match by device_serial if available (from assigned asset info)
-      if (request.device_serial) {
-        matchResult = await client.query(
-          `SELECT sn FROM assets WHERE device_serial ILIKE $1 AND status = 'ใช้งาน' LIMIT 1`,
-          [String(request.device_serial).trim()]
-        );
-      }
-      // Second try: match by requester name + item_type
+      const requesterName = String(request.requester).trim();
+      const firstWord = requesterName.split(' ')[0]; // take just the first name for fuzzy match
+      const reqItemType = String(request.item_type || '').trim();
+
+      // First try: exact match by requester name + item_type
+      matchResult = await client.query(
+        `SELECT sn FROM assets WHERE user_name ILIKE $1 AND item_type ILIKE $2 AND status = 'ใช้งาน' LIMIT 1`,
+        [`%${requesterName}%`, `%${reqItemType}%`]
+      );
+
+      // Second try: match by first name only + item_type
       if (!matchResult || matchResult.rowCount === 0) {
         matchResult = await client.query(
           `SELECT sn FROM assets WHERE user_name ILIKE $1 AND item_type ILIKE $2 AND status = 'ใช้งาน' LIMIT 1`,
-          [String(request.requester).trim(), `%${String(request.item_type).trim()}%`]
+          [`%${firstWord}%`, `%${reqItemType}%`]
         );
       }
-      // Third try: match by requester name only
+
+      // Third try: match by first name only
       if (!matchResult || matchResult.rowCount === 0) {
         matchResult = await client.query(
           `SELECT sn FROM assets WHERE user_name ILIKE $1 AND status = 'ใช้งาน' LIMIT 1`,
-          [String(request.requester).trim()]
+          [`%${firstWord}%`]
         );
       }
+
       if (matchResult && matchResult.rowCount > 0) {
         assignedSn = matchResult.rows[0].sn;
       }
