@@ -713,13 +713,31 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       assetStatus = condition === 'ชำรุด' ? 'รอซ่อม' : condition === 'สูญหาย' ? 'สูญหาย' : 'ว่าง';
     }
 
-    // For return requests without assigned asset, find the asset by device_serial
-    if (action === 'return' && assetStatus && !assignedSn && request.device_serial) {
-      const matchResult = await client.query(
-        `SELECT sn FROM assets WHERE device_serial ILIKE $1 LIMIT 1`,
-        [String(request.device_serial).trim()]
-      );
-      if (matchResult.rowCount > 0) {
+    // For return requests without assigned asset, find the asset by matching requester + item_type
+    if (action === 'return' && assetStatus && !assignedSn) {
+      let matchResult;
+      // First try: match by device_serial if available (from assigned asset info)
+      if (request.device_serial) {
+        matchResult = await client.query(
+          `SELECT sn FROM assets WHERE device_serial ILIKE $1 AND status = 'ใช้งาน' LIMIT 1`,
+          [String(request.device_serial).trim()]
+        );
+      }
+      // Second try: match by requester name + item_type
+      if (!matchResult || matchResult.rowCount === 0) {
+        matchResult = await client.query(
+          `SELECT sn FROM assets WHERE user_name ILIKE $1 AND item_type ILIKE $2 AND status = 'ใช้งาน' LIMIT 1`,
+          [String(request.requester).trim(), `%${String(request.item_type).trim()}%`]
+        );
+      }
+      // Third try: match by requester name only
+      if (!matchResult || matchResult.rowCount === 0) {
+        matchResult = await client.query(
+          `SELECT sn FROM assets WHERE user_name ILIKE $1 AND status = 'ใช้งาน' LIMIT 1`,
+          [String(request.requester).trim()]
+        );
+      }
+      if (matchResult && matchResult.rowCount > 0) {
         assignedSn = matchResult.rows[0].sn;
       }
     }
