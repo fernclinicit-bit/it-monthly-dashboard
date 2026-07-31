@@ -7872,14 +7872,7 @@ function Dashboard() {
             <Ticket size={16} />
             ขอเบิกอุปกรณ์
           </button>
-          <button onClick={() => {
-            setMobileSidebarOpen(false);
-            setAssetReturnView('returns');
-            setActiveModal('assetReturns');
-          }} className="sidebar-btn asset-return-menu-btn">
-            <RotateCcw size={16} />
-            คืนอุปกรณ์
-          </button>
+
         </div>
 
         {/* Month Dropdown Selection */}
