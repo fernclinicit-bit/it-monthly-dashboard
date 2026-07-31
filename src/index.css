@@ -2,30 +2,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
 
 :root {
-    /* Theme Colors - Modern Clean Light */
-    --bg-main: #f8fafc;
+    /* Theme Colors - Modern Pastel */
+    --bg-main: #fcfdfe; /* Very soft baby blue/white */
     --bg-sidebar: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.85);
-    --border-color: rgba(15, 23, 42, 0.08);
-    --border-hover: rgba(37, 99, 235, 0.4);
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(167, 199, 231, 0.3); /* Pastel Blue border */
+    --border-hover: rgba(167, 199, 231, 0.8);
     
-    /* Brand & Accent Colors */
-    --primary: #2563eb;
-    --secondary: #0891b2;
-    --success: #059669;
-    --warning: #d97706;
-    --danger: #dc2626;
-    --violet: #7c3aed;
+    /* Brand & Accent Colors (Pastel Palette) */
+    --primary: #a7c7e7;      /* Pastel Blue */
+    --secondary: #ffb7b2;    /* Pastel Peach */
+    --success: #b5ead7;      /* Pastel Mint Green */
+    --warning: #ffdac1;      /* Pastel Apricot */
+    --danger: #ff9aa2;       /* Pastel Rose */
+    --violet: #c7ceea;       /* Pastel Lavender */
     
     /* Text Colors */
-    --text-primary: #0f172a;
-    --text-muted: #64748b;
-    --text-dark: #000000;
+    --text-primary: #4a4e69; /* Soft Dark Purple/Grey for readability */
+    --text-muted: #9ca3af;
+    --text-dark: #22223b;    /* Deeper contrast for headings */
     
     /* Shadows & Effects */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-    --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.15);
+    --shadow-sm: 0 2px 5px rgba(167, 199, 231, 0.15);
+    --shadow-md: 0 8px 20px rgba(167, 199, 231, 0.2);
+    --shadow-glow: 0 0 20px rgba(255, 183, 178, 0.25);
     --radius: 12px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
