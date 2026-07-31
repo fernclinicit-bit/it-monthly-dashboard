@@ -5428,6 +5428,7 @@ function Dashboard() {
   const [assetSearch, setAssetSearch] = useState('');
   const [assetDeptFilter, setAssetDeptFilter] = useState('');
   const [assetStatusFilter, setAssetStatusFilter] = useState('');
+  const [assetTypeFilter, setAssetTypeFilter] = useState('');
   const [assetRequests, setAssetRequests] = useState([]);
   const [assetRequestLoading, setAssetRequestLoading] = useState(false);
   const [assetRequestForm, setAssetRequestForm] = useState({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
@@ -9228,6 +9229,7 @@ function Dashboard() {
       {activeModal === 'assetsList' && (() => {
         const uniquePositions = Array.from(new Set(assetsList.map(a => a.position).filter(Boolean))).sort();
         const uniqueStatuses = Array.from(new Set(assetsList.map(a => a.status).filter(Boolean))).sort();
+        const uniqueTypes = Array.from(new Set(assetsList.map(a => a.itemType).filter(Boolean))).sort();
 
         const filteredAssetsList = assetsList.filter(asset => {
           const matchesSearch = 
@@ -9242,8 +9244,9 @@ function Dashboard() {
             
           const matchesDept = !assetDeptFilter || asset.position === assetDeptFilter;
           const matchesStatus = !assetStatusFilter || asset.status === assetStatusFilter;
+          const matchesType = !assetTypeFilter || asset.itemType === assetTypeFilter;
           
-          return matchesSearch && matchesDept && matchesStatus;
+          return matchesSearch && matchesDept && matchesStatus && matchesType;
         });
 
         return (
@@ -9256,6 +9259,7 @@ function Dashboard() {
                   setAssetSearch('');
                   setAssetDeptFilter('');
                   setAssetStatusFilter('');
+                  setAssetTypeFilter('');
                 }} className="modal-close"><X size={20} /></button>
               </header>
               <div className="modal-body">
@@ -9286,6 +9290,26 @@ function Dashboard() {
                         color: 'white'
                       }}
                     />
+                  </div>
+                  <div style={{ width: '200px' }}>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามประเภท</label>
+                    <select
+                      value={assetTypeFilter}
+                      onChange={(e) => setAssetTypeFilter(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                        color: 'white'
+                      }}
+                    >
+                      <option value="">ทั้งหมดประเภท</option>
+                      {uniqueTypes.map((type, idx) => (
+                        <option key={idx} value={type}>{type}</option>
+                      ))}
+                    </select>
                   </div>
                   <div style={{ width: '200px' }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามแผนก/ตำแหน่ง</label>
