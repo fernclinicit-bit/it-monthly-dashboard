@@ -6054,39 +6054,24 @@ function Dashboard() {
       alert('มีรหัสเดือนนี้ในระบบอยู่แล้ว');
       return;
     }
+    const latestMonthKey = Object.keys(data).sort((a, b) => b.localeCompare(a))[0];
+    const baseData = latestMonthKey ? data[latestMonthKey] : {};
+
     setData(prev => ({
       ...prev,
       [newMonthKey]: {
+        ...baseData,
         monthName: newMonthName,
         totalAssets: assetsList.length,
-        assetValue: data[currentMonth]?.assetValue || 0,
-        assetsExpiring: 0,
-        assetsBroken: 0,
-        assetsLost: 0,
-        assetsVacant: 0,
-        ticketsCount: 0,
-        slaPercent: 100,
-        responseTime: 0,
-        resolutionTime: 0,
-        csat: 5.0,
-        totalSoftware: 0,
-        licensesInUse: 0,
-        licensesVacant: 0,
-        softwareCost: 0,
-        softwareExpiring: 0,
-        backupSuccess: 100,
-        securityIncidents: 0,
-        antivirusCoverage: 100,
-        mfaCoverage: 100,
-        repairCount: 0,
-        repairCost: 0,
-        topBrokenDevices: [],
-        deptCosts: {},
-        softwareExpiringDetails: [],
-        assetsExpiringDetails: [],
-        ongoingProjects: [],
-        recommendations: [],
-        ticketsList: []
+        assetValue: baseData.assetValue || 0,
+        // If there was no baseData, provide some defaults for arrays
+        topBrokenDevices: baseData.topBrokenDevices || [],
+        deptCosts: baseData.deptCosts || {},
+        softwareExpiringDetails: baseData.softwareExpiringDetails || [],
+        assetsExpiringDetails: baseData.assetsExpiringDetails || [],
+        ongoingProjects: baseData.ongoingProjects || [],
+        recommendations: baseData.recommendations || [],
+        ticketsList: baseData.ticketsList || []
       }
     }));
     setConsoleMonth(newMonthKey);
