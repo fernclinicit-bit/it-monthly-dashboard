@@ -6057,26 +6057,35 @@ function Dashboard() {
     const latestMonthKey = Object.keys(data).sort((a, b) => b.localeCompare(a))[0];
     const baseData = latestMonthKey ? data[latestMonthKey] : {};
 
-    setData(prev => ({
-      ...prev,
-      [newMonthKey]: {
-        ...baseData,
-        monthName: newMonthName,
-        totalAssets: assetsList.length,
-        assetValue: baseData.assetValue || 0,
-        // If there was no baseData, provide some defaults for arrays
-        topBrokenDevices: baseData.topBrokenDevices || [],
-        deptCosts: baseData.deptCosts || {},
-        softwareExpiringDetails: baseData.softwareExpiringDetails || [],
-        assetsExpiringDetails: baseData.assetsExpiringDetails || [],
-        ongoingProjects: baseData.ongoingProjects || [],
-        recommendations: baseData.recommendations || [],
-        ticketsList: baseData.ticketsList || []
-      }
-    }));
+    const newMonthData = {
+      ...baseData,
+      monthName: newMonthName,
+      totalAssets: assetsList.length,
+      assetValue: baseData.assetValue || 0,
+      // If there was no baseData, provide some defaults for arrays
+      topBrokenDevices: baseData.topBrokenDevices || [],
+      deptCosts: baseData.deptCosts || {},
+      softwareExpiringDetails: baseData.softwareExpiringDetails || [],
+      assetsExpiringDetails: baseData.assetsExpiringDetails || [],
+      ongoingProjects: baseData.ongoingProjects || [],
+      recommendations: baseData.recommendations || [],
+      ticketsList: baseData.ticketsList || []
+    };
+
+    const updatedData = {
+      ...data,
+      [newMonthKey]: newMonthData
+    };
+    
+    setData(updatedData);
     setConsoleMonth(newMonthKey);
+    setCurrentMonth(newMonthKey);
     setNewMonthKey('');
     setNewMonthName('');
+    
+    // Force immediate sync so it doesn't get lost on quick refresh
+    syncStateToDb(updatedData, assetsList).catch(err => console.error(err));
+    
     alert(`เพิ่มเดือน ${newMonthName} สำเร็จ!`);
   };
 
