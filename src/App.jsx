@@ -8169,19 +8169,35 @@ function Dashboard() {
               </div>
             </div>
             <div className="metrics-row" style={{ marginTop: '15px' }}>
-              <div className="metric-item">
+              <div 
+                className="metric-item" 
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+              >
                 <div className="metric-label">กำลังติดตามรวม</div>
                 <div className="metric-value highlight-primary">{monitoredTotal} เครื่อง</div>
               </div>
-              <div className="metric-item">
+              <div 
+                className="metric-item"
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+              >
                 <div className="metric-label">ตรวจสอบแล้ว (Active)</div>
                 <div className="metric-value highlight-success">{monitoredActive} เครื่อง</div>
               </div>
-              <div className="metric-item">
+              <div 
+                className="metric-item"
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+              >
                 <div className="metric-label">ใกล้ครบกำหนด (&le;7 วัน)</div>
                 <div className="metric-value highlight-warning">{monitoredWarning} เครื่อง</div>
               </div>
-              <div className="metric-item">
+              <div 
+                className="metric-item"
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+              >
                 <div className="metric-label">ค้างการตรวจสอบ (Action Required)</div>
                 <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
               </div>
