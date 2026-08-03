@@ -6069,7 +6069,7 @@ function Dashboard() {
       assetsExpiringDetails: baseData.assetsExpiringDetails || [],
       ongoingProjects: baseData.ongoingProjects || [],
       recommendations: baseData.recommendations || [],
-      ticketsList: baseData.ticketsList || []
+      ticketsList: [] // DO NOT copy tickets to avoid duplicate SN conflict in DB
     };
 
     const updatedData = {
