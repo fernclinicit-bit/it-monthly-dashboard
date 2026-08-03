@@ -5889,6 +5889,18 @@ function Dashboard() {
   const [newAssetSerial, setNewAssetSerial] = useState('');
   const [newAssetStatus, setNewAssetStatus] = useState('ใช้งาน');
   const [newAssetNotes, setNewAssetNotes] = useState('');
+  const [newAssetSubmittedOn, setNewAssetSubmittedOn] = useState('');
+  const [newAssetRespondent, setNewAssetRespondent] = useState('');
+  const [newAssetDate, setNewAssetDate] = useState('');
+  const [newAssetSoftwareApp, setNewAssetSoftwareApp] = useState('');
+  const [newAssetRegisteredEmail, setNewAssetRegisteredEmail] = useState('');
+  const [newAssetAdditionalSerial, setNewAssetAdditionalSerial] = useState('');
+  const [newAssetReturnDueDate, setNewAssetReturnDueDate] = useState('');
+  const [newAssetAuditDate, setNewAssetAuditDate] = useState('');
+  const [newAssetPurchaseDate, setNewAssetPurchaseDate] = useState('');
+  const [newAssetWarrantyExpiry, setNewAssetWarrantyExpiry] = useState('');
+  const [newAssetCost, setNewAssetCost] = useState('');
+
 
   // New Ticket creation states
   const [newTicketComplainant, setNewTicketComplainant] = useState('');
@@ -6211,7 +6223,18 @@ function Dashboard() {
           additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
           status: newAssetStatus,
-          notes: newAssetNotes
+          notes: newAssetNotes,
+          submittedOn: newAssetSubmittedOn,
+          respondent: newAssetRespondent,
+          date: newAssetDate,
+          softwareApp: newAssetSoftwareApp,
+          registeredEmail: newAssetRegisteredEmail,
+          additionalSerial: newAssetAdditionalSerial,
+          returnDueDate: newAssetReturnDueDate,
+          auditDate: newAssetAuditDate,
+          purchaseDate: newAssetPurchaseDate,
+          warrantyExpiry: newAssetWarrantyExpiry,
+          cost: newAssetCost
         } : a);
         runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
         return updated;
@@ -6229,7 +6252,18 @@ function Dashboard() {
         additionalEquipment: newAssetAdditionalEquipment,
         deviceSerial: newAssetSerial || '-',
         status: newAssetStatus,
-        notes: newAssetNotes
+        notes: newAssetNotes,
+        submittedOn: newAssetSubmittedOn,
+        respondent: newAssetRespondent,
+        date: newAssetDate || new Date().toLocaleDateString('th-TH'),
+        softwareApp: newAssetSoftwareApp,
+        registeredEmail: newAssetRegisteredEmail,
+        additionalSerial: newAssetAdditionalSerial,
+        returnDueDate: newAssetReturnDueDate,
+        auditDate: newAssetAuditDate,
+        purchaseDate: newAssetPurchaseDate,
+        warrantyExpiry: newAssetWarrantyExpiry,
+        cost: newAssetCost
       };
       setAssetsList(prev => {
         const updated = [...prev, newAsset];
@@ -6246,6 +6280,17 @@ function Dashboard() {
     setNewAssetSerial('');
     setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
+    setNewAssetSubmittedOn('');
+    setNewAssetRespondent('');
+    setNewAssetDate('');
+    setNewAssetSoftwareApp('');
+    setNewAssetRegisteredEmail('');
+    setNewAssetAdditionalSerial('');
+    setNewAssetReturnDueDate('');
+    setNewAssetAuditDate('');
+    setNewAssetPurchaseDate('');
+    setNewAssetWarrantyExpiry('');
+    setNewAssetCost('');
     setEditingAssetTagField(null);
   };
 
@@ -6255,9 +6300,20 @@ function Dashboard() {
     setNewAssetPosition(asset.position);
     setNewAssetItemType(asset.itemType);
     setNewAssetAdditionalEquipment(asset.additionalEquipment || '');
-    setNewAssetSerial(asset.deviceSerial);
-    setNewAssetStatus(asset.status);
+    setNewAssetSerial(asset.deviceSerial || '');
+    setNewAssetStatus(asset.status || 'ใช้งาน');
     setNewAssetNotes(asset.notes || '');
+    setNewAssetSubmittedOn(asset.submittedOn || '');
+    setNewAssetRespondent(asset.respondent || '');
+    setNewAssetDate(asset.date || '');
+    setNewAssetSoftwareApp(asset.softwareApp || '');
+    setNewAssetRegisteredEmail(asset.registeredEmail || '');
+    setNewAssetAdditionalSerial(asset.additionalSerial || '');
+    setNewAssetReturnDueDate(asset.returnDueDate || '');
+    setNewAssetAuditDate(asset.auditDate || '');
+    setNewAssetPurchaseDate(asset.purchaseDate || '');
+    setNewAssetWarrantyExpiry(asset.warrantyExpiry || '');
+    setNewAssetCost(asset.cost || '');
   };
 
   const handleCancelEditAsset = () => {
@@ -6270,6 +6326,17 @@ function Dashboard() {
     setNewAssetSerial('');
     setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
+    setNewAssetSubmittedOn('');
+    setNewAssetRespondent('');
+    setNewAssetDate('');
+    setNewAssetSoftwareApp('');
+    setNewAssetRegisteredEmail('');
+    setNewAssetAdditionalSerial('');
+    setNewAssetReturnDueDate('');
+    setNewAssetAuditDate('');
+    setNewAssetPurchaseDate('');
+    setNewAssetWarrantyExpiry('');
+    setNewAssetCost('');
   };
 
   const handleDeleteAsset = (sn) => {
@@ -6651,6 +6718,17 @@ function Dashboard() {
         setNewAssetSerial('');
         setNewAssetStatus('ใช้งาน');
         setNewAssetNotes('');
+        setNewAssetSubmittedOn('');
+        setNewAssetRespondent('');
+        setNewAssetDate('');
+        setNewAssetSoftwareApp('');
+        setNewAssetRegisteredEmail('');
+        setNewAssetAdditionalSerial('');
+        setNewAssetReturnDueDate('');
+        setNewAssetAuditDate('');
+        setNewAssetPurchaseDate('');
+        setNewAssetWarrantyExpiry('');
+        setNewAssetCost('');
       }
       setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตแดชบอร์ดแล้ว');
     } catch (error) {
@@ -9708,7 +9786,7 @@ function Dashboard() {
                 {/* TAB 4: ASSETS INVENTORY EDITOR */}
                 {consoleTab === 'assets' && (
                   <div className="lark-registry">
-                    <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(130px, 1fr)) minmax(210px, 1.2fr) minmax(250px, 1.45fr)', gap: '10px' }}>
+                    <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' }}>
                       <div className="console-field">
                         <span className="console-label">ผู้เบิกใช้งาน</span>
                         <input type="text" value={newAssetUser} onChange={e => setNewAssetUser(e.target.value)} placeholder="เช่น อมร แก้วสด" className="console-input" />
@@ -9742,10 +9820,54 @@ function Dashboard() {
                         <span className="console-label">หมายเหตุ</span>
                         <input type="text" value={newAssetNotes} onChange={e => setNewAssetNotes(e.target.value)} placeholder="รายละเอียด" className="console-input" />
                       </div>
-                      <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}`}>
+                      <div className="console-field">
+                        <span className="console-label">วันที่ Submit</span>
+                        <input type="text" value={newAssetSubmittedOn} onChange={e => setNewAssetSubmittedOn(e.target.value)} placeholder="YYYY-MM-DD" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">Respondents</span>
+                        <input type="text" value={newAssetRespondent} onChange={e => setNewAssetRespondent(e.target.value)} placeholder="ผู้ตอบกลับ" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">วันที่เบิกใช้งาน</span>
+                        <input type="text" value={newAssetDate} onChange={e => setNewAssetDate(e.target.value)} placeholder="วันที่เบิกใช้งาน" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">ซอฟต์แวร์ / App</span>
+                        <AssetTagEditor value={newAssetSoftwareApp} onChange={setNewAssetSoftwareApp} placeholder="โปรแกรม" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">เมลที่ลงทะเบียน</span>
+                        <input type="text" value={newAssetRegisteredEmail} onChange={e => setNewAssetRegisteredEmail(e.target.value)} placeholder="อีเมล" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">S/N เพิ่มเติม</span>
+                        <input type="text" value={newAssetAdditionalSerial} onChange={e => setNewAssetAdditionalSerial(e.target.value)} placeholder="Serial อุปกรณ์เสริม" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">กำหนดคืน</span>
+                        <input type="text" value={newAssetReturnDueDate} onChange={e => setNewAssetReturnDueDate(e.target.value)} placeholder="วันที่กำหนดคืน" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">วันที่ตรวจสอบ</span>
+                        <input type="text" value={newAssetAuditDate} onChange={e => setNewAssetAuditDate(e.target.value)} placeholder="วันที่ตรวจสอบ" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">วันที่ซื้อ</span>
+                        <input type="text" value={newAssetPurchaseDate} onChange={e => setNewAssetPurchaseDate(e.target.value)} placeholder="วันที่ซื้อ" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">วันหมดประกัน</span>
+                        <input type="text" value={newAssetWarrantyExpiry} onChange={e => setNewAssetWarrantyExpiry(e.target.value)} placeholder="วันหมดประกัน" className="console-input" />
+                      </div>
+                      <div className="console-field">
+                        <span className="console-label">ค่าใช้จ่าย</span>
+                        <input type="text" value={newAssetCost} onChange={e => setNewAssetCost(e.target.value)} placeholder="ค่าใช้จ่าย" className="console-input" />
+                      </div>
+                      <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}`} style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
                         {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
                       </div>
-                      <button type="button" className="console-save-dashboard-btn asset-inline-save-btn" onClick={saveConsoleChanges} disabled={consoleSaving}>
+                      <button type="button" className="console-save-dashboard-btn asset-inline-save-btn" onClick={saveConsoleChanges} disabled={consoleSaving} style={{ gridColumn: '1 / -1' }}>
                         {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
                       </button>
                       {editingAssetSn !== null ? (
