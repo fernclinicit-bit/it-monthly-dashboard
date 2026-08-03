@@ -6062,6 +6062,16 @@ function Dashboard() {
       monthName: newMonthName,
       totalAssets: assetsList.length,
       assetValue: baseData.assetValue || 0,
+      
+      // Reset monthly operational metrics
+      ticketsCount: 0,
+      slaPercent: 100,
+      responseTime: 0,
+      resolutionTime: 0,
+      csat: 5.0,
+      repairCount: 0,
+      repairCost: 0,
+      securityIncidents: 0,
       // If there was no baseData, provide some defaults for arrays
       topBrokenDevices: baseData.topBrokenDevices || [],
       deptCosts: baseData.deptCosts || {},
