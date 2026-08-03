@@ -5491,6 +5491,29 @@ function Dashboard() {
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  
+  const [externalDevices, setExternalDevices] = useState([]);
+  const [isFetchingDevices, setIsFetchingDevices] = useState(false);
+
+  useEffect(() => {
+    const fetchDevices = async () => {
+      setIsFetchingDevices(true);
+      try {
+        const response = await fetch('https://ios-device-monitor-46w9.onrender.com/api/devices');
+        const result = await response.json();
+        if (result && result.devices) {
+          setExternalDevices(result.devices);
+        }
+      } catch (error) {
+        console.error('Error fetching external devices:', error);
+      } finally {
+        setIsFetchingDevices(false);
+      }
+    };
+    fetchDevices();
+    const interval = setInterval(fetchDevices, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
   const API_BASE = import.meta.env.VITE_API_BASE ||
     (window.location.hostname === 'localhost'
       ? 'http://localhost:5000'
@@ -7922,6 +7945,11 @@ function Dashboard() {
     );
   };
 
+  const monitoredTotal = externalDevices.length;
+  const monitoredActive = externalDevices.filter(d => d.status === 'active' && d.daysRemaining > 7).length;
+  const monitoredWarning = externalDevices.filter(d => d.status === 'active' && d.daysRemaining <= 7).length;
+  const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
+
   return (
     <>
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
@@ -8127,6 +8155,39 @@ function Dashboard() {
         </header>
 
         <section className="dashboard-grid">
+          {/* CARD 0: DEVICE MONITOR */}
+          <article className="card asset-card" style={{ borderColor: monitoredUnverified > 0 || monitoredWarning > 0 ? 'var(--warning)' : 'var(--border-color)' }}>
+            <div className="card-header">
+              <h3 className="card-title">
+                <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--primary)' }} /></span>
+                ติดตามสถานะอุปกรณ์ iOS (Device Monitor)
+              </h3>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '0.8rem', color: isFetchingDevices ? 'var(--warning)' : 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                  {isFetchingDevices ? 'กำลังซิงค์...' : `ซิงค์ล่าสุดเมื่อ ${new Date().toLocaleTimeString('th-TH')}`}
+                </span>
+              </div>
+            </div>
+            <div className="metrics-row" style={{ marginTop: '15px' }}>
+              <div className="metric-item">
+                <div className="metric-label">กำลังติดตามรวม</div>
+                <div className="metric-value highlight-primary">{monitoredTotal} เครื่อง</div>
+              </div>
+              <div className="metric-item">
+                <div className="metric-label">ตรวจสอบแล้ว (Active)</div>
+                <div className="metric-value highlight-success">{monitoredActive} เครื่อง</div>
+              </div>
+              <div className="metric-item">
+                <div className="metric-label">ใกล้ครบกำหนด (&le;7 วัน)</div>
+                <div className="metric-value highlight-warning">{monitoredWarning} เครื่อง</div>
+              </div>
+              <div className="metric-item">
+                <div className="metric-label">ค้างการตรวจสอบ (Action Required)</div>
+                <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
+              </div>
+            </div>
+          </article>
+
           {/* CARD 1: ASSETS */}
           <article className="card asset-card">
             <div className="card-header">
@@ -9973,7 +10034,30 @@ function Dashboard() {
                               </td>
                               <td><AssetTags value={asset.softwareApp} /></td>
                               <td>{asset.registeredEmail || '-'}</td>
-                              <td><strong>{asset.deviceSerial}</strong></td>
+                              <td>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                  <strong>{asset.deviceSerial}</strong>
+                                  {(() => {
+                                    const match = externalDevices.find(d => 
+                                      (d.deviceNumber || '').toLowerCase().replace(/\s/g, '') === (asset.deviceSerial || '').toLowerCase().replace(/\s/g, '')
+                                      || (d.deviceNumber || '').toLowerCase().replace(/\s/g, '') === (asset.additionalSerial || '').toLowerCase().replace(/\s/g, '')
+                                    );
+                                    if (!match) return null;
+                                    
+                                    let badgeColor = 'var(--text-muted)';
+                                    let statusText = 'Unverified';
+                                    if (match.status === 'active') {
+                                      if (match.daysRemaining > 7) { badgeColor = 'var(--success)'; statusText = 'Verified'; }
+                                      else { badgeColor = 'var(--warning)'; statusText = 'Expiring Soon'; }
+                                    }
+                                    return (
+                                      <span style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: badgeColor, color: '#fff', alignSelf: 'flex-start' }} title={`ตรวจสอบล่าสุด: ${match.lastVerifiedAt ? new Date(match.lastVerifiedAt).toLocaleString('th-TH') : '-'}`}>
+                                        {statusText} ({match.daysRemaining} วัน)
+                                      </span>
+                                    );
+                                  })()}
+                                </div>
+                              </td>
                               <td>{asset.additionalSerial || '-'}</td>
                               <td>{asset.returnDueDate || '-'}</td>
                               <td>
