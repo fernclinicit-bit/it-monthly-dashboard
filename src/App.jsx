@@ -7162,15 +7162,15 @@ function Dashboard() {
     XLSX.writeFile(wb, 'IT_Dashboard_Template.xlsx');
   };
 
-  const exportAssetsToExcel = () => {
-    if (!consoleAssets || consoleAssets.length === 0) {
+  const exportAssetsToExcel = (assetsToExport, monthToExport) => {
+    if (!assetsToExport || assetsToExport.length === 0) {
       alert('ไม่มีข้อมูลสำหรับ Export');
       return;
     }
     const wb = XLSX.utils.book_new();
     const headers = ['Number', 'วันที่ Submit', 'ผู้รับผิดชอบ', 'วันที่เบิกใช้งาน', 'ผู้เบิกใช้งาน', 'ตำแหน่ง/แผนก', 'รายการอุปกรณ์หลัก', 'อุปกรณ์เพิ่มเติม', 'ซอฟต์แวร์/App', 'อีเมลที่ลงทะเบียน', 'หมายเลขอุปกรณ์', 'S/N เพิ่มเติม', 'กำหนดคืน', 'สถานะ', 'หมายเหตุ', 'วันที่ตรวจสอบ', 'วันที่ซื้อ', 'วันหมดประกัน', 'ค่าใช้จ่าย'];
     
-    const rows = consoleAssets.map((asset, idx) => [
+    const rows = assetsToExport.map((asset, idx) => [
       idx + 1,
       asset.submittedOn || '',
       asset.respondent || '',
@@ -7195,7 +7195,7 @@ function Dashboard() {
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
     ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length + 4, 15) }));
     XLSX.utils.book_append_sheet(wb, ws, 'Asset_Registry');
-    XLSX.writeFile(wb, `Asset_Registry_${consoleMonth}.xlsx`);
+    XLSX.writeFile(wb, `Asset_Registry_${monthToExport}.xlsx`);
   };
 
   const exportAssetsToPDF = () => {
@@ -9990,7 +9990,7 @@ function Dashboard() {
                       
                       {/* Export Actions */}
                       <div className="console-field" style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', minWidth: '220px' }}>
-                        <button type="button" onClick={exportAssetsToExcel} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#059669', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
+                        <button type="button" onClick={() => exportAssetsToExcel(consoleAssets, consoleMonth)} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#059669', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
                           <Download size={16} style={{ marginRight: '6px' }} /> Excel
                         </button>
                         <button type="button" onClick={exportAssetsToPDF} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#dc2626', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
