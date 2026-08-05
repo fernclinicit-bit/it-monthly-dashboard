@@ -7162,6 +7162,52 @@ function Dashboard() {
     XLSX.writeFile(wb, 'IT_Dashboard_Template.xlsx');
   };
 
+  const exportAssetsToExcel = () => {
+    if (!consoleAssets || consoleAssets.length === 0) {
+      alert('ไม่มีข้อมูลสำหรับ Export');
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+    const headers = ['Number', 'วันที่ Submit', 'ผู้รับผิดชอบ', 'วันที่เบิกใช้งาน', 'ผู้เบิกใช้งาน', 'ตำแหน่ง/แผนก', 'รายการอุปกรณ์หลัก', 'อุปกรณ์เพิ่มเติม', 'ซอฟต์แวร์/App', 'อีเมลที่ลงทะเบียน', 'หมายเลขอุปกรณ์', 'S/N เพิ่มเติม', 'กำหนดคืน', 'สถานะ', 'หมายเหตุ', 'วันที่ตรวจสอบ', 'วันที่ซื้อ', 'วันหมดประกัน', 'ค่าใช้จ่าย'];
+    
+    const rows = consoleAssets.map((asset, idx) => [
+      idx + 1,
+      asset.submittedOn || '',
+      asset.respondent || '',
+      asset.date || '',
+      asset.user || '',
+      asset.position || '',
+      asset.itemType || '',
+      Array.isArray(asset.additionalEquipment) ? asset.additionalEquipment.join(', ') : (asset.additionalEquipment || ''),
+      Array.isArray(asset.softwareApp) ? asset.softwareApp.join(', ') : (asset.softwareApp || ''),
+      asset.registeredEmail || '',
+      asset.deviceSerial || '',
+      asset.additionalSerial || '',
+      asset.returnDueDate || '',
+      asset.status || '',
+      asset.notes || '',
+      asset.inspectionDate || '',
+      asset.purchaseDate || '',
+      asset.warrantyEndDate || '',
+      asset.expense || ''
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length + 4, 15) }));
+    XLSX.utils.book_append_sheet(wb, ws, 'Asset_Registry');
+    XLSX.writeFile(wb, `Asset_Registry_${consoleMonth}.xlsx`);
+  };
+
+  const exportAssetsToPDF = () => {
+    // We can use a simple window.print() and hide the form elements using CSS.
+    // By adding a temporary class to body to indicate asset PDF export.
+    document.body.classList.add('printing-assets');
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-assets');
+    }, 1000);
+  };
+
   // Export current data to .xlsx
   const exportToXlsx = () => {
     const wb = XLSX.utils.book_new();
@@ -9940,6 +9986,16 @@ function Dashboard() {
                       <div className="console-field">
                         <span className="console-label">ค่าใช้จ่าย</span>
                         <input type="text" value={newAssetCost} onChange={e => setNewAssetCost(e.target.value)} placeholder="ค่าใช้จ่าย" className="console-input" />
+                      </div>
+                      
+                      {/* Export Actions */}
+                      <div className="console-field" style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', minWidth: '220px' }}>
+                        <button type="button" onClick={exportAssetsToExcel} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#059669', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
+                          <Download size={16} style={{ marginRight: '6px' }} /> Excel
+                        </button>
+                        <button type="button" onClick={exportAssetsToPDF} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#dc2626', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
+                          <Printer size={16} style={{ marginRight: '6px' }} /> PDF
+                        </button>
                       </div>
                       <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}`} style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
                         {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}

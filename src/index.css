@@ -912,6 +912,29 @@ body {
     .no-print {
         display: none !important;
     }
+    
+    /* Specific styling when printing Asset Registry PDF */
+    body.printing-assets .dashboard-container,
+    body.printing-assets .dashboard-header,
+    body.printing-assets .console-form,
+    body.printing-assets .lark-registry-toolbar,
+    body.printing-assets .lark-registry-header {
+        display: none !important;
+    }
+    
+    body.printing-assets .lark-registry-scroll {
+        overflow: visible !important;
+        max-height: none !important;
+    }
+    
+    body.printing-assets .lark-main {
+        padding: 0 !important;
+    }
+    
+    body.printing-assets .lark-registry-table {
+        width: 100% !important;
+        font-size: 8pt !important;
+    }
 
     /* Formatting dashboard container for printing */
     .dashboard-container {
