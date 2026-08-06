@@ -5431,7 +5431,7 @@ function Dashboard() {
   const [assetTypeFilter, setAssetTypeFilter] = useState('');
   const [assetRequests, setAssetRequests] = useState([]);
   const [assetRequestLoading, setAssetRequestLoading] = useState(false);
-  const [assetRequestForm, setAssetRequestForm] = useState({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
+  const [assetRequestForm, setAssetRequestForm] = useState({ requester: '', department: '', itemType: '', purpose: '', requestedDate: new Date().toISOString().slice(0, 10), notes: '' });
   const [assetWorkflowRole, setAssetWorkflowRole] = useState('requester');
   const [assetRequesterSearch, setAssetRequesterSearch] = useState('');
   const [assetReturnSearch, setAssetReturnSearch] = useState('');
@@ -5599,7 +5599,7 @@ function Dashboard() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'ส่งคำขอไม่สำเร็จ');
-      setAssetRequestForm({ requester: '', department: '', itemType: '', purpose: '', dueDate: '', notes: '' });
+      setAssetRequestForm({ requester: '', department: '', itemType: '', purpose: '', requestedDate: new Date().toISOString().slice(0, 10), notes: '' });
       await loadAssetRequests();
       alert(`ส่งคำขอเบิกเลขที่ #${result.id} สำเร็จ`);
     } catch (err) {
@@ -8536,7 +8536,7 @@ function Dashboard() {
                     <label>ชื่อผู้ขอ <input required value={assetRequestForm.requester} onChange={e => setAssetRequestForm(p => ({ ...p, requester: e.target.value }))} /></label>
                     <label>แผนก <input required value={assetRequestForm.department} onChange={e => setAssetRequestForm(p => ({ ...p, department: e.target.value }))} /></label>
                     <label>ประเภทอุปกรณ์ <input required placeholder="เช่น Notebook, iPad" value={assetRequestForm.itemType} onChange={e => setAssetRequestForm(p => ({ ...p, itemType: e.target.value }))} /></label>
-                    <label>กำหนดคืน <input type="date" value={assetRequestForm.dueDate} onChange={e => setAssetRequestForm(p => ({ ...p, dueDate: e.target.value }))} /></label>
+                    <label>วันที่เบิก <input required type="date" value={assetRequestForm.requestedDate} onChange={e => setAssetRequestForm(p => ({ ...p, requestedDate: e.target.value }))} /></label>
                     <label className="workflow-span-2">เหตุผลการใช้งาน <textarea required value={assetRequestForm.purpose} onChange={e => setAssetRequestForm(p => ({ ...p, purpose: e.target.value }))} /></label>
                     <label className="workflow-span-2">หมายเหตุ <input value={assetRequestForm.notes} onChange={e => setAssetRequestForm(p => ({ ...p, notes: e.target.value }))} /></label>
                   </div>
@@ -8559,7 +8559,7 @@ function Dashboard() {
                           <tr><td colSpan="8" className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
                         ) : displayedRequests.map(request => (
                           <tr key={request.id}>
-                            <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
+                            <td><strong>#{request.id}</strong><small>{request.requested_date || request.created_at ? new Date(request.requested_date || request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
                             <td><strong>{request.requester}</strong><small>{request.department}</small></td>
                             <td><strong>{request.item_type}</strong><small>{request.purpose}</small></td>
                             <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
@@ -8722,7 +8722,7 @@ function Dashboard() {
                           <tr key={request.id}>
                             <td>
                               <strong>#{request.id}</strong>
-                              <small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small>
+                              <small>{request.requested_date || request.created_at ? new Date(request.requested_date || request.created_at).toLocaleDateString('th-TH') : '-'}</small>
                             </td>
                             <td><strong>{request.requester}</strong><small>{request.department}</small></td>
                             <td>
@@ -8782,7 +8782,7 @@ function Dashboard() {
                           <tr><td colSpan="6" className="workflow-empty">ไม่มีอุปกรณ์รอตรวจรับ</td></tr>
                         ) : inspectionRequests.map(request => (
                           <tr key={request.id}>
-                            <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
+                            <td><strong>#{request.id}</strong><small>{request.requested_date || request.created_at ? new Date(request.requested_date || request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
                             <td><strong>{request.requester}</strong><small>{request.department}</small></td>
                             <td><strong>{request.device_serial || request.item_type}</strong><small>{request.assigned_item_type || request.purpose}</small></td>
                             <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>

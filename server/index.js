@@ -652,17 +652,20 @@ app.get('/api/asset-requests', async (_req, res) => {
 });
 
 app.post('/api/asset-requests', async (req, res) => {
-  const { requester, department, itemType, purpose, dueDate, notes } = req.body;
-  if (!requester || !department || !itemType || !purpose) {
+  const { requester, department, itemType, purpose, requestedDate, dueDate, notes } = req.body;
+  if (!requester || !department || !itemType || !purpose || !requestedDate) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลคำขอให้ครบ' });
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+    return res.status(400).json({ error: 'รูปแบบวันที่เบิกต้องเป็น YYYY-MM-DD' });
   }
   try {
     const event = { status: 'pending', at: new Date().toISOString(), by: requester, note: 'ส่งคำขอเบิกอุปกรณ์' };
     const result = await pool.query(`
-      INSERT INTO asset_requests (requester, department, item_type, purpose, due_date, notes, history)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO asset_requests (requester, department, item_type, purpose, requested_date, due_date, notes, history)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
-    `, [requester, department, itemType, purpose, dueDate || null, notes || '', JSON.stringify([event])]);
+    `, [requester, department, itemType, purpose, requestedDate, dueDate || null, notes || '', JSON.stringify([event])]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error creating asset request:', err);
