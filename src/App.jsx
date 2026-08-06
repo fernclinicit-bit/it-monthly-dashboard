@@ -6745,19 +6745,16 @@ function Dashboard() {
     count: assetsList.filter((asset) => category.match(String(asset.itemType || ''))).length,
   }));
 
-  const primaryVacantAssets = assetsList.filter((asset) => {
-    const type = String(asset.itemType || '');
-    return asset.status === 'ว่าง' && mainAssetCategories.some((category) => category.match(type));
-  }).length;
-
-  const vacantMainAssetBreakdown = mainAssetCategories
-    .map((category) => ({
-      label: category.label,
-      count: assetsList.filter((asset) =>
-        asset.status === 'ว่าง' && category.match(String(asset.itemType || ''))
-      ).length,
-    }))
-    .filter((asset) => asset.count > 0);
+  const vacantStockAssets = assetsList.filter((asset) => asset.status === 'ว่าง');
+  const vacantStockCount = vacantStockAssets.length;
+  const vacantStockBreakdown = Array.from(vacantStockAssets.reduce((groups, asset) => {
+    const type = String(asset.itemType || 'ไม่ระบุ').trim() || 'ไม่ระบุ';
+    const mainCategory = mainAssetCategories.find((category) => category.match(type));
+    const label = mainCategory?.label || type;
+    groups.set(label, (groups.get(label) || 0) + 1);
+    return groups;
+  }, new Map()), ([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'th'));
 
   const parseAssetDate = (value) => {
     if (!value) return null;
@@ -8256,9 +8253,9 @@ function Dashboard() {
                   </div>
                   <div className="asset-vacant-summary">
                     <div className="metric-label">เครื่องว่าง</div>
-                    <div className="metric-value highlight-success">{primaryVacantAssets} เครื่อง</div>
+                    <div className="metric-value highlight-success">{vacantStockCount} เครื่อง</div>
                     <div className="vacant-assets-breakdown">
-                      {vacantMainAssetBreakdown.length > 0 ? vacantMainAssetBreakdown.map((asset) => (
+                      {vacantStockBreakdown.length > 0 ? vacantStockBreakdown.map((asset) => (
                         <span key={asset.label}>{asset.label} <strong>{asset.count}</strong></span>
                       )) : (
                         <span>ไม่มีเครื่องว่าง</span>
@@ -8286,8 +8283,8 @@ function Dashboard() {
               </div>
               <div className="metric-item">
                 <div className="metric-label">เครื่องว่าง (พร้อมใช้)</div>
-                <div className="metric-value highlight-success">{primaryVacantAssets} เครื่อง</div>
-                <div className="metric-note">เฉพาะอุปกรณ์หลัก</div>
+                <div className="metric-value highlight-success">{vacantStockCount} เครื่อง</div>
+                <div className="metric-note">ตามสถานะว่างในทะเบียนคลัง</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">ชำรุด</div>
