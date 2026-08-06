@@ -5435,6 +5435,7 @@ function Dashboard() {
   const [assetWorkflowRole, setAssetWorkflowRole] = useState('requester');
   const [assetRequesterSearch, setAssetRequesterSearch] = useState('');
   const [assetReturnSearch, setAssetReturnSearch] = useState('');
+  const [assetReturnIdentity, setAssetReturnIdentity] = useState('');
   const [assetReturnView, setAssetReturnView] = useState('returns');
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
@@ -5646,23 +5647,17 @@ function Dashboard() {
     }
   };
 
-  const runAssetRequestAction = async (request, action, requestedByUser = false) => {
+  const runAssetRequestAction = async (request, action) => {
     const payload = { action };
     if (action === 'approve') {
-      if (request.due_date && String(request.due_date).trim() !== '') {
-        if (!window.confirm('คำขอนี้มีการระบุกำหนดคืน (เป็นการคืนอุปกรณ์) ยืนยันอนุมัติโดยไม่จัดสรรเครื่องใหม่หรือไม่?')) return;
-        payload.isReturnRequest = true;
-        payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
-      } else {
-        const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
-        if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
-        const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
-        const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
-        if (selected === null) return;
-        if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
-        payload.assetSn = Number(selected);
-        payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
-      }
+      const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
+      if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
+      const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
+      const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
+      if (selected === null) return;
+      if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
+      payload.assetSn = Number(selected);
+      payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
     } else if (action === 'reject') {
       const note = window.prompt('ระบุเหตุผลที่ไม่อนุมัติ');
       if (note === null) return;
@@ -5671,50 +5666,22 @@ function Dashboard() {
     } else if (action === 'issue') {
       if (!window.confirm(`ยืนยันส่งมอบอุปกรณ์ให้ ${request.requester}?`)) return;
       payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ส่งมอบ') || request.reviewer || 'IT';
+    } else if (action === 'request_return') {
+      if (!assetReturnIdentity.trim()) return alert('กรุณาระบุชื่อผู้คืนก่อน');
+      if (!window.confirm(`ยืนยันแจ้งขอคืนอุปกรณ์ ${request.device_serial || request.item_type} ให้ IT ตรวจรับใช่หรือไม่?`)) return;
+      payload.requesterIdentity = assetReturnIdentity.trim();
+      payload.reviewer = assetReturnIdentity.trim();
+      payload.note = 'ผู้ใช้งานแจ้งขอคืนอุปกรณ์ รอเจ้าหน้าที่ IT ตรวจรับ';
     } else if (action === 'return') {
-      if (request.is_direct_asset) {
-        let condition = 'ปกติ';
-        if (requestedByUser) {
-          if (!window.confirm(`ยืนยันส่งคืนอุปกรณ์ ${request.device_serial || request.item_type} เข้าคลังใช่หรือไม่?`)) return;
-        } else {
-          condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
-          if (condition === null) return;
-          if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
-        }
-
-        setAssetRequestLoading(true);
-        try {
-          const updatedAssets = assetsList.map(a => {
-            if (a.sn === request.asset_sn) {
-              const newStatus = condition === 'ชำรุด' ? 'ส่งซ่อม' : (condition === 'สูญหาย' ? 'แทงจำหน่าย' : 'ว่าง');
-              return { ...a, status: newStatus, user: 'ส่วนกลาง/ไม่ระบุ', position: '-' };
-            }
-            return a;
-          });
-          await syncStateToDb(data, updatedAssets);
-          setAssetsList(updatedAssets);
-          alert(requestedByUser ? 'ส่งคืนอุปกรณ์สำเร็จ' : 'รับคืนอุปกรณ์และอัปเดตคลังสำเร็จ');
-        } catch (err) {
-          alert(err.message);
-        } finally {
-          setAssetRequestLoading(false);
-        }
-        return;
-      }
-
-      if (requestedByUser) {
-        if (!window.confirm(`ยืนยันส่งคืนอุปกรณ์ ${request.device_serial || request.item_type} เข้าคลังใช่หรือไม่?`)) return;
-        payload.condition = 'ปกติ';
-        payload.reviewer = request.requester;
-        payload.note = 'ผู้ใช้งานยืนยันส่งคืนอุปกรณ์เข้าคลัง';
-      } else {
-        const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
-        if (condition === null) return;
-        if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
-        payload.condition = condition;
-        payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
-        payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
-      }
+      const adminPassword = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT เพื่อยืนยันรับคืน');
+      if (adminPassword === null) return;
+      const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
+      if (condition === null) return;
+      if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
+      payload.adminPassword = adminPassword;
+      payload.condition = condition;
+      payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
+      payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
     }
 
     setAssetRequestLoading(true);
@@ -5727,11 +5694,8 @@ function Dashboard() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'ดำเนินการไม่สำเร็จ');
       await Promise.all([loadAssetRequests(), refreshOperationalStateFromDb()]);
-      if (action === 'return') {
-        alert(requestedByUser
-          ? 'ส่งคืนอุปกรณ์สำเร็จ เครื่องถูกนำออกจากผู้ใช้งานและคืนเข้าคลังแล้ว'
-          : 'รับคืนอุปกรณ์และอัปเดตคลังสำเร็จ');
-      }
+      if (action === 'request_return') alert('แจ้งขอคืนอุปกรณ์สำเร็จ กรุณานำอุปกรณ์ให้เจ้าหน้าที่ IT ตรวจรับ');
+      if (action === 'return') alert('IT ตรวจรับอุปกรณ์และอัปเดตสถานะคลังสำเร็จ');
     } catch (err) {
       alert(err.message);
     } finally {
@@ -8531,7 +8495,7 @@ function Dashboard() {
       {activeModal === 'assetWorkflow' && (() => {
         const statusLabels = {
           pending: 'รออนุมัติ', approved: 'อนุมัติแล้ว', rejected: 'ไม่อนุมัติ',
-          issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', returned: 'คืนแล้ว', need_info: 'รอข้อมูลเพิ่ม'
+          issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', return_requested: 'รอ IT ตรวจรับ', returned: 'คืนแล้ว', need_info: 'รอข้อมูลเพิ่ม'
         };
         const requesterSearch = assetRequesterSearch.trim().toLocaleLowerCase('th-TH');
         const displayedRequests = assetWorkflowRole === 'it' || !requesterSearch
@@ -8596,10 +8560,10 @@ function Dashboard() {
                                 <span className="workflow-done">-</span>
                               ) : (
                               <div className="workflow-actions">
-                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>{request.due_date && String(request.due_date).trim() !== '' ? 'อนุมัติ' : 'อนุมัติ/เลือกเครื่อง'}</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
-                                {request.status === 'approved' && request.due_date && String(request.due_date).trim() !== '' ? <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button> : request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
-                                {(request.status === 'issued' || request.status === 'overdue') && <button onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>รับคืน</button>}
+                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
+                                {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
+                                {['issued', 'overdue', 'return_requested'].includes(request.status) && <span className="workflow-done">ดำเนินการคืนที่เมนู “คืนอุปกรณ์”</span>}
                               </div>
                               )}
                             </td>
@@ -8631,37 +8595,14 @@ function Dashboard() {
           issued: 'ส่งมอบแล้ว',
           rejected: 'ไม่อนุมัติ',
           overdue: 'เกินกำหนด',
+          return_requested: 'รอ IT ตรวจรับ',
           returned: 'คืนแล้ว'
         };
         const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
-        const inUseDirectAssets = assetsList
-          .filter(asset => asset.status === 'ใช้งาน')
-          .filter(asset => {
-            const existingRequest = assetRequests.find(r => 
-              ['issued', 'overdue'].includes(r.status) && 
-              (
-                r.assigned_asset_sn === asset.sn ||
-                (r.device_serial && asset.deviceSerial && String(r.device_serial).toLowerCase() === String(asset.deviceSerial).toLowerCase())
-              )
-            );
-            return !existingRequest;
-          })
-          .map(asset => ({
-            id: `ASSET-${asset.sn}`,
-            is_direct_asset: true,
-            asset_sn: asset.sn,
-            requester: asset.user && asset.user !== '-' ? asset.user : 'ไม่ระบุ',
-            department: asset.position && asset.position !== '-' ? asset.position : '',
-            item_type: asset.itemType && asset.itemType !== '-' ? asset.itemType : '',
-            device_serial: asset.deviceSerial && asset.deviceSerial !== '-' ? asset.deviceSerial : '',
-            assigned_item_type: asset.additionalEquipment && asset.additionalEquipment !== '-' ? asset.additionalEquipment : '',
-            due_date: asset.returnDueDate || '',
-            status: 'issued',
-            created_at: asset.purchaseDate || ''
-          }));
-
-        const returnRequests = [...assetRequests
-          .filter(request => ['issued', 'overdue', 'returned'].includes(request.status) || (request.due_date && String(request.due_date).trim() !== '')), ...inUseDirectAssets]
+        const identity = assetReturnIdentity.trim().toLocaleLowerCase('th-TH');
+        const returnRequests = assetRequests
+          .filter(request => identity && String(request.requester || '').trim().toLocaleLowerCase('th-TH') === identity)
+          .filter(request => ['issued', 'overdue', 'return_requested', 'returned'].includes(request.status))
           .filter(request => {
             if (!search) return true;
             return [
@@ -8678,6 +8619,7 @@ function Dashboard() {
             return aDone - bDone;
           });
         const waitingCount = returnRequests.filter(request => ['issued', 'overdue'].includes(request.status)).length;
+        const inspectionRequests = assetRequests.filter(request => request.status === 'return_requested');
         const uniquePositions = Array.from(new Set(assetsList.map(asset => asset.position).filter(Boolean))).sort();
         const uniqueStatuses = Array.from(new Set(assetsList.map(asset => asset.status).filter(Boolean))).sort();
         const registryAssets = assetsList.filter(asset => {
@@ -8715,7 +8657,16 @@ function Dashboard() {
                   <p className="workflow-subtitle">ค้นหาอุปกรณ์ที่รับไปแล้ว ยืนยันการส่งคืน และตรวจสอบประวัติการคืน</p>
                 </div>
                 <div className="workflow-header-actions">
-
+                  <div className="return-view-switch">
+                    <button className={assetReturnView === 'returns' ? 'active' : ''} onClick={() => setAssetReturnView('returns')}>แจ้งขอคืน</button>
+                    <button className={assetReturnView === 'registry' ? 'active' : ''} onClick={() => setAssetReturnView('registry')}>ทะเบียนทรัพย์สินทั้งหมด</button>
+                    <button
+                      className={assetReturnView === 'inspection' ? 'active it-inspection' : 'it-inspection'}
+                      onClick={() => requireAdminAccess(() => setAssetReturnView('inspection'))}
+                    >
+                      IT ตรวจรับ
+                    </button>
+                  </div>
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
                 </div>
               </header>
@@ -8723,10 +8674,19 @@ function Dashboard() {
                 {assetReturnView === 'returns' && <section className="workflow-list-section">
                   <div className="workflow-section-heading">
                     <div>
-                      <h4>รายการอุปกรณ์สำหรับส่งคืน</h4>
+                      <h4>รายการอุปกรณ์ของผู้คืน</h4>
+                      <label className="return-identity-field">
+                        <span>ยืนยันตัวผู้คืนด้วยชื่อ-นามสกุลที่ใช้ตอนเบิก</span>
+                        <input
+                          className="workflow-requester-search"
+                          placeholder="กรอกชื่อ-นามสกุลให้ตรงกับคำขอเบิก"
+                          value={assetReturnIdentity}
+                          onChange={event => setAssetReturnIdentity(event.target.value)}
+                        />
+                      </label>
                       <input
                         className="workflow-requester-search"
-                        placeholder="ค้นหาชื่อผู้ขอ แผนก หรือหมายเลขเครื่อง"
+                        placeholder="ค้นหาแผนกหรือหมายเลขเครื่องของคุณ"
                         value={assetReturnSearch}
                         onChange={event => setAssetReturnSearch(event.target.value)}
                       />
@@ -8747,7 +8707,7 @@ function Dashboard() {
                       </thead>
                       <tbody>
                         {returnRequests.length === 0 ? (
-                          <tr><td colSpan="6" className="workflow-empty">ไม่พบอุปกรณ์ที่อยู่ในขั้นตอนการคืน</td></tr>
+                          <tr><td colSpan="6" className="workflow-empty">{identity ? 'ไม่พบอุปกรณ์ที่ตรงกับชื่อผู้คืน' : 'กรุณากรอกชื่อ-นามสกุลผู้คืนเพื่อแสดงรายการของคุณ'}</td></tr>
                         ) : returnRequests.map(request => (
                           <tr key={request.id}>
                             <td>
@@ -8766,17 +8726,63 @@ function Dashboard() {
                                 <div className="workflow-actions">
                                   <button
                                     className="return"
-                                    onClick={() => runAssetRequestAction(request, 'return', true)}
+                                    onClick={() => runAssetRequestAction(request, 'request_return')}
                                     disabled={assetRequestLoading}
                                   >
-                                    ยืนยันส่งคืนอุปกรณ์
+                                    แจ้งขอคืนอุปกรณ์
                                   </button>
                                 </div>
+                              ) : request.status === 'return_requested' ? (
+                                <span className="workflow-done">รอเจ้าหน้าที่ IT ตรวจรับเครื่อง</span>
                               ) : (
                                 <span className="workflow-done">
                                   คืนเมื่อ {request.return_date ? new Date(request.return_date).toLocaleDateString('th-TH') : '-'}
                                 </span>
                               )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>}
+
+                {assetReturnView === 'inspection' && <section className="workflow-list-section return-inspection-section">
+                  <div className="workflow-section-heading">
+                    <div>
+                      <h4>รายการรอเจ้าหน้าที่ IT ตรวจรับ</h4>
+                      <p className="workflow-subtitle">ตรวจสภาพเครื่องก่อนยืนยัน ระบบจึงจะเปลี่ยนสถานะคลังเป็น ว่าง / รอซ่อม / สูญหาย</p>
+                    </div>
+                    <span>รอตรวจรับ {inspectionRequests.length} รายการ</span>
+                  </div>
+                  <div className="workflow-table-wrap">
+                    <table className="details-table workflow-table asset-return-table">
+                      <thead>
+                        <tr>
+                          <th>เลขที่</th>
+                          <th>ผู้คืน/แผนก</th>
+                          <th>อุปกรณ์</th>
+                          <th>กำหนดคืน</th>
+                          <th>สถานะ</th>
+                          <th>ตรวจรับ</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {inspectionRequests.length === 0 ? (
+                          <tr><td colSpan="6" className="workflow-empty">ไม่มีอุปกรณ์รอตรวจรับ</td></tr>
+                        ) : inspectionRequests.map(request => (
+                          <tr key={request.id}>
+                            <td><strong>#{request.id}</strong><small>{request.created_at ? new Date(request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
+                            <td><strong>{request.requester}</strong><small>{request.department}</small></td>
+                            <td><strong>{request.device_serial || request.item_type}</strong><small>{request.assigned_item_type || request.purpose}</small></td>
+                            <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
+                            <td><span className="workflow-status status-return_requested">รอ IT ตรวจรับ</span></td>
+                            <td>
+                              <div className="workflow-actions">
+                                <button className="return" onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>
+                                  ตรวจสภาพและรับคืน
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}

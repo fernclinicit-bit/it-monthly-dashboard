@@ -2164,6 +2164,7 @@ body {
 .status-pending, .status-need_info { color: #fbbf24; background: rgba(245,158,11,.15); }
 .status-approved { color: #60a5fa; background: rgba(59,130,246,.15); }
 .status-issued, .status-overdue { color: #c084fc; background: rgba(168,85,247,.15); }
+.status-return_requested { color: #38bdf8; background: rgba(14,165,233,.15); }
 .status-returned { color: #34d399; background: rgba(16,185,129,.15); }
 .status-rejected { color: #f87171; background: rgba(239,68,68,.15); }
 .workflow-actions { display: flex; gap: 5px; flex-wrap: wrap; }
@@ -2182,6 +2183,11 @@ body {
 .return-view-switch { display: flex; gap: 5px; padding: 4px; border: 1px solid var(--border-color); border-radius: 9px; background: #0f172a; }
 .return-view-switch button { border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; }
 .return-view-switch button.active { color: #fff; background: #059669; }
+.return-view-switch button.it-inspection { border: 1px solid rgba(59,130,246,.45); }
+.return-view-switch button.it-inspection.active { background: #2563eb; }
+.return-identity-field { display: block; margin-top: 10px; }
+.return-identity-field > span { display: block; margin-bottom: 5px; color: #fbbf24; font-size: .76rem; font-weight: 700; }
+.return-identity-field + .workflow-requester-search { margin-top: 7px; }
 .return-registry-filters { display: flex; justify-content: flex-end; gap: 10px; margin: -58px 0 16px auto; }
 .return-registry-filters select { min-width: 170px; padding: 9px 11px; border: 1px solid #334155; border-radius: 7px; background: #1e293b; color: #fff; }
 .return-registry-table-wrap { max-height: calc(100vh - 245px); }

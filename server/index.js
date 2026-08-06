@@ -24,13 +24,16 @@ app.get('/health', (_req, res) => {
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH ||
   '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
 
-app.post('/api/admin/verify', (req, res) => {
-  const password = String(req.body?.password || '');
-  const suppliedHash = crypto.createHash('sha256').update(password).digest('hex');
+function isAdminPassword(password) {
+  const suppliedHash = crypto.createHash('sha256').update(String(password || '')).digest('hex');
   const suppliedBuffer = Buffer.from(suppliedHash, 'hex');
   const expectedBuffer = Buffer.from(ADMIN_PASSWORD_HASH, 'hex');
-  const valid = suppliedBuffer.length === expectedBuffer.length &&
+  return suppliedBuffer.length === expectedBuffer.length &&
     crypto.timingSafeEqual(suppliedBuffer, expectedBuffer);
+}
+
+app.post('/api/admin/verify', (req, res) => {
+  const valid = isAdminPassword(req.body?.password);
   res.status(valid ? 200 : 401).json({ valid });
 });
 
@@ -65,6 +68,56 @@ async function refreshOperationalCounters(client) {
         assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง'),
         tickets_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key),
         repair_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key)
+  `);
+}
+
+async function reconcileAssetRequestWorkflow(client) {
+  await client.query(`
+    UPDATE asset_requests
+    SET status = 'overdue',
+        history = history || jsonb_build_array(jsonb_build_object(
+          'status', 'overdue',
+          'at', NOW(),
+          'by', 'System',
+          'note', 'เกินกำหนดคืนอุปกรณ์อัตโนมัติ'
+        )),
+        updated_at = NOW()
+    WHERE status = 'issued'
+      AND due_date IS NOT NULL
+      AND due_date < CURRENT_DATE
+  `);
+
+  // Every in-use asset must have one active workflow record. This also imports
+  // legacy/direct registry assignments into the checkout/return audit trail.
+  await client.query(`
+    INSERT INTO asset_requests (
+      requester, department, item_type, purpose, status, assigned_asset_sn,
+      reviewer, issue_date, notes, history
+    )
+    SELECT
+      COALESCE(NULLIF(a.user_name, ''), 'ไม่ระบุ'),
+      COALESCE(NULLIF(a.position, ''), '-'),
+      COALESCE(NULLIF(a.item_type, ''), 'อุปกรณ์ IT'),
+      'สร้างรายการใช้งานอัตโนมัติจากทะเบียนทรัพย์สิน',
+      'issued',
+      a.sn,
+      'IT Asset Registry',
+      NOW(),
+      'ระบบซิงค์ Workflow กับสถานะใช้งานในทะเบียน',
+      jsonb_build_array(jsonb_build_object(
+        'status', 'issued',
+        'at', NOW(),
+        'by', 'System',
+        'note', 'สร้างรายการใช้งานเพื่อให้ประวัติตรงกับทะเบียนทรัพย์สิน'
+      ))
+    FROM assets a
+    WHERE a.status = 'ใช้งาน'
+      AND NOT EXISTS (
+        SELECT 1 FROM asset_requests active
+        WHERE active.assigned_asset_sn = a.sn
+          AND active.status IN ('approved', 'issued', 'overdue', 'return_requested')
+      )
+    ON CONFLICT DO NOTHING
   `);
 }
 
@@ -170,6 +223,14 @@ async function initDb() {
           updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `);
+      await client.query(`
+        CREATE UNIQUE INDEX IF NOT EXISTS asset_requests_one_active_asset
+        ON asset_requests (assigned_asset_sn)
+        WHERE assigned_asset_sn IS NOT NULL
+          AND status IN ('approved', 'issued', 'overdue', 'return_requested')
+      `);
+
+      await reconcileAssetRequestWorkflow(client);
 
       // Workflow is authoritative for assets that are reserved or currently issued.
       // Reconcile on every deploy so stale dashboard snapshots cannot leave them behind.
@@ -183,7 +244,7 @@ async function initDb() {
             )
         FROM asset_requests r
         WHERE r.assigned_asset_sn = a.sn
-          AND r.status IN ('approved', 'issued', 'overdue')
+          AND r.status IN ('approved', 'issued', 'overdue', 'return_requested')
       `);
 
       // An active request must never point to a deleted asset. Return a dangling
@@ -199,7 +260,7 @@ async function initDb() {
               'note', 'ยกเลิกการจัดสรรอัตโนมัติ เนื่องจากไม่พบอุปกรณ์ในทะเบียน'
             )),
             updated_at = NOW()
-        WHERE r.status IN ('approved', 'issued', 'overdue')
+        WHERE r.status IN ('approved', 'issued', 'overdue', 'return_requested')
           AND NOT EXISTS (SELECT 1 FROM assets a WHERE a.sn = r.assigned_asset_sn)
       `);
 
@@ -383,7 +444,7 @@ app.post('/api/tickets', async (req, res) => {
 
       const activeRequests = await client.query(`
         SELECT id, history FROM asset_requests
-        WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue')
+        WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue', 'return_requested')
         FOR UPDATE
       `, [linkedAssetSn]);
       for (const request of activeRequests.rows) {
@@ -523,7 +584,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
     if (['ว่าง', 'รอซ่อม', 'สูญหาย'].includes(status)) {
       const activeRequests = await client.query(`
         SELECT id, history FROM asset_requests
-        WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue')
+        WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue', 'return_requested')
         FOR UPDATE
       `, [sn]);
       for (const request of activeRequests.rows) {
@@ -549,6 +610,8 @@ app.patch('/api/assets/:sn', async (req, res) => {
       }
     }
 
+    await reconcileAssetRequestWorkflow(client);
+
     await client.query(`
       UPDATE monthly_data
       SET total_assets = (SELECT COUNT(*) FROM assets),
@@ -570,6 +633,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
 
 app.get('/api/asset-requests', async (_req, res) => {
   try {
+    await reconcileAssetRequestWorkflow(pool);
     const result = await pool.query(`
       SELECT r.*, a.device_serial, a.item_type AS assigned_item_type
       FROM asset_requests r
@@ -619,9 +683,13 @@ app.patch('/api/asset-requests/:id', async (req, res) => {
     return res.status(400).json({ error: 'รูปแบบกำหนดคืนต้องเป็น YYYY-MM-DD' });
   }
 
+  let client;
   try {
-    const current = await pool.query('SELECT history FROM asset_requests WHERE id = $1', [id]);
+    client = await pool.connect();
+    await client.query('BEGIN');
+    const current = await client.query('SELECT history, status, assigned_asset_sn FROM asset_requests WHERE id = $1 FOR UPDATE', [id]);
     if (current.rowCount === 0) {
+      await client.query('ROLLBACK');
       return res.status(404).json({ error: 'ไม่พบคำขอ' });
     }
     const event = {
@@ -631,7 +699,7 @@ app.patch('/api/asset-requests/:id', async (req, res) => {
       note: 'แก้ไขรายละเอียดคำขอ'
     };
     const history = [...(current.rows[0].history || []), event];
-    const result = await pool.query(`
+    const result = await client.query(`
       UPDATE asset_requests
       SET requester = $1,
           department = $2,
@@ -653,17 +721,30 @@ app.patch('/api/asset-requests/:id', async (req, res) => {
       JSON.stringify(history),
       id
     ]);
+    if (current.rows[0].assigned_asset_sn && ['approved', 'issued', 'overdue', 'return_requested'].includes(current.rows[0].status)) {
+      await client.query(`
+        UPDATE assets
+        SET user_name = $1,
+            position = $2,
+            details = details || jsonb_build_object('user', $1::text, 'position', $2::text)
+        WHERE sn = $3
+      `, [requester.trim(), department.trim(), current.rows[0].assigned_asset_sn]);
+    }
+    await client.query('COMMIT');
     res.json(result.rows[0]);
   } catch (err) {
+    if (client) await client.query('ROLLBACK');
     console.error('Error editing asset request:', err);
     res.status(500).json({ error: 'แก้ไขคำขอไม่สำเร็จ' });
+  } finally {
+    if (client) client.release();
   }
 });
 
 app.patch('/api/asset-requests/:id/action', async (req, res) => {
   const id = Number(req.params.id);
-  const { action, reviewer, assetSn, condition, note, isReturnRequest } = req.body;
-  const allowedActions = ['approve', 'reject', 'issue', 'return'];
+  const { action, reviewer, assetSn, condition, note, requesterIdentity, adminPassword } = req.body;
+  const allowedActions = ['approve', 'reject', 'issue', 'request_return', 'return'];
   if (!Number.isInteger(id) || !allowedActions.includes(action)) {
     return res.status(400).json({ error: 'คำสั่งไม่ถูกต้อง' });
   }
@@ -684,16 +765,12 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
 
     if (action === 'approve') {
       if (request.status !== 'pending' && request.status !== 'need_info') throw new Error('คำขอนี้ไม่อยู่ในสถานะรออนุมัติ');
-      if (isReturnRequest) {
-        nextStatus = 'approved';
-      } else {
-        assignedSn = Number(assetSn);
-        const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [assignedSn]);
-        if (assetResult.rowCount === 0) throw new Error('ไม่พบอุปกรณ์ที่เลือก');
-        if (assetResult.rows[0].status !== 'ว่าง') throw new Error('อุปกรณ์นี้ไม่ว่างหรือถูกจองแล้ว');
-        nextStatus = 'approved';
-        assetStatus = 'จอง';
-      }
+      assignedSn = Number(assetSn);
+      const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [assignedSn]);
+      if (assetResult.rowCount === 0) throw new Error('ไม่พบอุปกรณ์ที่เลือก');
+      if (assetResult.rows[0].status !== 'ว่าง') throw new Error('อุปกรณ์นี้ไม่ว่างหรือถูกจองแล้ว');
+      nextStatus = 'approved';
+      assetStatus = 'จอง';
     } else if (action === 'reject') {
       if (request.status !== 'pending' && request.status !== 'need_info') throw new Error('คำขอนี้ไม่สามารถปฏิเสธได้');
       nextStatus = 'rejected';
@@ -701,14 +778,17 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       if (request.status !== 'approved') throw new Error('ต้องอนุมัติคำขอก่อนส่งมอบ');
       nextStatus = 'issued';
       assetStatus = 'ใช้งาน';
-    } else {
-      // return action
-      const validStatuses = ['issued', 'overdue'];
-      // Allow return from 'approved' if the request has a due_date (return request, no need to issue/deliver)
-      if (request.due_date && String(request.due_date).trim() !== '') {
-        validStatuses.push('approved');
+    } else if (action === 'request_return') {
+      if (request.status !== 'issued' && request.status !== 'overdue') throw new Error('รายการนี้ไม่อยู่ในสถานะที่แจ้งขอคืนได้');
+      if (!String(requesterIdentity || '').trim() ||
+          String(requesterIdentity).trim().toLocaleLowerCase('th-TH') !== String(request.requester).trim().toLocaleLowerCase('th-TH')) {
+        throw new Error('ชื่อผู้คืนไม่ตรงกับผู้เบิกอุปกรณ์');
       }
-      if (!validStatuses.includes(request.status)) throw new Error('รายการนี้ยังไม่ได้ส่งมอบ');
+      nextStatus = 'return_requested';
+    } else {
+      if (request.status !== 'return_requested') throw new Error('ผู้ใช้งานยังไม่ได้แจ้งขอคืนอุปกรณ์');
+      if (!isAdminPassword(adminPassword)) throw new Error('รหัสผ่านเจ้าหน้าที่ IT ไม่ถูกต้อง');
+      if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) throw new Error('กรุณาระบุสภาพอุปกรณ์ที่รับคืน');
       nextStatus = 'returned';
       assetStatus = condition === 'ชำรุด' ? 'รอซ่อม' : condition === 'สูญหาย' ? 'สูญหาย' : 'ว่าง';
     }
@@ -901,7 +981,7 @@ app.post('/api/sync-all', async (req, res) => {
       SELECT a.*
       FROM assets a
       JOIN asset_requests r ON r.assigned_asset_sn = a.sn
-      WHERE r.status IN ('approved', 'issued', 'overdue')
+      WHERE r.status IN ('approved', 'issued', 'overdue', 'return_requested')
     `);
 
     // Keep workflow-controlled status/user authoritative when a browser sends an
@@ -918,7 +998,7 @@ app.post('/api/sync-all', async (req, res) => {
         COALESCE(NULLIF(asset_row.item->>'deviceSerial', ''), '-'),
         COALESCE(
           CASE WHEN assignment.status = 'approved' THEN 'จอง'
-               WHEN assignment.status IN ('issued', 'overdue') THEN 'ใช้งาน'
+               WHEN assignment.status IN ('issued', 'overdue', 'return_requested') THEN 'ใช้งาน'
           END,
           NULLIF(asset_row.item->>'status', ''),
           'ใช้งาน'
@@ -928,7 +1008,7 @@ app.post('/api/sync-all', async (req, res) => {
           'user', COALESCE(assignment.requester, NULLIF(asset_row.item->>'user', ''), 'ส่วนกลาง'),
           'status', COALESCE(
             CASE WHEN assignment.status = 'approved' THEN 'จอง'
-                 WHEN assignment.status IN ('issued', 'overdue') THEN 'ใช้งาน'
+                 WHEN assignment.status IN ('issued', 'overdue', 'return_requested') THEN 'ใช้งาน'
             END,
             NULLIF(asset_row.item->>'status', ''),
             'ใช้งาน'
@@ -937,7 +1017,7 @@ app.post('/api/sync-all', async (req, res) => {
       FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS asset_row(item, ordinality)
       LEFT JOIN asset_requests assignment
         ON assignment.assigned_asset_sn = COALESCE(NULLIF(asset_row.item->>'sn', '')::integer, asset_row.ordinality::integer)
-       AND assignment.status IN ('approved', 'issued', 'overdue')
+       AND assignment.status IN ('approved', 'issued', 'overdue', 'return_requested')
     `, [JSON.stringify(assetsList)]);
 
     await client.query(`
@@ -1056,6 +1136,8 @@ app.post('/api/sync-all', async (req, res) => {
           attachment_name = COALESCE(EXCLUDED.attachment_name, tickets.attachment_name)
       `, [JSON.stringify(ticketPayload)]);
     }
+
+    await reconcileAssetRequestWorkflow(client);
 
     // Preserve the values entered in the full dashboard editor. Operational
     // workflow endpoints recalculate their own counters when a ticket or asset
