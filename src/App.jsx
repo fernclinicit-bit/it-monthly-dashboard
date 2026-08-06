@@ -8507,16 +8507,19 @@ function Dashboard() {
           issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', return_requested: 'รอ IT ตรวจรับ', returned: 'คืนแล้ว', need_info: 'รอข้อมูลเพิ่ม'
         };
         const requesterSearch = assetRequesterSearch.trim().toLocaleLowerCase('th-TH');
-        const displayedRequests = assetWorkflowRole === 'it' || !requesterSearch
-          ? assetRequests
-          : assetRequests.filter(request => request.requester?.toLocaleLowerCase('th-TH').includes(requesterSearch));
+        const itUsageStatuses = ['pending', 'need_info', 'approved', 'issued', 'overdue'];
+        const displayedRequests = assetWorkflowRole === 'it'
+          ? assetRequests.filter(request => itUsageStatuses.includes(request.status))
+          : (!requesterSearch
+              ? assetRequests
+              : assetRequests.filter(request => request.requester?.toLocaleLowerCase('th-TH').includes(requesterSearch)));
         return (
           <div className="modal-overlay active">
             <div className="modal large dashboard-fullscreen-modal asset-workflow-modal">
               <header className="modal-header">
                 <div>
-                  <h3>{assetWorkflowRole === 'it' ? '🛡️ IT อนุมัติและจัดการอุปกรณ์' : '🙋 ผู้ขอใช้บริการอุปกรณ์ IT'}</h3>
-                  <p className="workflow-subtitle">{assetWorkflowRole === 'it' ? 'ตรวจสอบคำขอ → อนุมัติและเลือกเครื่อง → ส่งมอบ → รับคืน' : 'ส่งคำขอใหม่และติดตามสถานะการใช้งาน'}</p>
+                  <h3>{assetWorkflowRole === 'it' ? '🛡️ IT อนุมัติการใช้งานและส่งมอบ' : '🙋 ผู้ขอใช้บริการอุปกรณ์ IT'}</h3>
+                  <p className="workflow-subtitle">{assetWorkflowRole === 'it' ? 'ตรวจสอบคำขอ → อนุมัติและเลือกเครื่อง → ส่งมอบเพื่อใช้งาน' : 'ส่งคำขอใหม่และติดตามสถานะการใช้งาน'}</p>
                 </div>
                 <div className="workflow-header-actions">
                   <div className="workflow-role-switch">
@@ -8545,7 +8548,7 @@ function Dashboard() {
                 <section className="workflow-list-section">
                   <div className="workflow-section-heading">
                     <div>
-                      <h4>{assetWorkflowRole === 'it' ? 'รายการคำขอทั้งหมดสำหรับ IT' : 'ติดตามคำขอของผู้ใช้บริการ'}</h4>
+                      <h4>{assetWorkflowRole === 'it' ? 'รายการรออนุมัติและการใช้งาน' : 'ติดตามคำขอของผู้ใช้บริการ'}</h4>
                       {assetWorkflowRole === 'requester' && <input className="workflow-requester-search" placeholder="ค้นหาด้วยชื่อผู้ขอ" value={assetRequesterSearch} onChange={event => setAssetRequesterSearch(event.target.value)} />}
                     </div>
                     <span>{displayedRequests.length} รายการ{assetWorkflowRole === 'it' ? ` · เครื่องว่าง ${assetsList.filter(asset => asset.status === 'ว่าง').length} เครื่อง` : ''}</span>
@@ -8572,7 +8575,7 @@ function Dashboard() {
                                 {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
                                 {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
                                 {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
-                                {['issued', 'overdue', 'return_requested'].includes(request.status) && <span className="workflow-done">ดำเนินการคืนที่เมนู “คืนอุปกรณ์”</span>}
+                                {['issued', 'overdue'].includes(request.status) && <span className="workflow-done">กำลังใช้งาน</span>}
                               </div>
                               )}
                             </td>
