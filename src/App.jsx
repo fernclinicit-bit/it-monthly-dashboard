@@ -7991,7 +7991,17 @@ function Dashboard() {
             setActiveModal('assetWorkflow');
           }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white' }}>
             <Ticket size={16} />
-            ขอเบิกอุปกรณ์-คืนอุปกรณ์
+            ขอเบิกอุปกรณ์
+          </button>
+          <button onClick={() => {
+            setAssetReturnView('returns');
+            setAssetReturnSearch('');
+            setAssetReturnIdentity('');
+            setMobileSidebarOpen(false);
+            setActiveModal('assetReturns');
+          }} className="sidebar-btn asset-return-menu-btn">
+            <RotateCcw size={16} />
+            คืนอุปกรณ์
           </button>
 
         </div>
