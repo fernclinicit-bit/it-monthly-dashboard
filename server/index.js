@@ -659,17 +659,49 @@ app.post('/api/asset-requests', async (req, res) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
     return res.status(400).json({ error: 'รูปแบบวันที่เบิกต้องเป็น YYYY-MM-DD' });
   }
+  const requestedItems = Array.from(new Set(String(itemType)
+    .split(/[,;\n]+/)
+    .map(value => value.trim())
+    .filter(Boolean)));
+  if (requestedItems.length === 0) {
+    return res.status(400).json({ error: 'กรุณาระบุหมายเลขหรือประเภทอุปกรณ์อย่างน้อย 1 รายการ' });
+  }
+  if (requestedItems.length > 50) {
+    return res.status(400).json({ error: 'สามารถส่งคำขอได้ไม่เกิน 50 เครื่องต่อครั้ง' });
+  }
+  let client;
   try {
-    const event = { status: 'pending', at: new Date().toISOString(), by: requester, note: 'ส่งคำขอเบิกอุปกรณ์' };
-    const result = await pool.query(`
-      INSERT INTO asset_requests (requester, department, item_type, purpose, requested_date, due_date, notes, history)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *
-    `, [requester, department, itemType, purpose, requestedDate, dueDate || null, notes || '', JSON.stringify([event])]);
-    res.status(201).json(result.rows[0]);
+    client = await pool.connect();
+    await client.query('BEGIN');
+    const created = [];
+    for (const item of requestedItems) {
+      const event = {
+        status: 'pending',
+        at: new Date().toISOString(),
+        by: requester,
+        note: requestedItems.length > 1 ? `ส่งคำขอเบิกแบบหลายเครื่อง (${requestedItems.length} รายการ)` : 'ส่งคำขอเบิกอุปกรณ์'
+      };
+      const result = await client.query(`
+        INSERT INTO asset_requests (requester, department, item_type, purpose, requested_date, due_date, notes, history)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *
+      `, [requester, department, item, purpose, requestedDate, dueDate || null, notes || '', JSON.stringify([event])]);
+      created.push(result.rows[0]);
+    }
+    await client.query('COMMIT');
+    res.status(201).json({
+      ...created[0],
+      id: created[0].id,
+      ids: created.map(row => Number(row.id)),
+      count: created.length,
+      requests: created
+    });
   } catch (err) {
+    if (client) await client.query('ROLLBACK');
     console.error('Error creating asset request:', err);
     res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    if (client) client.release();
   }
 });
 

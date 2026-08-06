@@ -5601,7 +5601,9 @@ function Dashboard() {
       if (!response.ok) throw new Error(result.error || 'ส่งคำขอไม่สำเร็จ');
       setAssetRequestForm({ requester: '', department: '', itemType: '', purpose: '', requestedDate: new Date().toISOString().slice(0, 10), notes: '' });
       await loadAssetRequests();
-      alert(`ส่งคำขอเบิกเลขที่ #${result.id} สำเร็จ`);
+      alert(result.count > 1
+        ? `ส่งคำขอเบิก ${result.count} เครื่องสำเร็จ เลขที่ #${result.ids.join(', #')}`
+        : `ส่งคำขอเบิกเลขที่ #${result.id} สำเร็จ`);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -8527,12 +8529,12 @@ function Dashboard() {
                 {assetWorkflowRole === 'requester' && <form className="workflow-request-form" onSubmit={submitAssetRequest}>
                   <div className="workflow-section-heading">
                     <h4>สร้างคำขอเบิกอุปกรณ์</h4>
-                    <span>ผู้ขอไม่ต้องเลือก Serial — เจ้าหน้าที่ IT จะเลือกเครื่องว่างตอนอนุมัติ</span>
+                    <span>ระบุได้หลายเครื่อง โดยคั่นหมายเลขด้วยจุลภาคหรือขึ้นบรรทัดใหม่</span>
                   </div>
                   <div className="workflow-form-grid">
                     <label>ชื่อผู้ขอ <input required value={assetRequestForm.requester} onChange={e => setAssetRequestForm(p => ({ ...p, requester: e.target.value }))} /></label>
                     <label>แผนก <input required value={assetRequestForm.department} onChange={e => setAssetRequestForm(p => ({ ...p, department: e.target.value }))} /></label>
-                    <label>ประเภทอุปกรณ์ <input required placeholder="เช่น Notebook, iPad" value={assetRequestForm.itemType} onChange={e => setAssetRequestForm(p => ({ ...p, itemType: e.target.value }))} /></label>
+                    <label>หมายเลขเครื่อง / ประเภทอุปกรณ์ <textarea required rows="2" placeholder="เช่น iPad-006, iPad-007" value={assetRequestForm.itemType} onChange={e => setAssetRequestForm(p => ({ ...p, itemType: e.target.value }))} /></label>
                     <label>วันที่เบิก <input required type="date" value={assetRequestForm.requestedDate} onChange={e => setAssetRequestForm(p => ({ ...p, requestedDate: e.target.value }))} /></label>
                     <label className="workflow-span-2">เหตุผลการใช้งาน <textarea required value={assetRequestForm.purpose} onChange={e => setAssetRequestForm(p => ({ ...p, purpose: e.target.value }))} /></label>
                     <label className="workflow-span-2">หมายเหตุ <input value={assetRequestForm.notes} onChange={e => setAssetRequestForm(p => ({ ...p, notes: e.target.value }))} /></label>
