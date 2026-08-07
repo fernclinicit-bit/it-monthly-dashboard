@@ -30,6 +30,124 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* New ticket / asset-request notification center */
+.notification-center {
+    position: relative;
+    width: 100%;
+}
+
+.notification-button {
+    position: relative;
+    margin-bottom: 8px;
+    background: #1f2937;
+    border: 1px solid #334155;
+    color: #f8fafc;
+}
+
+.notification-badge {
+    min-width: 21px;
+    height: 21px;
+    margin-left: auto;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.notification-panel {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    z-index: 1200;
+    width: min(380px, calc(100vw - 28px));
+    max-height: 430px;
+    overflow-y: auto;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    background: #111827;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .45);
+}
+
+.notification-panel-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid #273449;
+    background: #111827;
+    color: #f8fafc;
+}
+
+.notification-panel-header button {
+    border: 0;
+    background: transparent;
+    color: #60a5fa;
+    cursor: pointer;
+}
+
+.notification-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px 14px;
+    border: 0;
+    border-bottom: 1px solid #253147;
+    background: transparent;
+    color: #f8fafc;
+    text-align: left;
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    background: #1e293b;
+}
+
+.notification-item strong,
+.notification-item small {
+    display: block;
+}
+
+.notification-item small {
+    margin-top: 3px;
+    color: #aab7ca;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.notification-item.ticket {
+    box-shadow: inset 3px 0 #3b82f6;
+}
+
+.notification-item.asset {
+    box-shadow: inset 3px 0 #7c3aed;
+}
+
+.notification-empty {
+    padding: 24px 14px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .notification-panel {
+        position: fixed;
+        top: 76px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-height: calc(100dvh - 96px);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;

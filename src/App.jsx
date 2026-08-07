@@ -34,7 +34,8 @@ import {
   FileCode,
   ShieldCheck,
   Wrench,
-  RotateCcw
+  RotateCcw,
+  Bell
 } from 'lucide-react';
 
 // Initial blank data - use Excel import to load real data
@@ -5437,6 +5438,10 @@ function Dashboard() {
   const [assetReturnSearch, setAssetReturnSearch] = useState('');
   const [assetReturnIdentity, setAssetReturnIdentity] = useState('');
   const [assetReturnView, setAssetReturnView] = useState('returns');
+  const [notifications, setNotifications] = useState([]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const notificationInitializedRef = useRef(false);
   const [currentMonth, setCurrentMonth] = useState("2026-07");
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
@@ -5824,6 +5829,111 @@ function Dashboard() {
 
     return () => clearInterval(interval);
   }, [isLoaded]);
+
+  // Read-only notification watcher. Existing records become the initial baseline;
+  // only records created afterwards are announced, so historical data is untouched.
+  useEffect(() => {
+    if (!isLoaded) return undefined;
+
+    let cancelled = false;
+    const seenTicketKey = 'it_dashboard_seen_ticket_ids';
+    const seenRequestKey = 'it_dashboard_seen_asset_request_ids';
+
+    const readSeenIds = (key) => {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(key) || '[]').map(String));
+      } catch {
+        return new Set();
+      }
+    };
+
+    const seenTickets = readSeenIds(seenTicketKey);
+    const seenRequests = readSeenIds(seenRequestKey);
+
+    const saveSeenIds = (key, values) => {
+      localStorage.setItem(key, JSON.stringify(Array.from(values).slice(-1000)));
+    };
+
+    const announce = (item) => {
+      setNotifications(previous => [item, ...previous.filter(entry => entry.key !== item.key)].slice(0, 30));
+      setUnreadNotifications(previous => previous + 1);
+      if ('Notification' in window && window.Notification.permission === 'granted') {
+        new window.Notification(item.title, {
+          body: item.message,
+          icon: fernAesthetiqueLogo,
+          tag: item.key
+        });
+      }
+    };
+
+    const pollNewItems = async () => {
+      try {
+        const [dashboardResponse, requestsResponse] = await Promise.all([
+          fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' }),
+          fetch(`${API_BASE}/api/asset-requests`, { cache: 'no-store' })
+        ]);
+        if (!dashboardResponse.ok || !requestsResponse.ok) return;
+
+        const [dashboardResult, requestResult] = await Promise.all([
+          dashboardResponse.json(),
+          requestsResponse.json()
+        ]);
+        if (cancelled) return;
+
+        const ticketRows = Object.values(dashboardResult.data || {})
+          .flatMap(month => Array.isArray(month.ticketsList) ? month.ticketsList : []);
+        const requestRows = Array.isArray(requestResult) ? requestResult : [];
+
+        if (!notificationInitializedRef.current && seenTickets.size === 0 && seenRequests.size === 0) {
+          ticketRows.forEach(ticket => seenTickets.add(String(ticket.sn)));
+          requestRows.forEach(request => seenRequests.add(String(request.id)));
+          saveSeenIds(seenTicketKey, seenTickets);
+          saveSeenIds(seenRequestKey, seenRequests);
+          notificationInitializedRef.current = true;
+          return;
+        }
+
+        ticketRows.forEach(ticket => {
+          const id = String(ticket.sn);
+          if (seenTickets.has(id)) return;
+          seenTickets.add(id);
+          announce({
+            key: `ticket-${id}`,
+            type: 'ticket',
+            title: `แจ้ง Ticket ใหม่ #${id}`,
+            message: `${ticket.complainant || 'ผู้แจ้งไม่ระบุชื่อ'}: ${ticket.issue || 'ไม่มีรายละเอียด'}`,
+            createdAt: new Date().toISOString()
+          });
+        });
+
+        requestRows.forEach(request => {
+          const id = String(request.id);
+          if (seenRequests.has(id)) return;
+          seenRequests.add(id);
+          announce({
+            key: `asset-request-${id}`,
+            type: 'asset',
+            title: `คำขอเบิกอุปกรณ์ใหม่ #${id}`,
+            message: `${request.requester || 'ผู้ขอไม่ระบุชื่อ'} ขอ ${request.item_type || 'อุปกรณ์ IT'}`,
+            createdAt: new Date().toISOString()
+          });
+        });
+
+        saveSeenIds(seenTicketKey, seenTickets);
+        saveSeenIds(seenRequestKey, seenRequests);
+        notificationInitializedRef.current = true;
+      } catch (error) {
+        console.warn('Notification polling failed:', error.message);
+      }
+    };
+
+    pollNewItems();
+    const notificationTimer = window.setInterval(pollNewItems, 5000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(notificationTimer);
+    };
+  }, [isLoaded, API_BASE]);
 
   // Automatically sync local changes to PostgreSQL database once loaded
   useEffect(() => {
@@ -7975,6 +8085,68 @@ function Dashboard() {
         </div>
 
         <div className="sidebar-primary-actions">
+          <div className="notification-center">
+            <button
+              type="button"
+              className="sidebar-btn notification-button"
+              onClick={async () => {
+                const willOpen = !notificationOpen;
+                setNotificationOpen(willOpen);
+                if (willOpen) {
+                  setUnreadNotifications(0);
+                  if ('Notification' in window && window.Notification.permission === 'default') {
+                    try {
+                      await window.Notification.requestPermission();
+                    } catch (error) {
+                      console.warn('Browser notification permission failed:', error);
+                    }
+                  }
+                }
+              }}
+              aria-expanded={notificationOpen}
+            >
+              <Bell size={17} />
+              การแจ้งเตือน
+              {unreadNotifications > 0 && <span className="notification-badge">{unreadNotifications > 99 ? '99+' : unreadNotifications}</span>}
+            </button>
+            {notificationOpen && (
+              <div className="notification-panel">
+                <div className="notification-panel-header">
+                  <strong>การแจ้งเตือนล่าสุด</strong>
+                  {notifications.length > 0 && (
+                    <button type="button" onClick={() => setNotifications([])}>ล้าง</button>
+                  )}
+                </div>
+                {notifications.length === 0 ? (
+                  <div className="notification-empty">ยังไม่มีรายการใหม่</div>
+                ) : notifications.map(item => (
+                  <button
+                    type="button"
+                    className={`notification-item ${item.type}`}
+                    key={item.key}
+                    onClick={() => {
+                      setNotificationOpen(false);
+                      setMobileSidebarOpen(false);
+                      if (item.type === 'asset') {
+                        requireAdminAccess(() => {
+                          setAssetWorkflowRole('it');
+                          setActiveModal('assetWorkflow');
+                        });
+                      } else {
+                        requireAdminAccess(() => {
+                          setConsoleTab('tickets');
+                          setActiveModal('fullConsole');
+                        });
+                      }
+                    }}
+                  >
+                    <span>{item.type === 'ticket' ? '🎫' : '💻'}</span>
+                    <span><strong>{item.title}</strong><small>{item.message}</small></span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => {
               setMobileSidebarOpen(false);
