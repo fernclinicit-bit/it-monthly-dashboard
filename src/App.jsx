@@ -7131,7 +7131,7 @@ function Dashboard() {
       return;
     }
     const wb = XLSX.utils.book_new();
-    const headers = ['Number', 'วันที่ Submit', 'ผู้รับผิดชอบ', 'วันที่เบิกใช้งาน', 'ผู้เบิกใช้งาน', 'ตำแหน่ง/แผนก', 'รายการอุปกรณ์หลัก', 'อุปกรณ์เพิ่มเติม', 'ซอฟต์แวร์/App', 'อีเมลที่ลงทะเบียน', 'หมายเลขอุปกรณ์', 'S/N เพิ่มเติม', 'กำหนดคืน', 'สถานะ', 'หมายเหตุ', 'วันที่ตรวจสอบ', 'วันที่ซื้อ', 'วันหมดประกัน', 'ค่าใช้จ่าย'];
+    const headers = ['Number', 'วันที่ Submit', 'ผู้รับผิดชอบ', 'วันที่เบิกใช้งาน', 'ผู้เบิกใช้งาน', 'ตำแหน่ง/แผนก', 'รายการอุปกรณ์หลัก', 'อุปกรณ์เพิ่มเติม', 'ซอฟต์แวร์/App', 'อีเมลที่ลงทะเบียน', 'หมายเลขอุปกรณ์', 'หมายเลขอุปกรณ์เพิ่มเติม', 'กำหนดคืน', 'สถานะ', 'หมายเหตุ', 'วันที่ตรวจสอบ', 'วันที่ซื้อ', 'วันหมดประกัน', 'ค่าใช้จ่าย'];
     
     const rows = assetsToExport.map((asset, idx) => [
       idx + 1,
@@ -9982,8 +9982,8 @@ function Dashboard() {
                         <input type="text" value={newAssetRegisteredEmail} onChange={e => setNewAssetRegisteredEmail(e.target.value)} placeholder="อีเมล" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">S/N เพิ่มเติม</span>
-                        <input type="text" value={newAssetAdditionalSerial} onChange={e => setNewAssetAdditionalSerial(e.target.value)} placeholder="Serial อุปกรณ์เสริม" className="console-input" />
+                        <span className="console-label">หมายเลขอุปกรณ์เพิ่มเติม</span>
+                        <input type="text" value={newAssetAdditionalSerial} onChange={e => setNewAssetAdditionalSerial(e.target.value)} placeholder="เช่น Pencil-001, Cable-018" className="console-input" />
                       </div>
                       <div className="console-field">
                         <span className="console-label">กำหนดคืน</span>
