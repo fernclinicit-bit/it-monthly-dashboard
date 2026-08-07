@@ -8096,7 +8096,7 @@ function Dashboard() {
   };
 
   const monitoredTotal = externalDevices.length;
-  const monitoredActive = externalDevices.filter(d => d.status === 'active' && d.daysRemaining > 7).length;
+  const monitoredActive = externalDevices.filter(d => d.status === 'active').length;
   const monitoredWarning = externalDevices.filter(d => d.status === 'active' && d.daysRemaining <= 7).length;
   const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
 
