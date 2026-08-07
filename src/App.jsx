@@ -5442,7 +5442,10 @@ function Dashboard() {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const notificationInitializedRef = useRef(false);
-  const [currentMonth, setCurrentMonth] = useState("2026-07");
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const keys = Object.keys(data || {}).sort((a, b) => b.localeCompare(a));
+    return keys.length > 0 ? keys[0] : "2026-07";
+  });
   const [activeModal, setActiveModal] = useState(null); // 'edit', 'expiringAssets', 'expiringSoftware', 'topBrokenDevices', 'assetsList', 'fullConsole'
   const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: string }
   
