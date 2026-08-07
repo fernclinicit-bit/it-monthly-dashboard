@@ -8123,68 +8123,7 @@ function Dashboard() {
         </div>
 
         <div className="sidebar-primary-actions">
-          <div className="notification-center">
-            <button
-              type="button"
-              className="sidebar-btn notification-button"
-              onClick={async () => {
-                const willOpen = !notificationOpen;
-                setNotificationOpen(willOpen);
-                if (willOpen) {
-                  setUnreadNotifications(0);
-                  if ('Notification' in window && window.Notification.permission === 'default') {
-                    try {
-                      await window.Notification.requestPermission();
-                    } catch (error) {
-                      console.warn('Browser notification permission failed:', error);
-                    }
-                  }
-                }
-              }}
-              aria-expanded={notificationOpen}
-            >
-              <Bell size={17} />
-              การแจ้งเตือน
-              {unreadNotifications > 0 && <span className="notification-badge">{unreadNotifications > 99 ? '99+' : unreadNotifications}</span>}
-            </button>
-            {notificationOpen && (
-              <div className="notification-panel">
-                <div className="notification-panel-header">
-                  <strong>การแจ้งเตือนล่าสุด</strong>
-                  {notifications.length > 0 && (
-                    <button type="button" onClick={() => setNotifications([])}>ล้าง</button>
-                  )}
-                </div>
-                {notifications.length === 0 ? (
-                  <div className="notification-empty">ยังไม่มีรายการใหม่</div>
-                ) : notifications.map(item => (
-                  <button
-                    type="button"
-                    className={`notification-item ${item.type}`}
-                    key={item.key}
-                    onClick={() => {
-                      setNotificationOpen(false);
-                      setMobileSidebarOpen(false);
-                      if (item.type === 'asset') {
-                        requireAdminAccess(() => {
-                          setAssetWorkflowRole('it');
-                          setActiveModal('assetWorkflow');
-                        });
-                      } else {
-                        requireAdminAccess(() => {
-                          setConsoleTab('tickets');
-                          setActiveModal('fullConsole');
-                        });
-                      }
-                    }}
-                  >
-                    <span>{item.type === 'ticket' ? '🎫' : '💻'}</span>
-                    <span><strong>{item.title}</strong><small>{item.message}</small></span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+
           <button
             onClick={() => {
               setMobileSidebarOpen(false);
