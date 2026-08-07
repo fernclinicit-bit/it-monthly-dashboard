@@ -705,6 +705,29 @@ app.post('/api/asset-requests', async (req, res) => {
   }
 });
 
+// Read-only integrity summary used to detect ticket months that were detached
+// from monthly_data by an older full-snapshot synchronization.
+app.get('/api/data-integrity/months', async (_req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    const result = await pool.query(`
+      SELECT
+        t.month_key,
+        COUNT(*)::integer AS ticket_count,
+        COUNT(*) FILTER (WHERE t.source = 'request_form')::integer AS request_form_count,
+        (m.month_key IS NOT NULL) AS has_month_record
+      FROM tickets t
+      LEFT JOIN monthly_data m ON m.month_key = t.month_key
+      GROUP BY t.month_key, m.month_key
+      ORDER BY t.month_key
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error checking month integrity:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.patch('/api/asset-requests/:id', async (req, res) => {
   const id = Number(req.params.id);
   const { requester, department, itemType, purpose, dueDate, notes } = req.body;
@@ -1003,11 +1026,9 @@ app.post('/api/sync-all', async (req, res) => {
 
     client = await pool.connect();
     await client.query('BEGIN');
-
-    await client.query('DELETE FROM monthly_data');
-    // Tickets created by API workflows are authoritative and must survive older
-    // dashboard snapshots sent by automatic synchronization.
-    await client.query(`DELETE FROM tickets WHERE source = 'dashboard'`);
+    // Serialize full snapshots and only replace the months explicitly included
+    // in this payload. Older browsers must never delete newer month records.
+    await client.query('SELECT pg_advisory_xact_lock(42002)');
 
     // Keep assets assigned to active requests even if an older browser snapshot
     // does not contain them. This prevents dangling issue/return workflows.
@@ -1064,6 +1085,13 @@ app.post('/api/sync-all', async (req, res) => {
 
     const ticketPayload = [];
     for (const [monthKey, monthData] of Object.entries(data)) {
+      await client.query('DELETE FROM monthly_data WHERE month_key = $1', [monthKey]);
+      // API-created tickets remain authoritative. Dashboard tickets are replaced
+      // only for the same month, preserving records from newer/unseen months.
+      await client.query(
+        `DELETE FROM tickets WHERE source = 'dashboard' AND month_key = $1`,
+        [monthKey]
+      );
       await client.query(`
         INSERT INTO monthly_data (
           month_key, month_name, total_assets, asset_value, assets_expiring, assets_broken, assets_lost, assets_vacant,
