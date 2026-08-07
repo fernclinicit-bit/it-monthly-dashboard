@@ -163,6 +163,14 @@ async function initDb() {
       `);
 
       await client.query(`
+        CREATE TABLE IF NOT EXISTS monthly_data_snapshots (
+          id BIGSERIAL PRIMARY KEY,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          snapshot JSONB NOT NULL
+        )
+      `);
+
+      await client.query(`
         CREATE TABLE IF NOT EXISTS assets (
           sn INTEGER PRIMARY KEY,
           date VARCHAR(50) NOT NULL,
@@ -1029,6 +1037,17 @@ app.post('/api/sync-all', async (req, res) => {
     // Serialize full snapshots and only replace the months explicitly included
     // in this payload. Older browsers must never delete newer month records.
     await client.query('SELECT pg_advisory_xact_lock(42002)');
+    await client.query(`
+      INSERT INTO monthly_data_snapshots (snapshot)
+      SELECT COALESCE(jsonb_agg(to_jsonb(month_row) ORDER BY month_row.month_key), '[]'::jsonb)
+      FROM monthly_data month_row
+    `);
+    await client.query(`
+      DELETE FROM monthly_data_snapshots
+      WHERE id NOT IN (
+        SELECT id FROM monthly_data_snapshots ORDER BY id DESC LIMIT 50
+      )
+    `);
 
     // Keep assets assigned to active requests even if an older browser snapshot
     // does not contain them. This prevents dangling issue/return workflows.
