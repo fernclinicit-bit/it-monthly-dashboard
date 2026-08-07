@@ -5500,26 +5500,57 @@ function Dashboard() {
   
   const [externalDevices, setExternalDevices] = useState([]);
   const [isFetchingDevices, setIsFetchingDevices] = useState(false);
+  const [externalDevicesLastSynced, setExternalDevicesLastSynced] = useState(null);
+  const [externalDevicesSyncError, setExternalDevicesSyncError] = useState('');
+  const [externalDevicesRefreshKey, setExternalDevicesRefreshKey] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    let activeController = null;
+
     const fetchDevices = async () => {
+      if (activeController) return;
+      activeController = new AbortController();
       setIsFetchingDevices(true);
       try {
-        const response = await fetch('https://ios-device-monitor-46w9.onrender.com/api/devices');
+        const response = await fetch('https://ios-device-monitor-46w9.onrender.com/api/devices', {
+          cache: 'no-store',
+          signal: activeController.signal
+        });
+        if (!response.ok) throw new Error(`Device Monitor API ${response.status}`);
         const result = await response.json();
-        if (result && result.devices) {
+        if (!cancelled && Array.isArray(result?.devices)) {
           setExternalDevices(result.devices);
+          setExternalDevicesLastSynced(new Date());
+          setExternalDevicesSyncError('');
         }
       } catch (error) {
-        console.error('Error fetching external devices:', error);
+        if (error.name !== 'AbortError') {
+          console.error('Error fetching external devices:', error);
+          if (!cancelled) setExternalDevicesSyncError('ซิงค์ไม่สำเร็จ');
+        }
       } finally {
-        setIsFetchingDevices(false);
+        activeController = null;
+        if (!cancelled) setIsFetchingDevices(false);
       }
     };
+
+    const syncWhenVisible = () => {
+      if (document.visibilityState === 'visible') fetchDevices();
+    };
+
     fetchDevices();
-    const interval = setInterval(fetchDevices, 10 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+    const interval = window.setInterval(fetchDevices, 30 * 1000);
+    window.addEventListener('focus', fetchDevices);
+    document.addEventListener('visibilitychange', syncWhenVisible);
+    return () => {
+      cancelled = true;
+      if (activeController) activeController.abort();
+      window.clearInterval(interval);
+      window.removeEventListener('focus', fetchDevices);
+      document.removeEventListener('visibilitychange', syncWhenVisible);
+    };
+  }, [externalDevicesRefreshKey]);
   const API_BASE = import.meta.env.VITE_API_BASE ||
     (window.location.hostname === 'localhost'
       ? 'http://localhost:5000'
@@ -8353,10 +8384,24 @@ function Dashboard() {
                 <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--primary)' }} /></span>
                 ติดตามสถานะอุปกรณ์ iOS (Device Monitor)
               </h3>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ fontSize: '0.8rem', color: isFetchingDevices ? 'var(--warning)' : 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
-                  {isFetchingDevices ? 'กำลังซิงค์...' : `ซิงค์ล่าสุดเมื่อ ${new Date().toLocaleTimeString('th-TH')}`}
+              <div style={{ display: 'flex', gap: '7px', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', color: externalDevicesSyncError ? 'var(--danger)' : isFetchingDevices ? 'var(--warning)' : 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                  {externalDevicesSyncError || (isFetchingDevices
+                    ? 'กำลังซิงค์...'
+                    : externalDevicesLastSynced
+                      ? `ซิงค์ล่าสุด ${externalDevicesLastSynced.toLocaleTimeString('th-TH')}`
+                      : 'รอซิงค์ข้อมูล')}
                 </span>
+                <button
+                  type="button"
+                  title="ซิงค์ Device Monitor ตอนนี้"
+                  aria-label="ซิงค์ Device Monitor ตอนนี้"
+                  onClick={() => setExternalDevicesRefreshKey(previous => previous + 1)}
+                  disabled={isFetchingDevices}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', padding: 0, borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-primary)', cursor: isFetchingDevices ? 'wait' : 'pointer' }}
+                >
+                  <RotateCcw size={14} className={isFetchingDevices ? 'device-sync-spinning' : ''} />
+                </button>
               </div>
             </div>
             <div className="metrics-row" style={{ marginTop: '15px' }}>

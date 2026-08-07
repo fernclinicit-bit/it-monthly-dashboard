@@ -137,6 +137,14 @@
     text-align: center;
 }
 
+@keyframes device-sync-rotate {
+    to { transform: rotate(360deg); }
+}
+
+.device-sync-spinning {
+    animation: device-sync-rotate .8s linear infinite;
+}
+
 @media (max-width: 768px) {
     .notification-panel {
         position: fixed;
