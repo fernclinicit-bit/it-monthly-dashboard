@@ -5409,6 +5409,54 @@ const isValidDashboardData = (value) => {
   return monthKeys.length > 0 && monthKeys.every((key) => /^\d{4}-\d{2}$/.test(key) && value[key] && typeof value[key] === 'object');
 };
 
+// Some legacy uploads were decoded as Windows-874 even though the workbook
+// contained UTF-8 Thai text. Repair only strings that have the characteristic
+// mojibake pattern and that round-trip to valid UTF-8; ordinary Thai is kept as-is.
+let windows874ByteLookup;
+const getWindows874ByteLookup = () => {
+  if (windows874ByteLookup) return windows874ByteLookup;
+  const decoder = new TextDecoder('windows-874');
+  windows874ByteLookup = new Map();
+  for (let byte = 0; byte <= 255; byte += 1) {
+    windows874ByteLookup.set(decoder.decode(Uint8Array.of(byte)), byte);
+  }
+  return windows874ByteLookup;
+};
+
+const thaiMojibakeScore = (text) => {
+  const value = String(text || '');
+  const controlCount = (value.match(/[\u0080-\u009f]/g) || []).length;
+  const thaiUtf8PrefixCount = (value.match(/\u0e18\u0e30|\u0e40\u0e19/g) || []).length;
+  return (controlCount * 4) + thaiUtf8PrefixCount;
+};
+
+const repairThaiMojibake = (value) => {
+  if (typeof value !== 'string' || thaiMojibakeScore(value) < 2) return value;
+  try {
+    const byteLookup = getWindows874ByteLookup();
+    const bytes = [];
+    for (const character of value) {
+      const byte = byteLookup.get(character);
+      if (byte === undefined) return value;
+      bytes.push(byte);
+    }
+    const repaired = new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(bytes));
+    if (!/[\u0e00-\u0e7f]/.test(repaired)) return value;
+    return thaiMojibakeScore(repaired) < thaiMojibakeScore(value)
+      ? repaired.normalize('NFC')
+      : value;
+  } catch {
+    return value;
+  }
+};
+
+const repairThaiTextDeep = (value) => {
+  if (typeof value === 'string') return repairThaiMojibake(value);
+  if (Array.isArray(value)) return value.map(repairThaiTextDeep);
+  if (!value || typeof value !== 'object' || value instanceof Date) return value;
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairThaiTextDeep(item)]));
+};
+
 function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(() => {
@@ -5416,14 +5464,14 @@ function Dashboard() {
     if (!saved) return initialDashboardData;
     try {
       const parsed = JSON.parse(saved);
-      return isValidDashboardData(parsed) ? parsed : initialDashboardData;
+      return isValidDashboardData(parsed) ? repairThaiTextDeep(parsed) : initialDashboardData;
     } catch {
       return initialDashboardData;
     }
   });
   const [assetsList, setAssetsList] = useState(() => {
     const saved = localStorage.getItem('it_dashboard_assets');
-    return saved ? JSON.parse(saved) : initialAssetsData;
+    return saved ? repairThaiTextDeep(JSON.parse(saved)) : initialAssetsData;
   });
   const [assetSearch, setAssetSearch] = useState('');
   const [assetDeptFilter, setAssetDeptFilter] = useState('');
@@ -5608,7 +5656,7 @@ function Dashboard() {
     try {
       const response = await fetch(`${API_BASE}/api/asset-requests`);
       if (!response.ok) throw new Error(`API ${response.status}`);
-      setAssetRequests(await response.json());
+      setAssetRequests(repairThaiTextDeep(await response.json()));
     } catch (err) {
       console.error('Failed to load asset requests:', err);
     }
@@ -5619,8 +5667,8 @@ function Dashboard() {
     if (!response.ok) throw new Error(`API ${response.status}`);
     const result = await response.json();
     isPollingUpdateRef.current = true;
-    if (result.data) setData(result.data);
-    if (result.assetsList) setAssetsList(result.assetsList);
+    if (result.data) setData(repairThaiTextDeep(result.data));
+    if (result.assetsList) setAssetsList(repairThaiTextDeep(result.assetsList));
   };
 
   const submitAssetRequest = async (event) => {
@@ -5807,9 +5855,9 @@ function Dashboard() {
         
         if (result.data && Object.keys(result.data).length > 0) {
           isPollingUpdateRef.current = true;
-          setData(result.data);
+          setData(repairThaiTextDeep(result.data));
           if (result.assetsList) {
-            setAssetsList(result.assetsList);
+            setAssetsList(repairThaiTextDeep(result.assetsList));
           }
           console.log('Successfully synced dashboard state with Render PostgreSQL database.');
         } else {
@@ -5869,13 +5917,15 @@ function Dashboard() {
         const currentLocalData = latestDataRef.current;
         const currentLocalAssets = latestAssetsRef.current;
 
-        const hasDataChanged = JSON.stringify(result.data) !== JSON.stringify(currentLocalData);
-        const hasAssetsChanged = JSON.stringify(result.assetsList) !== JSON.stringify(currentLocalAssets);
+        const repairedData = repairThaiTextDeep(result.data);
+        const repairedAssets = repairThaiTextDeep(result.assetsList);
+        const hasDataChanged = JSON.stringify(repairedData) !== JSON.stringify(currentLocalData);
+        const hasAssetsChanged = JSON.stringify(repairedAssets) !== JSON.stringify(currentLocalAssets);
 
         if (hasDataChanged || hasAssetsChanged) {
           isPollingUpdateRef.current = true;
-          if (hasDataChanged) setData(result.data);
-          if (hasAssetsChanged) setAssetsList(result.assetsList);
+          if (hasDataChanged) setData(repairedData);
+          if (hasAssetsChanged) setAssetsList(repairedAssets);
           console.log('Real-time update synced from Render PostgreSQL.');
         }
       } catch (err) {
@@ -7538,7 +7588,7 @@ function Dashboard() {
               warrantyEndDate: row['วันหมดประกัน'] || '',
               expense: Number(row['ค่าใช้จ่าย']) || 0
             };
-          });
+          }).map(repairThaiTextDeep);
 
           // Calculate asset value sum
           const CATEGORY_VALUES = {

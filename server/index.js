@@ -32,6 +32,102 @@ function isAdminPassword(password) {
     crypto.timingSafeEqual(suppliedBuffer, expectedBuffer);
 }
 
+let windows874ByteLookup;
+function getWindows874ByteLookup() {
+  if (windows874ByteLookup) return windows874ByteLookup;
+  const decoder = new TextDecoder('windows-874');
+  windows874ByteLookup = new Map();
+  for (let byte = 0; byte <= 255; byte += 1) {
+    windows874ByteLookup.set(decoder.decode(Uint8Array.of(byte)), byte);
+  }
+  return windows874ByteLookup;
+}
+
+function thaiMojibakeScore(text) {
+  const value = String(text || '');
+  const controlCount = (value.match(/[\u0080-\u009f]/g) || []).length;
+  const thaiUtf8PrefixCount = (value.match(/\u0e18\u0e30|\u0e40\u0e19/g) || []).length;
+  return (controlCount * 4) + thaiUtf8PrefixCount;
+}
+
+function repairThaiMojibake(value) {
+  if (typeof value !== 'string' || thaiMojibakeScore(value) < 2) return value;
+  try {
+    const byteLookup = getWindows874ByteLookup();
+    const bytes = [];
+    for (const character of value) {
+      const byte = byteLookup.get(character);
+      if (byte === undefined) return value;
+      bytes.push(byte);
+    }
+    const repaired = new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(bytes));
+    if (!/[\u0e00-\u0e7f]/.test(repaired)) return value;
+    return thaiMojibakeScore(repaired) < thaiMojibakeScore(value)
+      ? repaired.normalize('NFC')
+      : value;
+  } catch {
+    return value;
+  }
+}
+
+function repairThaiTextDeep(value) {
+  if (typeof value === 'string') return repairThaiMojibake(value);
+  if (Array.isArray(value)) return value.map(repairThaiTextDeep);
+  if (!value || typeof value !== 'object' || value instanceof Date) return value;
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairThaiTextDeep(item)]));
+}
+
+let storedThaiRepairComplete = false;
+let storedThaiRepairPromise;
+async function ensureStoredThaiTextIsReadable(queryable) {
+  if (storedThaiRepairComplete) return 0;
+  if (storedThaiRepairPromise) return storedThaiRepairPromise;
+  storedThaiRepairPromise = (async () => {
+    let updatedCount = 0;
+    const assetRows = await queryable.query('SELECT sn, user_name, position, item_type, notes, details FROM assets');
+    for (const row of assetRows.rows) {
+      const repaired = repairThaiTextDeep(row);
+      if (JSON.stringify(repaired) === JSON.stringify(row)) continue;
+      await queryable.query(
+        'UPDATE assets SET user_name = $1, position = $2, item_type = $3, notes = $4, details = $5::jsonb WHERE sn = $6',
+        [repaired.user_name, repaired.position, repaired.item_type, repaired.notes, JSON.stringify(repaired.details || {}), row.sn]
+      );
+      updatedCount += 1;
+    }
+
+    const ticketRows = await queryable.query('SELECT sn, complainant, issue, cause, responder FROM tickets');
+    for (const row of ticketRows.rows) {
+      const repaired = repairThaiTextDeep(row);
+      if (JSON.stringify(repaired) === JSON.stringify(row)) continue;
+      await queryable.query(
+        'UPDATE tickets SET complainant = $1, issue = $2, cause = $3, responder = $4 WHERE sn = $5',
+        [repaired.complainant, repaired.issue, repaired.cause, repaired.responder, row.sn]
+      );
+      updatedCount += 1;
+    }
+
+    const requestRows = await queryable.query('SELECT id, requester, department, item_type, purpose, reviewer, notes, history FROM asset_requests');
+    for (const row of requestRows.rows) {
+      const repaired = repairThaiTextDeep(row);
+      if (JSON.stringify(repaired) === JSON.stringify(row)) continue;
+      await queryable.query(
+        'UPDATE asset_requests SET requester = $1, department = $2, item_type = $3, purpose = $4, reviewer = $5, notes = $6, history = $7::jsonb WHERE id = $8',
+        [repaired.requester, repaired.department, repaired.item_type, repaired.purpose, repaired.reviewer, repaired.notes, JSON.stringify(repaired.history || []), row.id]
+      );
+      updatedCount += 1;
+    }
+
+    storedThaiRepairComplete = true;
+    console.log(`Thai text audit completed. Repaired ${updatedCount} stored records.`);
+    return updatedCount;
+  })();
+  try {
+    return await storedThaiRepairPromise;
+  } finally {
+    if (!storedThaiRepairComplete) storedThaiRepairPromise = undefined;
+  }
+}
+
 app.post('/api/admin/verify', (req, res) => {
   const valid = isAdminPassword(req.body?.password);
   res.status(valid ? 200 : 401).json({ valid });
@@ -247,6 +343,8 @@ async function initDb() {
           AND status IN ('approved', 'issued', 'overdue', 'return_requested')
       `);
 
+      await ensureStoredThaiTextIsReadable(client);
+
       await reconcileAssetRequestWorkflow(client);
 
       // Workflow is authoritative for assets that are reserved or currently issued.
@@ -294,6 +392,7 @@ async function initDb() {
 app.get('/api/db-state', async (req, res) => {
   try {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    await ensureStoredThaiTextIsReadable(pool);
     const monthsResult = await pool.query('SELECT * FROM monthly_data');
     const assetsResult = await pool.query('SELECT * FROM assets ORDER BY sn ASC');
     const ticketsResult = await pool.query('SELECT * FROM tickets ORDER BY sn ASC');
@@ -650,6 +749,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
 
 app.get('/api/asset-requests', async (_req, res) => {
   try {
+    await ensureStoredThaiTextIsReadable(pool);
     await reconcileAssetRequestWorkflow(pool);
     const result = await pool.query(`
       SELECT r.*, a.device_serial, a.item_type AS assigned_item_type
@@ -657,11 +757,11 @@ app.get('/api/asset-requests', async (_req, res) => {
       LEFT JOIN assets a ON a.sn = r.assigned_asset_sn
       ORDER BY r.created_at DESC, r.id DESC
     `);
-    res.json(result.rows.map(row => ({
+    res.json(repairThaiTextDeep(result.rows.map(row => ({
       ...row,
       id: Number(row.id),
       assigned_asset_sn: row.assigned_asset_sn === null ? null : Number(row.assigned_asset_sn)
-    })));
+    }))));
   } catch (err) {
     console.error('Error fetching asset requests:', err);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -1000,7 +1100,7 @@ app.get('/api/inventory-data', (req, res) => {
       if (Number.isNaN(d.getTime())) return String(value);
       return new Intl.DateTimeFormat('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
     };
-    res.json(rows.map((row, i) => ({
+    res.json(repairThaiTextDeep(rows.map((row, i) => ({
       sn: row['Nember'] || i + 1,
       submittedOn: formatDate(row['Submitted on']),
       respondent: row['Respondents'],
@@ -1020,7 +1120,7 @@ app.get('/api/inventory-data', (req, res) => {
       purchaseDate: formatDate(row['วันที่ซื้อ']),
       warrantyEndDate: formatDate(row['วันหมดประกัน']),
       expense: Number(row['ค่าใช้จ่าย']) || 0
-    })));
+    }))));
   } catch (err) {
     console.error('Error reading inventory data:', err);
     res.status(500).json({ error: 'Failed to read inventory data' });
