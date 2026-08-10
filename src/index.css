@@ -169,6 +169,17 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, .22);
 }
 
+.sidebar-notification-count {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    z-index: 2;
+    margin-left: 0;
+    border: 2px solid #111827;
+    background: #334155;
+    color: #fff;
+}
+
 @media (max-width: 768px) {
     .notification-panel {
         position: fixed;

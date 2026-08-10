@@ -8134,11 +8134,12 @@ function Dashboard() {
             style={{ position: 'relative' }}
           >
             แจ้ง Ticket
-            {pendingTicketsCount > 0 && (
-              <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold', border: '2px solid #111827' }}>
-                {pendingTicketsCount}
-              </span>
-            )}
+            <span
+              className={`menu-count-badge sidebar-notification-count ${pendingTicketsCount > 0 ? 'has-items' : ''}`}
+              aria-label={`Ticket ที่รอดำเนินการ ${pendingTicketsCount} รายการ`}
+            >
+              {pendingTicketsCount}
+            </span>
           </button>
           <button onClick={() => {
             setAssetWorkflowRole('requester');
@@ -8147,11 +8148,12 @@ function Dashboard() {
           }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white', position: 'relative' }}>
             <Ticket size={16} />
             ขอเบิกอุปกรณ์
-            {pendingAssetRequestsCount > 0 && (
-              <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: '#ef4444', color: 'white', borderRadius: '9999px', padding: '2px 6px', fontSize: '11px', fontWeight: 'bold', border: '2px solid #111827' }}>
-                {pendingAssetRequestsCount}
-              </span>
-            )}
+            <span
+              className={`menu-count-badge sidebar-notification-count ${pendingAssetRequestsCount > 0 ? 'has-items' : ''}`}
+              aria-label={`คำขอเบิกอุปกรณ์ที่รออนุมัติ ${pendingAssetRequestsCount} รายการ`}
+            >
+              {pendingAssetRequestsCount}
+            </span>
           </button>
           <button onClick={() => {
             setAssetReturnView('returns');
