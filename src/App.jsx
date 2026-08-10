@@ -5775,6 +5775,7 @@ function Dashboard() {
           const result = await response.json().catch(() => ({}));
           if (response.ok) return result;
           lastError = new Error(result.error || `API server returned ${response.status}`);
+          lastError.status = response.status;
           if (![500, 502, 503].includes(response.status)) break;
         } catch (error) {
           lastError = error;
@@ -5841,6 +5842,23 @@ function Dashboard() {
       }
 
       try {
+        const pendingSyncRaw = localStorage.getItem('it_dashboard_pending_sync');
+        if (pendingSyncRaw) {
+          const pendingSync = JSON.parse(pendingSyncRaw);
+          if (pendingSync?.type === 'asset_patch' && pendingSync?.sn && pendingSync?.payload) {
+            isPendingSyncRef.current = true;
+            const pendingResponse = await fetch(`${API_BASE}/api/assets/${pendingSync.sn}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(pendingSync.payload)
+            });
+            const pendingResult = await pendingResponse.json().catch(() => ({}));
+            if (!pendingResponse.ok) throw new Error(pendingResult.error || `API ${pendingResponse.status}`);
+            localStorage.removeItem('it_dashboard_pending_sync');
+            setConsoleSaveMessage('ซิงค์หมายเหตุที่รอบันทึกขึ้นฐานข้อมูลสำเร็จแล้ว');
+          }
+        }
+
         const res = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!res.ok) return;
         const result = await res.json();
@@ -5862,6 +5880,8 @@ function Dashboard() {
         }
       } catch (err) {
         console.warn('Real-time sync poll failed:', err.message);
+      } finally {
+        isPendingSyncRef.current = false;
       }
     }, 3000);
 
@@ -6788,13 +6808,22 @@ function Dashboard() {
     setConsoleSaving(true);
     setConsoleSaveMessage('');
     isPendingSyncRef.current = true;
+    let assetsToSave = assetsList;
+    let dataToSave = data;
+    let pendingAssetPatch = null;
     try {
-      let assetsToSave = assetsList;
-      let dataToSave = data;
-
       // If an asset is still open in edit mode, commit the visible form values
       // before sending the complete dashboard snapshot.
       if (editingAssetSn !== null && newAssetItemType) {
+        pendingAssetPatch = {
+          user: newAssetUser,
+          position: newAssetPosition,
+          itemType: newAssetItemType,
+          additionalEquipment: newAssetAdditionalEquipment,
+          deviceSerial: newAssetSerial,
+          status: newAssetStatus,
+          notes: newAssetNotes
+        };
         assetsToSave = assetsList.map(asset => asset.sn === editingAssetSn ? {
           ...asset,
           user: newAssetUser || 'ส่วนกลาง',
@@ -6878,10 +6907,24 @@ function Dashboard() {
       setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตแดชบอร์ดแล้ว');
     } catch (error) {
       console.error('Failed to save console changes:', error);
-      const databaseUnavailable = /500|502|503|database|connection|เชื่อมต่อ/i.test(String(error?.message || ''));
-      setConsoleSaveMessage(databaseUnavailable
-        ? 'ยังไม่บันทึก: ฐานข้อมูลไม่พร้อมใช้งาน กรุณาตรวจสอบ Render PostgreSQL แล้วลองใหม่'
-        : `บันทึกไม่สำเร็จ: ${error?.message || 'กรุณาลองใหม่'}`);
+      const databaseUnavailable = [500, 502, 503].includes(Number(error?.status)) ||
+        /500|502|503|internal server error|database|connection|เชื่อมต่อ/i.test(String(error?.message || ''));
+      if (databaseUnavailable && editingAssetSn !== null && pendingAssetPatch) {
+        localStorage.setItem('it_dashboard_pending_sync', JSON.stringify({
+          type: 'asset_patch',
+          sn: editingAssetSn,
+          payload: pendingAssetPatch,
+          savedAt: new Date().toISOString()
+        }));
+        setData(dataToSave);
+        setAssetsList(assetsToSave);
+        if (editingAssetSn !== null) handleCancelEditAsset();
+        setConsoleSaveMessage('บันทึกหมายเหตุไว้ในเครื่องแล้ว และจะซิงค์ขึ้นฐานข้อมูลอัตโนมัติเมื่อระบบพร้อม');
+      } else if (databaseUnavailable) {
+        setConsoleSaveMessage('ยังไม่บันทึก: ฐานข้อมูลไม่พร้อมใช้งาน กรุณาตรวจสอบ Render PostgreSQL แล้วลองใหม่');
+      } else {
+        setConsoleSaveMessage(`บันทึกไม่สำเร็จ: ${error?.message || 'กรุณาลองใหม่'}`);
+      }
     } finally {
       isPendingSyncRef.current = false;
       setConsoleSaving(false);
