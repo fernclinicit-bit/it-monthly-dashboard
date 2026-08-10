@@ -34,8 +34,7 @@ import {
   FileCode,
   ShieldCheck,
   Wrench,
-  RotateCcw,
-  Bell
+  RotateCcw
 } from 'lucide-react';
 
 // Initial blank data - use Excel import to load real data
@@ -5438,9 +5437,6 @@ function Dashboard() {
   const [assetReturnSearch, setAssetReturnSearch] = useState('');
   const [assetReturnIdentity, setAssetReturnIdentity] = useState('');
   const [assetReturnView, setAssetReturnView] = useState('returns');
-  const [notifications, setNotifications] = useState([]);
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const notificationInitializedRef = useRef(false);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const keys = Object.keys(data || {}).sort((a, b) => b.localeCompare(a));
@@ -5889,8 +5885,6 @@ function Dashboard() {
     };
 
     const announce = (item) => {
-      setNotifications(previous => [item, ...previous.filter(entry => entry.key !== item.key)].slice(0, 30));
-      setUnreadNotifications(previous => previous + 1);
       if ('Notification' in window && window.Notification.permission === 'granted') {
         new window.Notification(item.title, {
           body: item.message,
@@ -5917,6 +5911,7 @@ function Dashboard() {
         const ticketRows = Object.values(dashboardResult.data || {})
           .flatMap(month => Array.isArray(month.ticketsList) ? month.ticketsList : []);
         const requestRows = Array.isArray(requestResult) ? requestResult : [];
+        setAssetRequests(requestRows);
 
         if (!notificationInitializedRef.current && seenTickets.size === 0 && seenRequests.size === 0) {
           ticketRows.forEach(ticket => seenTickets.add(String(ticket.sn)));
@@ -8099,13 +8094,19 @@ function Dashboard() {
   };
 
   const monitoredTotal = externalDevices.length;
+  // Active includes devices that are also close to their due date. The warning
+  // metric is a subset of Active, matching the Device Monitor source dashboard.
   const monitoredActive = externalDevices.filter(d => d.status === 'active').length;
   const monitoredWarning = externalDevices.filter(d => d.status === 'active' && d.daysRemaining <= 7).length;
   const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
+  const pendingAssetApprovalCount = assetRequests.filter(request =>
+    ['pending', 'need_info', 'approved'].includes(request.status)
+  ).length;
+  const pendingTicketCloseCount = (data[currentMonth]?.ticketsList || []).filter(ticket =>
+    ticket.status === 'กำลังดำเนินการ'
+  ).length;
 
-  const pendingTicketsCount = Object.values(data || {}).reduce((acc, monthData) => {
-    return acc + (monthData.support?.ticketsList || []).filter(t => t.status === 'กำลังดำเนินการ').length;
-  }, 0);
+  const pendingTicketsCount = pendingTicketCloseCount;
   const pendingAssetRequestsCount = (assetRequests || []).filter(req => req.status === 'pending').length;
   return (
     <>
@@ -8217,6 +8218,7 @@ function Dashboard() {
               })} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'white' }}>
                 <ShieldCheck size={16} />
                 IT อนุมัติการใช้งาน
+                <span className={`menu-count-badge ${pendingAssetApprovalCount > 0 ? 'has-items' : ''}`}>{pendingAssetApprovalCount}</span>
               </button>
               <button onClick={() => requireAdminAccess(() => {
                 setLarkFormType('ticket');
@@ -8227,6 +8229,7 @@ function Dashboard() {
               })} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
                 <Wrench size={16} />
                 เมนูปิดงาน (IT Close)
+                <span className={`menu-count-badge ${pendingTicketCloseCount > 0 ? 'has-items' : ''}`}>{pendingTicketCloseCount}</span>
               </button>
             </div>
           )}

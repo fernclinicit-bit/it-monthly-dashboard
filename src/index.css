@@ -145,6 +145,30 @@
     animation: device-sync-rotate .8s linear infinite;
 }
 
+.menu-count-badge {
+    min-width: 23px;
+    height: 23px;
+    margin-left: auto;
+    padding: 0 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, .28);
+    color: rgba(255, 255, 255, .8);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.menu-count-badge.has-items {
+    border-color: #fff;
+    background: #ef4444;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, .22);
+}
+
 @media (max-width: 768px) {
     .notification-panel {
         position: fixed;
