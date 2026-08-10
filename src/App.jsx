@@ -5761,22 +5761,30 @@ function Dashboard() {
 
   const syncStateToDb = async (updatedData, updatedAssets) => {
     const operation = syncQueueRef.current.catch(() => undefined).then(async () => {
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 30000);
-      try {
-        const response = await fetch(`${API_BASE}/api/sync-all`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: updatedData, assetsList: updatedAssets }),
-          signal: controller.signal
-        });
-        if (!response.ok) {
-          throw new Error(`API server returned ${response.status}`);
+      let lastError;
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 30000);
+        try {
+          const response = await fetch(`${API_BASE}/api/sync-all`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: updatedData, assetsList: updatedAssets }),
+            signal: controller.signal
+          });
+          const result = await response.json().catch(() => ({}));
+          if (response.ok) return result;
+          lastError = new Error(result.error || `API server returned ${response.status}`);
+          if (![500, 502, 503].includes(response.status)) break;
+        } catch (error) {
+          lastError = error;
+          if (error.name === 'AbortError') break;
+        } finally {
+          window.clearTimeout(timeout);
         }
-        return response.json();
-      } finally {
-        window.clearTimeout(timeout);
+        if (attempt < 2) await new Promise(resolve => window.setTimeout(resolve, 1200));
       }
+      throw lastError || new Error('ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
     });
     syncQueueRef.current = operation;
     try {
@@ -6795,7 +6803,18 @@ function Dashboard() {
           additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
           status: newAssetStatus,
-          notes: newAssetNotes
+          notes: newAssetNotes,
+          submittedOn: newAssetSubmittedOn,
+          respondent: newAssetRespondent,
+          date: newAssetDate,
+          softwareApp: newAssetSoftwareApp,
+          registeredEmail: newAssetRegisteredEmail,
+          additionalSerial: newAssetAdditionalSerial,
+          returnDueDate: newAssetReturnDueDate,
+          auditDate: newAssetAuditDate,
+          purchaseDate: newAssetPurchaseDate,
+          warrantyExpiry: newAssetWarrantyExpiry,
+          cost: newAssetCost
         } : asset);
 
         dataToSave = {
@@ -6808,8 +6827,6 @@ function Dashboard() {
             assetsVacant: assetsToSave.filter(asset => asset.status === 'ว่าง').length
           }
         };
-        setAssetsList(assetsToSave);
-        setData(dataToSave);
       }
 
       await syncStateToDb(dataToSave, assetsToSave);
@@ -6861,7 +6878,10 @@ function Dashboard() {
       setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตแดชบอร์ดแล้ว');
     } catch (error) {
       console.error('Failed to save console changes:', error);
-      setConsoleSaveMessage('บันทึกไม่สำเร็จ กรุณาลองใหม่');
+      const databaseUnavailable = /500|502|503|database|connection|เชื่อมต่อ/i.test(String(error?.message || ''));
+      setConsoleSaveMessage(databaseUnavailable
+        ? 'ยังไม่บันทึก: ฐานข้อมูลไม่พร้อมใช้งาน กรุณาตรวจสอบ Render PostgreSQL แล้วลองใหม่'
+        : `บันทึกไม่สำเร็จ: ${error?.message || 'กรุณาลองใหม่'}`);
     } finally {
       isPendingSyncRef.current = false;
       setConsoleSaving(false);
