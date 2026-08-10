@@ -836,6 +836,34 @@ body {
     overflow: auto;
 }
 
+.asset-list-modal .asset-list-modal-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.asset-list-table-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, .06);
+}
+
+.asset-list-table-wrap .details-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #182131;
+}
+
+.asset-list-table-summary {
+    flex: 0 0 auto;
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: .8rem;
+    text-align: right;
+}
+
 .software-license-modal .details-table {
     min-width: 1320px;
     font-size: 0.82rem;

@@ -9653,7 +9653,7 @@ function Dashboard() {
 
         return (
           <div className="modal-overlay active">
-            <div className="modal large dashboard-fullscreen-modal">
+            <div className="modal large dashboard-fullscreen-modal asset-list-modal">
               <header className="modal-header">
                 <h3>ทะเบียนคลังทรัพย์สินและอุปกรณ์ IT (Asset Registry)</h3>
                 <button onClick={() => {
@@ -9664,7 +9664,7 @@ function Dashboard() {
                   setAssetTypeFilter('');
                 }} className="modal-close"><X size={20} /></button>
               </header>
-              <div className="modal-body">
+              <div className="modal-body asset-list-modal-body">
                 {/* Search & Filters Bar */}
                 <div style={{
                   display: 'flex',
@@ -9755,7 +9755,7 @@ function Dashboard() {
                   </div>
                 </div>
 
-                <div style={{ overflowX: 'auto', maxHeight: '450px', overflowY: 'auto' }}>
+                <div className="asset-list-table-wrap">
                   <table className="details-table">
                     <thead>
                       <tr>
@@ -9821,7 +9821,7 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
-              <div style={{ marginTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'right' }}>
+              <div className="asset-list-table-summary">
                 แสดง {filteredAssetsList.length} จากทั้งหมด {assetsList.length} อุปกรณ์
               </div>
             </div>
