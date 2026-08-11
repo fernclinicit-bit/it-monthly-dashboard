@@ -136,7 +136,7 @@ app.post('/api/admin/verify', (req, res) => {
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
   max: 20
 });
