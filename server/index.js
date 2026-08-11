@@ -392,7 +392,8 @@ async function initDb() {
       client.release();
     }
   } catch (err) {
-    console.warn('WARNING: Failed to connect to PostgreSQL database. Server will start in offline API fallback mode.', err.message);
+    console.warn(`WARNING: Failed to connect to PostgreSQL database (DATABASE_URL is ${process.env.DATABASE_URL ? 'SET' : 'NOT SET'}). Server will start in offline API fallback mode.`);
+    console.error(err);
   }
 }
 
