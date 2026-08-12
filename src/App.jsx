@@ -8905,10 +8905,11 @@ function Dashboard() {
         const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
         const identity = assetReturnIdentity.trim().toLocaleLowerCase('th-TH');
         const returnRequests = assetRequests
-          .filter(request => identity && String(request.requester || '').trim().toLocaleLowerCase('th-TH') === identity)
           .filter(request => ['issued', 'overdue', 'return_requested', 'returned'].includes(request.status))
           .filter(request => {
-            if (!search) return true;
+            const requester = String(request.requester || '').trim().toLocaleLowerCase('th-TH');
+            if (identity) return requester === identity;
+            if (!search) return false;
             return [
               request.requester,
               request.department,
@@ -9011,7 +9012,13 @@ function Dashboard() {
                       </thead>
                       <tbody>
                         {returnRequests.length === 0 ? (
-                          <tr><td colSpan="6" className="workflow-empty">{identity ? 'ไม่พบอุปกรณ์ที่ตรงกับชื่อผู้คืน' : 'กรุณากรอกชื่อ-นามสกุลผู้คืนเพื่อแสดงรายการของคุณ'}</td></tr>
+                          <tr><td colSpan="6" className="workflow-empty">{
+                            identity
+                              ? 'ไม่พบอุปกรณ์ที่ตรงกับชื่อผู้คืน'
+                              : search
+                                ? 'ไม่พบรายการที่ตรงกับคำค้นหา'
+                                : 'กรอกชื่อผู้คืน หรือค้นหาด้วยชื่อ แผนก และหมายเลขเครื่อง'
+                          }</td></tr>
                         ) : returnRequests.map(request => (
                           <tr key={request.id}>
                             <td>
