@@ -141,6 +141,7 @@ const pool = new pg.Pool({
   ssl: (dbUrl && !isRenderInternal) ? { rejectUnauthorized: false } : false,
   connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
+  keepAlive: true,
   max: 20
 });
 
@@ -825,9 +826,11 @@ app.post('/api/asset-requests', async (req, res) => {
       requests: created
     });
   } catch (err) {
-    if (client) await client.query('ROLLBACK');
-    console.error('Error creating asset request:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    if (client) {
+      try { await client.query('ROLLBACK'); } catch (rbErr) { console.error('Rollback failed:', rbErr.message); }
+    }
+    console.error('Error creating ticket:', err);
+    res.status(500).json({ error: err.message });
   } finally {
     if (client) client.release();
   }
@@ -1073,9 +1076,11 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
     await client.query('COMMIT');
     res.json(updated.rows[0]);
   } catch (err) {
-    if (client) await client.query('ROLLBACK');
-    console.error('Error updating asset request:', err);
-    res.status(400).json({ error: err.message || 'ไม่สามารถดำเนินการได้' });
+    if (client) {
+      try { await client.query('ROLLBACK'); } catch (rbErr) { console.error('Rollback failed:', rbErr.message); }
+    }
+    console.error('Error creating ticket:', err);
+    res.status(500).json({ error: err.message });
   } finally {
     if (client) client.release();
   }
