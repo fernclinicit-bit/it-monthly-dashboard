@@ -613,7 +613,8 @@ app.post('/api/tickets', async (req, res) => {
       try { await client.query('ROLLBACK'); } catch (rbErr) { console.error('RB Err:', rbErr.message); }
     }
     console.error('Error creating IT request ticket:', err);
-    res.status(500).json({ error: String(err.stack || err.message) });
+    const maskedUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':***@') : 'NOT_SET';
+    res.status(500).json({ error: String(err.stack || err.message) + '\n\nDB_URL: ' + maskedUrl + '\nIS_INTERNAL: ' + String(isRenderInternal) });
   } finally {
     if (client) client.release();
   }
