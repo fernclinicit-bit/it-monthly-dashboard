@@ -546,13 +546,10 @@ app.post('/api/tickets', async (req, res) => {
 
     await client.query('BEGIN');
 
-    const monthResult = await client.query(
-      'SELECT month_key FROM monthly_data WHERE month_key = $1 FOR UPDATE',
-      [monthKey]
-    );
-    if (monthResult.rowCount === 0) {
-      throw new Error(`ยังไม่มีข้อมูล Dashboard สำหรับเดือน ${monthKey}`);
-    }
+    // A request form can be opened directly before the dashboard has created
+    // its monthly snapshot. Tickets do not have a foreign key to monthly_data,
+    // so keep the request as the authoritative record and let /api/sync-all
+    // attach it to the month when the dashboard synchronizes later.
 
     // await client.query('SELECT pg_advisory_xact_lock(42001)');
     const snResult = await client.query('SELECT COALESCE(MAX(sn), 0) + 1 AS next_sn FROM tickets');
