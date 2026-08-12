@@ -527,10 +527,15 @@ app.post('/api/tickets', async (req, res) => {
   const monthKey = String(date).slice(0, 7);
   let client;
   try {
+    client = new pg.Client({
+      connectionString: dbUrl,
+      ssl: (dbUrl && !isRenderInternal) ? { rejectUnauthorized: false } : false
+    });
+    
     let retries = 3;
     while (retries > 0) {
       try {
-        client = await pool.connect();
+        await client.connect();
         break;
       } catch (connErr) {
         retries--;
@@ -538,6 +543,7 @@ app.post('/api/tickets', async (req, res) => {
         await new Promise(r => setTimeout(r, 1000));
       }
     }
+
     await client.query('BEGIN');
 
     const monthResult = await client.query(
@@ -616,7 +622,9 @@ app.post('/api/tickets', async (req, res) => {
     const maskedUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':***@') : 'NOT_SET';
     res.status(500).json({ error: String(err.stack || err.message) + '\n\nDB_URL: ' + maskedUrl + '\nIS_INTERNAL: ' + String(isRenderInternal) });
   } finally {
-    if (client) client.release();
+    if (client) {
+      try { await client.end(); } catch (e) {}
+    }
   }
 });
 
