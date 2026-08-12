@@ -8243,7 +8243,7 @@ function Dashboard() {
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
       <aside className={`sidebar no-print ${mobileSidebarOpen ? 'mobile-active' : ''}`}>
         <div className="logo-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <img className="fern-brand-logo" src={fernAesthetiqueLogo} alt="Fern Aesthetique" />
+          <img className="fern-brand-logo" src={lightItLogo} alt="Light IT" />
           <button 
             onClick={() => setMobileSidebarOpen(false)} 
             className="mobile-menu-close"
