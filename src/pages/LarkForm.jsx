@@ -77,16 +77,32 @@ const LarkForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 60000);
     try {
       const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '');
 
       const response = await fetch(`${API_BASE}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        signal: controller.signal
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'บันทึกคำร้องไม่สำเร็จ');
+      const responseText = await response.text();
+      let result = {};
+      if (responseText) {
+        try {
+          result = JSON.parse(responseText);
+        } catch {
+          if (response.ok) throw new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง กรุณาลองส่งอีกครั้ง');
+        }
+      }
+      if (!response.ok) {
+        const fallbackMessage = response.status === 404
+          ? 'ระบบรับแจ้ง Ticket กำลังเริ่มทำงาน กรุณารอสักครู่แล้วลองส่งอีกครั้ง'
+          : `บันทึกคำร้องไม่สำเร็จ (รหัส ${response.status})`;
+        throw new Error(result.error || responseText || fallbackMessage);
+      }
       
       setSubmitted(true);
       setTimeout(() => {
@@ -106,8 +122,12 @@ const LarkForm = () => {
       }, 3000);
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + error.message);
+      const message = error.name === 'AbortError'
+        ? 'ระบบใช้เวลาตอบกลับนานเกินไป กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองส่งอีกครั้ง'
+        : error.message;
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + message);
     } finally {
+      window.clearTimeout(timeoutId);
       setSubmitting(false);
     }
   };
