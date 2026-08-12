@@ -175,6 +175,14 @@ function normalizeImageAttachment(data, name) {
   };
 }
 
+function normalizeIdentity(value) {
+  return String(value || '')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLocaleLowerCase('th-TH');
+}
+
 async function refreshOperationalCounters(client) {
   await client.query(`
     UPDATE monthly_data m
@@ -984,8 +992,8 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       assetStatus = 'ใช้งาน';
     } else if (action === 'request_return') {
       if (request.status !== 'issued' && request.status !== 'overdue') throw new Error('รายการนี้ไม่อยู่ในสถานะที่แจ้งขอคืนได้');
-      if (!String(requesterIdentity || '').trim() ||
-          String(requesterIdentity).trim().toLocaleLowerCase('th-TH') !== String(request.requester).trim().toLocaleLowerCase('th-TH')) {
+      if (!normalizeIdentity(requesterIdentity) ||
+          normalizeIdentity(requesterIdentity) !== normalizeIdentity(request.requester)) {
         throw new Error('ชื่อผู้คืนไม่ตรงกับผู้เบิกอุปกรณ์');
       }
       nextStatus = 'return_requested';

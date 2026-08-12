@@ -8903,11 +8903,16 @@ function Dashboard() {
           returned: 'คืนแล้ว'
         };
         const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
-        const identity = assetReturnIdentity.trim().toLocaleLowerCase('th-TH');
+        const normalizeReturnIdentity = value => String(value || '')
+          .replace(/[\u200B-\u200D\uFEFF]/g, '')
+          .trim()
+          .replace(/\s+/g, ' ')
+          .toLocaleLowerCase('th-TH');
+        const identity = normalizeReturnIdentity(assetReturnIdentity);
         const returnRequests = assetRequests
           .filter(request => ['issued', 'overdue', 'return_requested', 'returned'].includes(request.status))
           .filter(request => {
-            const requester = String(request.requester || '').trim().toLocaleLowerCase('th-TH');
+            const requester = normalizeReturnIdentity(request.requester);
             if (identity) return requester === identity;
             if (!search) return false;
             return [
