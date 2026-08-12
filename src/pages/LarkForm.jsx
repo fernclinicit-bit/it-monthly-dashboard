@@ -80,7 +80,7 @@ const LarkForm = () => {
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 60000);
     try {
-      const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '');
+      const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://it-monthly-dashboard-new.onrender.com');
 
       const response = await fetch(`${API_BASE}/api/tickets`, {
         method: 'POST',
