@@ -5560,7 +5560,7 @@ function Dashboard() {
       activeController = new AbortController();
       setIsFetchingDevices(true);
       try {
-        const response = await fetch('https://ios-device-monitor-46w9.onrender.com/api/devices', {
+        const response = await fetch('https://ios-device-monitor-lkxv.onrender.com/api/devices', {
           cache: 'no-store',
           signal: activeController.signal
         });
