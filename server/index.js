@@ -183,6 +183,22 @@ function normalizeIdentity(value) {
     .toLocaleLowerCase('th-TH');
 }
 
+function getIdentityKeys(value) {
+  const raw = String(value || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
+  const keys = new Set([normalizeIdentity(raw)]);
+  keys.add(normalizeIdentity(raw.split(/[（(]/, 1)[0]));
+  for (const match of raw.matchAll(/[（(]([^()（）]+)[)）]/g)) {
+    keys.add(normalizeIdentity(match[1]));
+  }
+  keys.delete('');
+  return keys;
+}
+
+function matchesRequesterIdentity(input, requester) {
+  const normalizedInput = normalizeIdentity(input);
+  return Boolean(normalizedInput) && getIdentityKeys(requester).has(normalizedInput);
+}
+
 async function refreshOperationalCounters(client) {
   await client.query(`
     UPDATE monthly_data m
@@ -992,8 +1008,7 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       assetStatus = 'ใช้งาน';
     } else if (action === 'request_return') {
       if (request.status !== 'issued' && request.status !== 'overdue') throw new Error('รายการนี้ไม่อยู่ในสถานะที่แจ้งขอคืนได้');
-      if (!normalizeIdentity(requesterIdentity) ||
-          normalizeIdentity(requesterIdentity) !== normalizeIdentity(request.requester)) {
+      if (!matchesRequesterIdentity(requesterIdentity, request.requester)) {
         throw new Error('ชื่อผู้คืนไม่ตรงกับผู้เบิกอุปกรณ์');
       }
       nextStatus = 'return_requested';

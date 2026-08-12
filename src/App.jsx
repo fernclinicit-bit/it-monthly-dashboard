@@ -8908,12 +8908,21 @@ function Dashboard() {
           .trim()
           .replace(/\s+/g, ' ')
           .toLocaleLowerCase('th-TH');
+        const getReturnIdentityKeys = value => {
+          const raw = String(value || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
+          const keys = [normalizeReturnIdentity(raw)];
+          const nameBeforeNickname = raw.split(/[（(]/, 1)[0];
+          keys.push(normalizeReturnIdentity(nameBeforeNickname));
+          for (const match of raw.matchAll(/[（(]([^()（）]+)[)）]/g)) {
+            keys.push(normalizeReturnIdentity(match[1]));
+          }
+          return new Set(keys.filter(Boolean));
+        };
         const identity = normalizeReturnIdentity(assetReturnIdentity);
         const returnRequests = assetRequests
           .filter(request => ['issued', 'overdue', 'return_requested', 'returned'].includes(request.status))
           .filter(request => {
-            const requester = normalizeReturnIdentity(request.requester);
-            if (identity) return requester === identity;
+            if (identity) return getReturnIdentityKeys(request.requester).has(identity);
             if (!search) return false;
             return [
               request.requester,
@@ -8986,10 +8995,10 @@ function Dashboard() {
                     <div>
                       <h4>รายการอุปกรณ์ของผู้คืน</h4>
                       <label className="return-identity-field">
-                        <span>ยืนยันตัวผู้คืนด้วยชื่อ-นามสกุลที่ใช้ตอนเบิก</span>
+                        <span>ยืนยันตัวผู้คืนด้วยชื่อ-นามสกุล หรือชื่อเล่นในวงเล็บ</span>
                         <input
                           className="workflow-requester-search"
-                          placeholder="กรอกชื่อ-นามสกุลให้ตรงกับคำขอเบิก"
+                          placeholder="กรอกชื่อ-นามสกุล หรือชื่อเล่น เช่น ปอน"
                           value={assetReturnIdentity}
                           onChange={event => setAssetReturnIdentity(event.target.value)}
                         />
