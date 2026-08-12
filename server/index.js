@@ -538,7 +538,7 @@ app.post('/api/tickets', async (req, res) => {
       throw new Error(`ยังไม่มีข้อมูล Dashboard สำหรับเดือน ${monthKey}`);
     }
 
-    await client.query('SELECT pg_advisory_xact_lock(42001)');
+    // await client.query('SELECT pg_advisory_xact_lock(42001)');
     const snResult = await client.query('SELECT COALESCE(MAX(sn), 0) + 1 AS next_sn FROM tickets');
     const nextSn = Number(snResult.rows[0].next_sn);
     const complainant = `${String(name).trim()} (${String(department).trim()})`;
@@ -1035,7 +1035,7 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       `);
       if (monthResult.rowCount > 0) {
         const repairMonthKey = monthResult.rows[0].month_key;
-        await client.query('SELECT pg_advisory_xact_lock(42001)');
+        // await client.query('SELECT pg_advisory_xact_lock(42001)');
         const snResult = await client.query('SELECT COALESCE(MAX(sn), 0) + 1 AS next_sn FROM tickets');
         const nextTicketSn = Number(snResult.rows[0].next_sn);
         const assetResult = await client.query('SELECT device_serial, item_type FROM assets WHERE sn = $1', [assignedSn]);
@@ -1161,7 +1161,7 @@ app.post('/api/sync-all', async (req, res) => {
     await client.query('BEGIN');
     // Serialize full snapshots and only replace the months explicitly included
     // in this payload. Older browsers must never delete newer month records.
-    await client.query('SELECT pg_advisory_xact_lock(42002)');
+    // await client.query('SELECT pg_advisory_xact_lock(42002)');
     await client.query(`
       INSERT INTO monthly_data_snapshots (snapshot)
       SELECT COALESCE(jsonb_agg(to_jsonb(month_row) ORDER BY month_row.month_key), '[]'::jsonb)
