@@ -527,7 +527,17 @@ app.post('/api/tickets', async (req, res) => {
   const monthKey = String(date).slice(0, 7);
   let client;
   try {
-    client = await pool.connect();
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        client = await pool.connect();
+        break;
+      } catch (connErr) {
+        retries--;
+        if (retries === 0) throw connErr;
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    }
     await client.query('BEGIN');
 
     const monthResult = await client.query(
