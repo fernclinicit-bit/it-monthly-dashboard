@@ -7102,12 +7102,13 @@ function Dashboard() {
     if (!license.name) return;
 
     setData((previous) => {
-      const rows = [...(previous[currentMonth].softwareExpiringDetails || [])];
+      const monthData = previous[currentMonth] || { ...initialDashboardData['2026-07'] };
+      const rows = [...(monthData.softwareExpiringDetails || [])];
       if (editingSoftwareIndex === null) rows.push(license);
       else rows[editingSoftwareIndex] = license;
       return {
         ...previous,
-        [currentMonth]: { ...previous[currentMonth], softwareExpiringDetails: rows },
+        [currentMonth]: { ...monthData, softwareExpiringDetails: rows },
       };
     });
     resetSoftwareForm();
@@ -7129,13 +7130,17 @@ function Dashboard() {
 
   const deleteSoftwareLicense = (index) => {
     if (!window.confirm('ต้องการลบรายละเอียด License นี้ใช่หรือไม่?')) return;
-    setData((previous) => ({
-      ...previous,
-      [currentMonth]: {
-        ...previous[currentMonth],
-        softwareExpiringDetails: previous[currentMonth].softwareExpiringDetails.filter((_, rowIndex) => rowIndex !== index),
-      },
-    }));
+    setData((previous) => {
+      const monthData = previous[currentMonth] || { ...initialDashboardData['2026-07'] };
+      const currentList = monthData.softwareExpiringDetails || [];
+      return {
+        ...previous,
+        [currentMonth]: {
+          ...monthData,
+          softwareExpiringDetails: currentList.filter((_, rowIndex) => rowIndex !== index),
+        },
+      };
+    });
     resetSoftwareForm();
   };
 
