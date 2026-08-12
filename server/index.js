@@ -599,12 +599,11 @@ app.post('/api/tickets', async (req, res) => {
     await client.query('COMMIT');
     res.status(201).json({ success: true, sn: nextSn, monthKey, linkedAssetSn });
   } catch (err) {
-    if (client) await client.query('ROLLBACK');
+    if (client) {
+      try { await client.query('ROLLBACK'); } catch (rbErr) { console.error('RB Err:', rbErr.message); }
+    }
     console.error('Error creating IT request ticket:', err);
-    const isValidationError = err.message.startsWith('ยังไม่มีข้อมูล') ||
-      err.message.startsWith('ไม่พบหมายเลขเครื่อง') ||
-      err.message.startsWith('ไฟล์แนบ');
-    res.status(isValidationError ? 400 : 500).json({ error: err.message || 'บันทึกคำร้องไม่สำเร็จ' });
+    res.status(500).json({ error: String(err.stack || err.message) });
   } finally {
     if (client) client.release();
   }
