@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
-import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
+import lightItLogo from './assets/light_it_logo.jpg';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -5966,7 +5966,7 @@ function Dashboard() {
       if ('Notification' in window && window.Notification.permission === 'granted') {
         new window.Notification(item.title, {
           body: item.message,
-          icon: fernAesthetiqueLogo,
+          icon: lightItLogo,
           tag: item.key
         });
       }
