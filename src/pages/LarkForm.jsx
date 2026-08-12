@@ -78,7 +78,7 @@ const LarkForm = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://it-monthly-dashboard-new.onrender.com');
+      const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '');
 
       const response = await fetch(`${API_BASE}/api/tickets`, {
         method: 'POST',
