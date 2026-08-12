@@ -133,9 +133,12 @@ app.post('/api/admin/verify', (req, res) => {
   res.status(valid ? 200 : 401).json({ valid });
 });
 
+const dbUrl = process.env.DATABASE_URL || '';
+const isRenderInternal = dbUrl.includes('@dpg-') && !dbUrl.includes('.com');
+
 const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+  connectionString: dbUrl,
+  ssl: (dbUrl && !isRenderInternal) ? { rejectUnauthorized: false } : false,
   connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
   max: 20
