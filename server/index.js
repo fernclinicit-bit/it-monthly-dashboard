@@ -1403,6 +1403,31 @@ app.post('/api/sync-all', async (req, res) => {
     }
   }
 });
+app.post('/api/reset-database', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    
+    await client.query(`
+      TRUNCATE TABLE 
+        monthly_data_snapshots,
+        asset_requests,
+        assets,
+        tickets,
+        monthly_data
+      RESTART IDENTITY CASCADE;
+    `);
+
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Database has been completely wiped.' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error resetting database:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    client.release();
+  }
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -6689,17 +6689,29 @@ function Dashboard() {
     reader.readAsText(file);
   };
 
-  const handleResetToDefault = () => {
-    if (window.confirm('คุณต้องการรีเซ็ตข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้นจากไฟล์ Excel ดั้งเดิมใช่หรือไม่? ข้อมูลที่คุณแก้ไขจะหายไปทั้งหมด')) {
-      localStorage.removeItem('it_dashboard_data');
-      localStorage.removeItem('it_dashboard_assets');
-      setData(initialDashboardData);
-      setAssetsList(initialAssetsData);
-      setCurrentMonth('2026-07');
-      setConsoleMonth('2026-07');
-      setEditingAssetSn(null);
-      setEditingTicketSn(null);
-      alert('รีเซ็ตข้อมูลกลับเป็นค่าเริ่มต้นเรียบร้อยแล้ว!');
+  const handleResetToDefault = async () => {
+    if (window.confirm('คำเตือน: คุณต้องการลบข้อมูลทั้งหมดในระบบใช่หรือไม่? ข้อมูลทั้งหมดที่บันทึกไว้ในฐานข้อมูลจะถูกล้างและไม่สามารถกู้คืนได้!')) {
+      try {
+        const response = await fetch(`${API_BASE}/api/reset-database`, {
+          method: 'POST'
+        });
+        if (!response.ok) {
+          throw new Error('ไม่สามารถลบข้อมูลฐานข้อมูลได้');
+        }
+        localStorage.removeItem('it_dashboard_data');
+        localStorage.removeItem('it_dashboard_assets');
+        setData([]);
+        setAssetsList([]);
+        setCurrentMonth('2026-07');
+        setConsoleMonth('2026-07');
+        setEditingAssetSn(null);
+        setEditingTicketSn(null);
+        alert('ลบข้อมูลทั้งหมดเรียบร้อยแล้ว ระบบว่างเปล่าเหมือนเริ่มต้นใหม่');
+        window.location.reload();
+      } catch (error) {
+        console.error('Error resetting database:', error);
+        alert('เกิดข้อผิดพลาดในการลบข้อมูล: ' + error.message);
+      }
     }
   };
 
@@ -10626,12 +10638,12 @@ function Dashboard() {
                       </div>
 
                       <div className="console-card" style={{ border: '1px solid rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
-                        <h5 style={{ margin: '0 0 8px 0', color: 'rgb(239, 68, 68)' }}>⚠️ รีเซ็ตระบบใหม่ทั้งหมด (Reset System)</h5>
+                        <h5 style={{ margin: '0 0 8px 0', color: 'rgb(239, 68, 68)' }}>⚠️ รีเซ็ตระบบใหม่ทั้งหมด (Wipe Database)</h5>
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
-                          ลบข้อมูลที่ถูกแก้ไขในเว็บเบราว์เซอร์ทั้งหมด และย้อนกลับไปใช้ข้อมูลประวัติดั้งเดิมจากไฟล์ Excel ในโฟลเดอร์ Update
+                          ลบข้อมูลทั้งหมดในฐานข้อมูล ระบบจะถูกล้างค่าให้ว่างเปล่าเหมือนเริ่มต้นใหม่ (คำเตือน: ข้อมูลที่ถูกลบจะไม่สามารถกู้คืนได้)
                         </p>
                         <button type="button" onClick={handleResetToDefault} className="sidebar-btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'rgb(239, 68, 68)', border: 'none', color: 'white' }}>
-                          ล้างข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น
+                          ลบข้อมูลทั้งหมด (Wipe Database)
                         </button>
                       </div>
                     </div>
