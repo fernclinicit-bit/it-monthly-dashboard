@@ -145,7 +145,7 @@ const pool = new pg.Pool({
   max: 20
 });
 
-pool.on('error', (err, client) => {
+pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
 });
 
@@ -644,7 +644,7 @@ app.post('/api/tickets', async (req, res) => {
     res.status(500).json({ error: String(err.stack || err.message) + '\n\nDB_URL: ' + maskedUrl + '\nIS_INTERNAL: ' + String(isRenderInternal) });
   } finally {
     if (client) {
-      try { await client.end(); } catch (e) {}
+      try { await client.end(); } catch (closeError) { console.error('Failed to close database client:', closeError); }
     }
   }
 });

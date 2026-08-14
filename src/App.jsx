@@ -1,18 +1,10 @@
-import React, { Fragment, useState, useEffect, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
 import lightItLogo from './assets/light_it_logo.jpg';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
-  BarChart3, 
-  TrendingUp, 
-  Layers, 
-  Cpu, 
-  ShieldAlert, 
-  Activity, 
-  Award, 
-  Search, 
   Ticket, 
   Lightbulb, 
   Edit3, 
@@ -20,13 +12,10 @@ import {
   Database,
   CheckCircle,
   AlertTriangle,
-  Clock,
-  ThumbsUp,
   X,
   Upload,
   Download,
   FileSpreadsheet,
-  FileText,
   ChevronDown,
   ChevronRight,
   Menu,
@@ -36,6 +25,12 @@ import {
   Wrench,
   RotateCcw
 } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_BASE ||
+  (window.location.hostname === 'localhost'
+    ? 'http://localhost:5000'
+    : 'https://it-monthly-dashboard-new.onrender.com');
+const ADMIN_PASSWORD_HASH = '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
 
 // Initial blank data - use Excel import to load real data
 const initialAssetsData = [
@@ -5598,12 +5593,6 @@ function Dashboard() {
       document.removeEventListener('visibilitychange', syncWhenVisible);
     };
   }, [externalDevicesRefreshKey]);
-  const API_BASE = import.meta.env.VITE_API_BASE ||
-    (window.location.hostname === 'localhost'
-      ? 'http://localhost:5000'
-      : 'https://it-monthly-dashboard-new.onrender.com');
-  const ADMIN_PASSWORD_HASH = '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
-
   const verifyAdminPasswordLocally = async (password) => {
     const encodedPassword = new TextEncoder().encode(password);
     const digest = await window.crypto.subtle.digest('SHA-256', encodedPassword);
@@ -5652,7 +5641,7 @@ function Dashboard() {
     }
   };
 
-  const loadAssetRequests = async () => {
+  const loadAssetRequests = useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE}/api/asset-requests`);
       if (!response.ok) throw new Error(`API ${response.status}`);
@@ -5660,7 +5649,7 @@ function Dashboard() {
     } catch (err) {
       console.error('Failed to load asset requests:', err);
     }
-  };
+  }, []);
 
   const refreshOperationalStateFromDb = async () => {
     const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
@@ -5793,7 +5782,7 @@ function Dashboard() {
     loadAssetRequests();
     const timer = setInterval(loadAssetRequests, 3000);
     return () => clearInterval(timer);
-  }, [activeModal]);
+  }, [activeModal, loadAssetRequests]);
 
   const isPollingUpdateRef = useRef(false);
   const isPendingSyncRef = useRef(false);
@@ -5807,7 +5796,7 @@ function Dashboard() {
     latestAssetsRef.current = assetsList;
   }, [data, assetsList]);
 
-  const syncStateToDb = async (updatedData, updatedAssets) => {
+  const syncStateToDb = useCallback(async (updatedData, updatedAssets) => {
     const operation = syncQueueRef.current.catch(() => undefined).then(async () => {
       let lastError;
       for (let attempt = 1; attempt <= 2; attempt += 1) {
@@ -5843,7 +5832,7 @@ function Dashboard() {
       if (err.name === 'AbortError') throw new Error('เซิร์ฟเวอร์ใช้เวลาบันทึกนานเกิน 30 วินาที กรุณาลองใหม่');
       throw err;
     }
-  };
+  }, []);
 
   // Load state from Render PostgreSQL database on mount
   useEffect(() => {
@@ -5866,7 +5855,7 @@ function Dashboard() {
           await fetch(`${API_BASE}/api/sync-all`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data, assetsList })
+            body: JSON.stringify({ data: latestDataRef.current, assetsList: latestAssetsRef.current })
           });
         }
       } catch (err) {
@@ -6040,7 +6029,7 @@ function Dashboard() {
       cancelled = true;
       window.clearInterval(notificationTimer);
     };
-  }, [isLoaded, API_BASE]);
+  }, [isLoaded]);
 
   // Automatically sync local changes to PostgreSQL database once loaded
   useEffect(() => {
@@ -6076,7 +6065,7 @@ function Dashboard() {
       }
     }, 1000);
     return () => clearTimeout(timer);
-  }, [data, assetsList, isLoaded]);
+  }, [data, assetsList, isLoaded, syncStateToDb]);
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -6451,7 +6440,6 @@ function Dashboard() {
       // Create mode
       const newAsset = {
         sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
-        date: new Date().toLocaleDateString('th-TH'),
         user: newAssetUser || 'ส่วนกลาง',
         position: newAssetPosition || '-',
         itemType: newAssetItemType,
@@ -6850,7 +6838,7 @@ function Dashboard() {
   const availableMonthKeys = Object.keys(data).sort();
   const fallbackMonthKey = availableMonthKeys[availableMonthKeys.length - 1] || '2026-07';
   const activeDataSource = data[currentMonth] || data[fallbackMonthKey] || initialDashboardData['2026-07'];
-  const activeData = {
+  const activeData = useMemo(() => ({
     ...initialDashboardData['2026-07'],
     ...activeDataSource,
     monthName: activeDataSource?.monthName || fallbackMonthKey,
@@ -6864,7 +6852,7 @@ function Dashboard() {
     assetsExpiringDetails: activeDataSource?.assetsExpiringDetails || [],
     softwareExpiringDetails: activeDataSource?.softwareExpiringDetails || [],
     ticketsList: activeDataSource?.ticketsList || [],
-  };
+  }), [activeDataSource, fallbackMonthKey]);
 
   const saveConsoleChanges = async () => {
     setConsoleSaving(true);
@@ -7295,7 +7283,7 @@ function Dashboard() {
       if (softwareChartInst.current) softwareChartInst.current.destroy();
       if (repairChartInst.current) repairChartInst.current.destroy();
     };
-  }, [currentMonth, data, primaryExpiringAssets, calculatedLicensesInUse, calculatedLicensesVacant]);
+  }, [activeData, primaryExpiringAssets, calculatedLicensesInUse, calculatedLicensesVacant]);
 
   // ========================================
   // XLSX IMPORT / EXPORT / TEMPLATE FUNCTIONS

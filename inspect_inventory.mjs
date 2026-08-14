@@ -12,6 +12,6 @@ for (const sh of wb.worksheets.items) {
   const used = sh.getUsedRange();
   console.log('SHEET', sh.name, 'USED', used?.address ?? 'none');
   const preview = await wb.render({sheetName:sh.name, autoCrop:'all', scale:1, format:'png'});
-  const safe = sh.name.replace(/[\\/:*?\"<>|]/g,'_');
+  const safe = sh.name.replace(/[\\/:*?"<>|]/g,'_');
   await fs.writeFile(`${out}/before_${safe}.png`, new Uint8Array(await preview.arrayBuffer()));
 }
