@@ -1663,7 +1663,7 @@ const initialDashboardData = {
     assetsLost: 0,
     assetsVacant: 0,
     ticketsCount: 0,
-    slaPercent: 100,
+    slaPercent: 0,
     responseTime: 0,
     resolutionTime: 0,
     csat: 0,
@@ -1672,10 +1672,10 @@ const initialDashboardData = {
     licensesVacant: 0,
     softwareCost: 0,
     softwareExpiring: 0,
-    backupSuccess: 100,
+    backupSuccess: 0,
     securityIncidents: 0,
-    antivirusCoverage: 100,
-    mfaCoverage: 100,
+    antivirusCoverage: 0,
+    mfaCoverage: 0,
     repairCount: 0,
     repairCost: 0,
     topBrokenDevices: [],
@@ -2582,10 +2582,10 @@ function Dashboard() {
       }
     });
 
-    const calculatedSla = durationCount > 0 ? Math.round((slaCompliantCount / durationCount) * 1000) / 10 : 100;
-    const resolutionTimeHours = durationCount > 0 ? Number((durationSum / durationCount / 60).toFixed(1)) : 0.5;
-    const calculatedResponseTime = Math.max(5, Math.round(resolutionTimeHours * 12));
-    const calculatedCsat = Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1));
+    const calculatedSla = durationCount > 0 ? Math.round((slaCompliantCount / durationCount) * 1000) / 10 : 0;
+    const resolutionTimeHours = durationCount > 0 ? Number((durationSum / durationCount / 60).toFixed(1)) : 0;
+    const calculatedResponseTime = durationCount > 0 ? Math.max(5, Math.round(resolutionTimeHours * 12)) : 0;
+    const calculatedCsat = durationCount > 0 ? Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1)) : 0;
 
     const brokenAssetsCount = assets.filter(a => a.status === 'รอซ่อม').length;
     const lostAssetsCount = assets.filter(a => a.status === 'สูญหาย').length;
@@ -2677,7 +2677,7 @@ function Dashboard() {
       
       // Reset monthly operational metrics
       ticketsCount: 0,
-      slaPercent: 100,
+      slaPercent: 0,
       responseTime: 0,
       resolutionTime: 0,
       csat: 5.0,
@@ -4147,7 +4147,7 @@ function Dashboard() {
                 backupSuccess: 99.9,
                 securityIncidents: 0,
                 antivirusCoverage: 98.5,
-                mfaCoverage: 100.0,
+                mfaCoverage: 0.0,
                 repairCount: 0,
                 repairCost: 0,
                 topBrokenDevices: [],
