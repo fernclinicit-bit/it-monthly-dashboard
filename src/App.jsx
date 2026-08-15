@@ -1782,26 +1782,7 @@ const AssetTagPicker = ({ value, onChange, options, single = false, onClose }) =
   );
 };
 
-const seedSoftwareLicenses = [
-  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
-  { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
-  { name: 'Freepik', owner: 'กราฟฟิก', price: 11250, paymentChannel: 'บัตร', paymentDate: '11/05/2026-2027 (1 ปี)', expiringDate: '2027-06-11', registeredEmail: 'graphicfernclinic@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
-  { name: 'Kumoo', owner: 'กราฟฟิก', price: 3077, paymentChannel: 'บัตร', paymentDate: '06/01/2026', expiringDate: '2027-01-07', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
-  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 345, paymentChannel: 'Apple', paymentDate: '31/07/2026', expiringDate: '2026-08-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'บุษกร บัวสวรรค์ (เรนนี่), อภิสิทธิ์ พรจันทร์วัฒน์ (จุ้ย)' },
-  { name: 'Microsoft Office 365', owner: 'IT', price: 3690, paymentChannel: 'Microsoft Office', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Lark', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Google Suite', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Chat GPT', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Adobe', owner: 'กราฟฟิก', price: 11105, paymentChannel: 'บัตร', paymentDate: '2025-12-01', expiringDate: '2026-12-01', registeredEmail: 'fernclinic.it@gmail.com', currentUsers: 'ชัยธัช ชัยวัฒน์ (มาร์ค), พิชญาพร คลอวง (พี่เจน)' },
-  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 1810, paymentChannel: 'Apple', paymentDate: '25/06/2027', expiringDate: '2027-07-23', registeredEmail: 'drfernbussiness@gmail.com', currentUsers: '' },
-  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1190, paymentChannel: 'Applepay', paymentDate: '22/01/2027', expiringDate: '2027-01-22', registeredEmail: 'drfernbussiness@gmail.com', currentUsers: '' },
-  { name: 'PEAK', owner: 'Accounting', price: 12480, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-03-30', registeredEmail: '', currentUsers: '' },
-  { name: 'empeo', owner: 'HR', price: 132515, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-06-09', registeredEmail: '', currentUsers: '' },
-  { name: 'Chromecast Premium', owner: 'HR', price: 399, paymentChannel: '', paymentDate: 'รายเดือน', expiringDate: '', registeredEmail: '', currentUsers: '' },
-].map((item) => {
-  const used = item.currentUsers ? item.currentUsers.split(',').filter(Boolean).length : 0;
-  return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'ใช้งาน', isLicenseRecord: true, sourceVersion: 'software-image-v2' };
-});
+const seedSoftwareLicenses = [];
 
 const isValidDashboardData = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -2436,21 +2417,7 @@ function Dashboard() {
     };
   }, [isLoaded]);
 
-  // Automatically sync local changes to PostgreSQL database once loaded
-  useEffect(() => {
-    if (!isLoaded || softwareSeededRef.current || !data[currentMonth]) return;
-    softwareSeededRef.current = true;
-    const existing = data[currentMonth].softwareExpiringDetails || [];
-    if (existing.some((item) => item.sourceVersion === 'software-image-v2')) return;
-    const preservedDetails = existing.filter((item) => !item.isLicenseRecord);
-    setData((previous) => ({
-      ...previous,
-      [currentMonth]: {
-        ...previous[currentMonth],
-        softwareExpiringDetails: [...preservedDetails, ...seedSoftwareLicenses],
-      },
-    }));
-  }, [isLoaded, currentMonth, data]);
+  // Auto-seed removed
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -3823,14 +3790,14 @@ function Dashboard() {
     XLSX.writeFile(wb, `Asset_Registry_${monthToExport}.xlsx`);
   };
 
-  const exportAssetsToPDF = () => {
-    // We can use a simple window.print() and hide the form elements using CSS.
-    // By adding a temporary class to body to indicate asset PDF export.
-    document.body.classList.add('printing-assets');
-    window.print();
-    setTimeout(() => {
-      document.body.classList.remove('printing-assets');
-    }, 1000);
+  const exportAssetTemplate = () => {
+    const wb = XLSX.utils.book_new();
+    const headers = ['Nember', 'Submitted on', 'Respondents', 'วันที่เบิกใช้งาน', 'บุคคลเบิกใช้อุปกรณ์', 'ตำแหน่ง', 'รายการอุปกรณ์หลัก', 'อุปกรณ์เพิ่มเติมที่ต้องการเบิก', 'ซอต์ฟแวร์/ App', 'เมลที่ลงทะเบียน', 'หมายเลขอุปกรณ์ (เช่น  Ipad 016)', 'หมายเลขอุปกรณ์ เพิ่มเติม  (เช่น  สาย อะเเดปเตอร์ ipad-011))', 'กำหนดคืนอุปกรณ์', 'สถานะ', 'หมายเหตุ', 'วันที่ตรวจสอบ', 'วันที่ซื้อ', 'วันหมดประกัน', 'ค่าใช้จ่าย'];
+    const exampleRow = [1, 'YYYY-MM-DD', 'ชื่อผู้รับผิดชอบ', 'YYYY-MM-DD', 'ชื่อผู้เบิก', 'IT', 'Notebook', 'Mouse', 'Office 365', 'test@example.com', 'NB-001', 'MS-001', 'YYYY-MM-DD', 'ใช้งาน', '', '', '', '', '0'];
+    const ws = XLSX.utils.aoa_to_sheet([headers, exampleRow]);
+    ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length + 4, 15) }));
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
+    XLSX.writeFile(wb, `Asset_Registry_Template.xlsx`);
   };
 
   // Export current data to .xlsx
@@ -6734,8 +6701,8 @@ function Dashboard() {
                         <button type="button" onClick={() => exportAssetsToExcel(consoleAssets, consoleMonth)} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#059669', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
                           <Download size={16} style={{ marginRight: '6px' }} /> Excel
                         </button>
-                        <button type="button" onClick={exportAssetsToPDF} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#dc2626', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
-                          <Printer size={16} style={{ marginRight: '6px' }} /> PDF
+                        <button type="button" onClick={exportAssetTemplate} className="sidebar-btn" style={{ flex: 1, backgroundColor: '#3b82f6', color: 'white', padding: '6px', height: '42px', margin: 0, border: 'none' }}>
+                          <Download size={16} style={{ marginRight: '6px' }} /> Template
                         </button>
                       </div>
                       <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}`} style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
