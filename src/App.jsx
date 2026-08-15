@@ -1,4 +1,4 @@
-﻿import React, { Fragment, useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
 import lightItLogo from './assets/light_it_logo.jpg';
@@ -34,632 +34,632 @@ const initialAssetsData = [
   {
     "sn": 23,
     "date": "20/05/2569",
-    "user": "เธญเธณเธเธฅ เน€เน€เธเนเน€เน€เธฎ",
+    "user": "อำพล เเซ่เเฮ",
     "position": "IT",
     "itemType": "Computer (Pc)",
     "deviceSerial": "AS-002",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 83,
     "date": "06/12/2568",
-    "user": "เธญเธณเธเธฅ    เนเธเนเนเธฎ",
+    "user": "อำพล    แซ่แฮ",
     "position": "IT",
     "itemType": "Ipad",
     "deviceSerial": "iPad-010",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 217,
     "date": "",
-    "user": "เธญเธณเธเธฅ  เนเธเนเนเธฎ",
+    "user": "อำพล  แซ่แฮ",
     "position": "IT",
     "itemType": "Mornitor",
     "deviceSerial": "LG-005",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 213,
     "date": "18/05/2569",
-    "user": "เธเธฑเธเธงเธฒ เน€เน€เธเนเน€เน€เธฎ",
+    "user": "ธันวา เเซ่เเฮ",
     "position": "IT",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-010 ",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 138,
     "date": "20/11/2568",
-    "user": "เธญเธณเธเธฅ   เนเธเนเนเธฎ",
+    "user": "อำพล   แซ่แฮ",
     "position": "IT",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-033",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 239,
     "date": "",
-    "user": "เธญเธณเธเธฅ  เนเธเนเนเธฎ",
+    "user": "อำพล  แซ่แฮ",
     "position": "IT",
     "itemType": "External HDD",
     "deviceSerial": "ETN-003 WD My PassPort 1TB",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 246,
     "date": "",
-    "user": "เธญเธณเธเธฅ  เนเธเนเนเธฎ",
+    "user": "อำพล  แซ่แฮ",
     "position": "IT",
     "itemType": "Cable HDMI",
-    "deviceSerial": "เนเธกเนเธกเธตเธซเธกเธฒเธขเน€เธฅเธ เธญเธธเธเธเธฃเธ“เน",
-    "status": "เนเธเนเธเธฒเธ",
+    "deviceSerial": "ไม่มีหมายเลข อุปกรณ์",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 248,
     "date": "10/07/2569",
-    "user": "เธเธฑเธเธงเธฒ เน€เน€เธเนเน€เน€เธฎ",
+    "user": "ธันวา เเซ่เเฮ",
     "position": "IT",
     "itemType": "Mouse",
     "deviceSerial": "MOS-002",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 252,
     "date": "",
-    "user": "เธญเธณเธเธฅ  เนเธเนเนเธฎ",
+    "user": "อำพล  แซ่แฮ",
     "position": "IT",
     "itemType": "Keyboard",
     "deviceSerial": "KBD-003",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 329,
     "date": "10/07/2569",
-    "user": "เธเธฑเธเธงเธฒ เน€เน€เธเนเน€เน€เธฎ",
+    "user": "ธันวา เเซ่เเฮ",
     "position": "IT",
     "itemType": "Keyboard",
     "deviceSerial": "KBD-007",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 272,
     "date": "",
-    "user": "เธญเธณเธเธฅ   เนเธเนเนเธฎ",
+    "user": "อำพล   แซ่แฮ",
     "position": "IT",
     "itemType": "Screwdriver",
-    "deviceSerial": "เนเธกเนเธกเธตเธซเธกเธฒเธขเน€เธฅเธ เธญเธธเธเธเธฃเธ“เน",
-    "status": "เนเธเนเธเธฒเธ",
+    "deviceSerial": "ไม่มีหมายเลข อุปกรณ์",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 33,
     "date": "09/07/2569",
-    "user": "เธงเธดเธฅเธฒเธชเธดเธเธต เธ—เธฑเธเธ—เธดเธก (เธเธต)",
+    "user": "วิลาสินี ทับทิม (นี)",
     "position": "Accounting",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-006",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ เธงเธฑเธ เธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ วัน จ"
   },
   {
     "sn": 313,
     "date": "",
-    "user": "เธชเธธเธ เธฒเธ เนเธชเธเธเธฑเธเธ—เธฃเน ( เธชเนเธก )",
+    "user": "สุภาพ แสนจันทร์ ( ส้ม )",
     "position": "Accounting",
     "itemType": "Printer",
     "deviceSerial": "PT-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ เธงเธฑเธ เธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ วัน จ"
   },
   {
     "sn": 135,
     "date": "09/07/2569",
-    "user": "เธงเธดเธฅเธฒเธชเธดเธเธต เธ—เธฑเธเธ—เธดเธก (เธเธต)",
+    "user": "วิลาสินี ทับทิม (นี)",
     "position": "Accounting",
     "itemType": "Mornitor",
     "deviceSerial": "LG-004",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ เธงเธฑเธ เธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ วัน จ"
   },
   {
     "sn": 27,
     "date": "",
-    "user": "เธชเธธเธ เธฒเธ เนเธชเธเธเธฑเธเธ—เธฃเน ( เธชเนเธก )",
+    "user": "สุภาพ แสนจันทร์ ( ส้ม )",
     "position": "Accounting",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-005",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ เธงเธฑเธ เธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ วัน จ"
   },
   {
     "sn": 34,
     "date": "",
-    "user": "เธ“เธฑเธเธเธฒ เธเธณเธชเธญเธเธเธฑเธเธเน (เธเธดเนเธ)",
+    "user": "ณัฐชา คำสอนพันธ์ (กิ๊ก)",
     "position": "Procurement & Warehouse Officer",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-007",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 93,
     "date": "08/05/3111",
-    "user": "เธจเธดเธฃเธดเธเธฃ เน€เธเธเธฃเธกเธนเธฅ ( เธเธต )",
+    "user": "ศิริพร เพชรมูล ( บี )",
     "position": "Procurement & Warehouse Officer",
     "itemType": "Ipad",
     "deviceSerial": "iPad-020",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 71,
     "date": "08/05/3111",
-    "user": "เธจเธดเธฃเธดเธเธฃ เน€เธเธเธฃเธกเธนเธฅ ( เธเธต )",
+    "user": "ศิริพร เพชรมูล ( บี )",
     "position": "Procurement & Warehouse Officer",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-011",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 111,
     "date": "08/05/3111",
-    "user": "เธจเธดเธฃเธดเธเธฃ เน€เธเธเธฃเธกเธนเธฅ ( เธเธต )",
+    "user": "ศิริพร เพชรมูล ( บี )",
     "position": "Procurement & Warehouse Officer",
     "itemType": "Apple Pancill",
     "deviceSerial": "Pencil-018",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 26,
     "date": "",
-    "user": "เธจเธดเธฃเธดเธเธฃ เน€เธเธเธฃเธกเธนเธฅ ( เธเธต )",
+    "user": "ศิริพร เพชรมูล ( บี )",
     "position": "Procurement & Warehouse Officer",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-004",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 58,
     "date": "",
-    "user": "เธเธเธฑเธเธเธฒ เธเธธเธเธกเธตเธกเธฒเธ (เธเนเธญเธ)",
+    "user": "ธนัชชา บุญมีมาก (ป๊อป)",
     "position": "Content Creator",
     "itemType": "Macbook",
     "deviceSerial": "MacBookAir-028",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 325,
     "date": "10/07/2569",
-    "user": "เธงเธฃเธดเธชเธฃเธฒ เธชเธเธงเธเธงเธเธฉเน (เธเธดเธเธ”เธตเน)",
+    "user": "วริสรา สงวนวงษ์ (ซินดี้)",
     "position": "Content Creator",
     "itemType": "Macbook",
     "deviceSerial": "MacBook air-029  ",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 339,
     "date": "01/07/2569",
-    "user": "เธ“เธฑเธเธเธเธเธฒเธ”เธฒ เธ•เธฃเธตเธงเธดเธงเธฑเธ’เธเนเธเธธเธฅ (Mac)",
+    "user": "ณัฐฏชญาดา ตรีวิวัฒน์กุล (Mac)",
     "position": "Content Creator",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-043",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 231,
     "date": "23/05/2569",
-    "user": "เธเธเธฑเธเธเธฒ เธเธธเธเธกเธตเธกเธฒเธ (เธเนเธญเธ)",
+    "user": "ธนัชชา บุญมีมาก (ป๊อป)",
     "position": "Content Creator",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-MKT-005",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 214,
     "date": "",
-    "user": "เธงเธฃเธดเธชเธฃเธฒ เธชเธเธงเธเธงเธเธฉเน (เธเธดเธเธ”เธตเน)",
+    "user": "วริสรา สงวนวงษ์ (ซินดี้)",
     "position": "Tiktok Content Creator",
     "itemType": "Notebook Asus",
     "deviceSerial": "Asus-031",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 265,
     "date": "11/12/2568",
-    "user": "เธเธ เธฑเธชเธชเธฃ เธเธฒเธชเธงเธ ( เนเธเธงเน )",
+    "user": "นภัสสร นาสวน ( โบว์ )",
     "position": "Tiktok Content Creator",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-037",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 86,
     "date": "",
-    "user": "เธเธ เธฑเธชเธชเธฃ เธเธฒเธชเธงเธ ( เนเธเธงเน )",
+    "user": "นภัสสร นาสวน ( โบว์ )",
     "position": "Tiktok Content Creator",
     "itemType": "Ipad",
     "deviceSerial": "iPad-013",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 87,
     "date": "18/07/2569",
-    "user": "เธเธธเธฉเธเธฃ เธเธฑเธงเธชเธงเธฃเธฃเธเน",
+    "user": "บุษกร บัวสวรรค์",
     "position": "Tiktok Content Creator",
     "itemType": "Ipad",
     "deviceSerial": "iPad-014",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 282,
     "date": "15/07/2569",
-    "user": "เธเธ“เธดเธจเธญเธฃ เธเธธเธเธเธนเธเธธเธ•เธฃ",
+    "user": "ปณิศอร บุญจูบุตร",
     "position": "Tiktok Content Creator",
     "itemType": "Ipad",
     "deviceSerial": "iPad-021",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 53,
     "date": "",
-    "user": "เธ—เธตเธก",
+    "user": "ทีม",
     "position": "Tiktok Content Creator",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-013",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 62,
     "date": "",
-    "user": "เธ—เธตเธก",
+    "user": "ทีม",
     "position": "Tiktok Content Creator",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 66,
     "date": "",
-    "user": "เธ—เธตเธก",
+    "user": "ทีม",
     "position": "Tiktok Content Creator",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-006",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 72,
     "date": "",
-    "user": "เธ—เธตเธก",
+    "user": "ทีม",
     "position": "Tiktok Content Creator",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-012",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 357,
     "date": "",
-    "user": "เธ—เธตเธก",
+    "user": "ทีม",
     "position": "Tiktok Content Creator",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-014",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 365,
     "date": "30/06/2569",
-    "user": "เธ—เธตเธก",
+    "user": "ทีม",
     "position": "Tiktok Content Creator",
     "itemType": "IPhone",
     "deviceSerial": "iphone-015",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 20,
     "date": "",
-    "user": "เธเธ เธฑเธชเธชเธฃ เธเธฒเธชเธงเธ ( เนเธเธงเน )",
+    "user": "นภัสสร นาสวน ( โบว์ )",
     "position": "Tiktok Content Creator",
     "itemType": "IMac",
     "deviceSerial": "MC-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 326,
     "date": "",
-    "user": "เธเธฑเธขเธเธฑเธ เธเธฑเธขเธงเธฑเธ’เธเน (เธกเธฒเธฃเนเธ)",
+    "user": "ชัยธัช ชัยวัฒน์ (มาร์ค)",
     "position": "Graphic Designer",
     "itemType": "Computer (Pc)",
     "deviceSerial": "AS-003",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 305,
     "date": "08/06/2569",
-    "user": "เธฃเธฒเธกเธเธดเธ•เธ•เธด เธเธดเธเธเธฐเน€เธเธดเธ”เนเธเธ(เน€เธเธเธเน)",
+    "user": "รามจิตติ ชินนะเกิดโชค(เบนซ์)",
     "position": "Graphic Designer",
     "itemType": "Computer (Pc), Mornitor",
     "deviceSerial": "PC LG-004 ",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 294,
     "date": "08/06/2569",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ)",
+    "user": "อาทิตยา มุมทอง (ขมิ้น)",
     "position": "Graphic Designer",
     "itemType": "IMac",
     "deviceSerial": "MC-008",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 319,
     "date": "19/05/2569",
-    "user": "เธเธดเธเธเธฒเธเธฃ เธเธญเธ—เธญเธ(เธเธตเน€เธเนเธ)",
+    "user": "พิชชาพร คอทอง(พีเจ้น)",
     "position": "Graphic Designer",
     "itemType": "IMac",
     "deviceSerial": "MC-009",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 218,
     "date": "08/06/2569",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ)",
+    "user": "อาทิตยา มุมทอง (ขมิ้น)",
     "position": "Graphic Designer",
     "itemType": "Mornitor",
-    "deviceSerial": "LG-003 (เธเธญ)",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "deviceSerial": "LG-003 (จอ)",
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 303,
     "date": "08/06/2569",
-    "user": "เธฃเธฒเธกเธเธดเธ•เธ•เธด เธเธดเธเธเธฐเน€เธเธดเธ”เนเธเธ(เน€เธเธเธเน)",
+    "user": "รามจิตติ ชินนะเกิดโชค(เบนซ์)",
     "position": "Graphic Designer",
     "itemType": "Mornitor",
     "deviceSerial": "AS-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 304,
     "date": "",
-    "user": "เธเธดเธเธเธฒเธเธฃ เธเธญเธ—เธญเธ(เธเธตเน€เธเนเธ)",
+    "user": "พิชชาพร คอทอง(พีเจ้น)",
     "position": "Graphic Designer",
     "itemType": "Mornitor",
     "deviceSerial": "AS-003",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 318,
     "date": "",
-    "user": "เธเธฑเธขเธเธฑเธ เธเธฑเธขเธงเธฑเธ’เธเน (เธกเธฒเธฃเนเธ)",
+    "user": "ชัยธัช ชัยวัฒน์ (มาร์ค)",
     "position": "Graphic Designer",
     "itemType": "Mornitor",
     "deviceSerial": "LG-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 234,
     "date": "08/06/2569",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ)",
+    "user": "อาทิตยา มุมทอง (ขมิ้น)",
     "position": "Graphic Designer",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-Meeting-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 301,
     "date": "",
-    "user": "เธเธดเธเธเธฒเธเธฃ เธเธญเธ—เธญเธ(เธเธตเน€เธเนเธ)",
+    "user": "พิชชาพร คอทอง(พีเจ้น)",
     "position": "Graphic Designer",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Meeting-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 238,
     "date": "08/06/2569",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ)",
+    "user": "อาทิตยา มุมทอง (ขมิ้น)",
     "position": "Graphic Designer",
     "itemType": "External HDD",
     "deviceSerial": "ETN-002  WD My PassPort 4TB",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 247,
     "date": "",
-    "user": "เธเธดเธเธเธฒเธเธฃ เธเธญเธ—เธญเธ(เธเธตเน€เธเนเธ)",
+    "user": "พิชชาพร คอทอง(พีเจ้น)",
     "position": "Graphic Designer",
     "itemType": "Mouse",
     "deviceSerial": "MOS-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 249,
     "date": "08/06/2569",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ)",
+    "user": "อาทิตยา มุมทอง (ขมิ้น)",
     "position": "Graphic Designer",
     "itemType": "Mouse",
     "deviceSerial": "MOS-003",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 250,
     "date": "08/06/2569",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ)",
+    "user": "อาทิตยา มุมทอง (ขมิ้น)",
     "position": "Graphic Designer",
     "itemType": "Keyboard",
     "deviceSerial": "KBD-004",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 260,
     "date": "01/06/2569",
-    "user": "เธเธฑเธขเธเธฑเธ เธเธฑเธขเธงเธฑเธ’เธเน (เธกเธฒเธฃเนเธ)",
+    "user": "ชัยธัช ชัยวัฒน์ (มาร์ค)",
     "position": "Graphic Designer",
     "itemType": "Keyboard",
     "deviceSerial": "KBD-006",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 302,
     "date": "08/06/2569",
-    "user": "เธฃเธฒเธกเธเธดเธ•เธ•เธด เธเธดเธเธเธฐเน€เธเธดเธ”เนเธเธ(เน€เธเธเธเน)",
+    "user": "รามจิตติ ชินนะเกิดโชค(เบนซ์)",
     "position": "Graphic Designer",
     "itemType": "Hub Lan",
-    "deviceSerial": "เนเธกเนเธกเธตเธซเธกเธฒเธขเน€เธฅเธ",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "deviceSerial": "ไม่มีหมายเลข",
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 330,
     "date": "20/05/2569",
-    "user": "เธเธดเธเธเธฒเธเธฃ เธเธญเธ—เธญเธ(เธเธตเน€เธเนเธ)",
+    "user": "พิชชาพร คอทอง(พีเจ้น)",
     "position": "Graphic Designer",
     "itemType": "Hub Lan",
     "deviceSerial": "USB-C TO LAN ",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 229,
     "date": "",
-    "user": "เธ—เธตเธก admin",
+    "user": "ทีม admin",
     "position": "Admin",
     "itemType": "Computer (Pc)",
-    "deviceSerial": "MIS-002 เธกเธดเธเธดpc",
-    "status": "เนเธเนเธเธฒเธ",
+    "deviceSerial": "MIS-002 มินิpc",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 36,
     "date": "",
-    "user": "เธเธฒเธเธ•เนเธ‘เธดเธ•เธฒ เธเธตเธฃเธฐเธเธดเธเธนเธฅเธขเน ( เธญเธดเธ )",
+    "user": "กานต์ฑิตา ธีระพิบูลย์ ( อิง )",
     "position": "Admin",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-011",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 37,
     "date": "",
-    "user": "เธจเธธเธ เธคเธเธฉเน เธ เธฒเธขเนเธเธชเธ (เธเธฃเธดเธก)",
+    "user": "ศุภฤกษ์ ภายใธสง (คริม)",
     "position": "Admin",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-017",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธซเธฒ lark เนเธกเนเน€เธเธญ เธเธฃเธฑเธ"
+    "status": "ใช้งาน",
+    "notes": "หา lark ไม่เจอ ครับ"
   },
   {
     "sn": 76,
     "date": "30/06/2569",
-    "user": "เธจเธธเธ เธคเธเธฉเน เธ เธฒเธขเนเธเธชเธ (เธ”เธฃเธตเธก)",
+    "user": "ศุภฤกษ์ ภายไธสง (ดรีม)",
     "position": "Admin",
     "itemType": "Ipad",
     "deviceSerial": "iPad-003",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 358,
     "date": "",
-    "user": "เธ—เธฑเธจเธงเธงเธฃเธ“ เธงเธฑเธฅเธขเนเธ”เธฒเธง (เนเธเธ•เธญเธ)",
+    "user": "ทัศววรณ วัลย์ดาว (ใบตอง)",
     "position": "Admin",
     "itemType": "Ipad",
     "deviceSerial": "iPad-019",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 359,
     "date": "",
-    "user": "เธ—เธฑเธจเธงเธงเธฃเธ“ เธงเธฑเธฅเธขเนเธ”เธฒเธง (เนเธเธ•เธญเธ)",
+    "user": "ทัศววรณ วัลย์ดาว (ใบตอง)",
     "position": "Admin",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-004",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 360,
     "date": "",
-    "user": "เธเธฒเธเธ•เนเธ‘เธดเธ•เธฒ เธเธตเธฃเธฐเธเธดเธเธนเธฅเธขเน ( เธญเธดเธ )",
+    "user": "กานต์ฑิตา ธีระพิบูลย์ ( อิง )",
     "position": "Admin",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-009",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 28,
     "date": "",
-    "user": "เธเธฑเธเธเธกเธฒ เธชเธกเธเธฑเธ•เธดเธเธณเนเธฃ (เน€เธญเธดเธ)",
+    "user": "ปัญจมา สมบัติกำไร (เอิน)",
     "position": "Admin",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-014",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 47,
     "date": "",
-    "user": "เธ—เธฑเธจเธงเธงเธฃเธ“ เธงเธฑเธฅเธขเนเธ”เธฒเธง (เนเธเธ•เธญเธ)",
+    "user": "ทัศววรณ วัลย์ดาว (ใบตอง)",
     "position": "Admin",
     "itemType": "Notebook Acer, Iphone",
     "deviceSerial": "ACER-015",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 56,
     "date": "14/07/2569",
-    "user": "เน€เธเธ•เธฃเธเธฃเธตเธเธฒ เธ—เธฑเธ”เธจเธฃเธต",
+    "user": "เนตรปรีญา ทัดศรี",
     "position": "Receptionist",
     "itemType": "Macbook",
     "deviceSerial": "MacBookAir-009",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 91,
@@ -668,8 +668,8 @@ const initialAssetsData = [
     "position": "Receptionist",
     "itemType": "Ipad",
     "deviceSerial": "iPad-018",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 67,
@@ -678,8 +678,8 @@ const initialAssetsData = [
     "position": "Receptionist",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-007",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 51,
@@ -688,8 +688,8 @@ const initialAssetsData = [
     "position": "Receptionist",
     "itemType": "IMac",
     "deviceSerial": "MC-003",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 52,
@@ -698,757 +698,757 @@ const initialAssetsData = [
     "position": "Receptionist",
     "itemType": "IMac",
     "deviceSerial": "MC-004",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 334,
     "date": "16/07/2569",
-    "user": "เน€เธเธ•เธฃเธเธฃเธตเธเธฒ เธ—เธฑเธ”เธจเธฃเธต",
+    "user": "เนตรปรีญา ทัดศรี",
     "position": "Receptionist",
     "itemType": "Mouse",
     "deviceSerial": "MC-008",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 35,
     "date": "",
-    "user": "เธงเธดเธเธฒเธเธ”เธฒ เธ—เธธเธกเธกเธเธ•เธฃเธต ( เนเธเนเธงเนเธซเธงเนเธง )",
+    "user": "วิกานดา ทุมมนตรี ( แป๋วแหว๋ว )",
     "position": "Payroll Officer",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-008",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 44,
     "date": "10/07/2569",
-    "user": "เธญเธเธดเธฃเธธเธ•เธ•เน เธเธฒเธเนเธชเธเธเธฒ",
+    "user": "อนิรุตต์ พานแสนซา",
     "position": "Live Streamer",
     "itemType": "Ipad",
     "deviceSerial": "iPad-016",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 85,
     "date": "26/06/2569",
-    "user": "เธเธเธฑเธเธงเธฅเธฑเธเธเธเน เธจเธฃเธตเธญเธญเธ (เธญเธฒเนเธ)",
+    "user": "ธนันวลัญชน์ ศรีออน (อาโน)",
     "position": "Live Streamer",
     "itemType": "Ipad",
     "deviceSerial": "iPad-012",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 314,
     "date": "",
-    "user": "เธเธเธดเธชเธฃเธฒ เธ•เธฃเธตเธชเธฑเธ•เธขเธเธธเธฅ (เธญเธธเธเธญเธดเธ)",
+    "user": "ชนิสรา ตรีสัตยกุล (อุบอิบ)",
     "position": "Live Streamer",
     "itemType": "Ipad",
     "deviceSerial": "\niPad 017\n",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 61,
     "date": "",
-    "user": "เธเธเธดเธชเธฃเธฒ เธ•เธฃเธตเธชเธฑเธ•เธขเธเธธเธฅ  (เธญเธธเธเธญเธดเธ)",
+    "user": "ชนิสรา ตรีสัตยกุล  (อุบอิบ)",
     "position": "Live Streamer",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 63,
     "date": "26/06/2569",
-    "user": "เธเธเธฑเธเธงเธฅเธฑเธเธเธเน เธจเธฃเธตเธญเธญเธ (เธญเธฒเนเธ)",
+    "user": "ธนันวลัญชน์ ศรีออน (อาโน)",
     "position": "Live Streamer",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-003",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 285,
     "date": "",
-    "user": "เธเธเธดเธชเธฃเธฒ เธ•เธฃเธตเธชเธฑเธ•เธขเธเธธเธฅ  (เธญเธธเธเธญเธดเธ)",
+    "user": "ชนิสรา ตรีสัตยกุล  (อุบอิบ)",
     "position": "Live Streamer",
     "itemType": "Adapter Apple",
     "deviceSerial": "ADT-007",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 287,
     "date": "",
-    "user": "เธเธเธดเธชเธฃเธฒ เธ•เธฃเธตเธชเธฑเธ•เธขเธเธธเธฅ  (เธญเธธเธเธญเธดเธ)",
+    "user": "ชนิสรา ตรีสัตยกุล  (อุบอิบ)",
     "position": "Live Streamer",
     "itemType": "Cable Apple",
     "deviceSerial": "-",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 40,
     "date": "",
-    "user": "เธญเธชเธกเธฒเธ เธฃเธ“เน เธขเนเธฒเธเน€เธ”เธดเธก ( เน€เธเธก )",
+    "user": "อสมาภรณ์ ย่านเดิม ( เนม )",
     "position": "Personal Assistant to CEO",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-020",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 43,
     "date": "08/01/3111",
-    "user": "เธชเธฃเธธเธ”เธ•เธฒ เธเนเธญเธเธฃเธดเนเธ (เธเธฒเธ)",
+    "user": "สรุดตา ป๋อพริ้ง (ปาน)",
     "position": "Personal Assistant to CEO",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-023",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 57,
     "date": "16/07/2569",
-    "user": "เน€เธเธฅเธดเธเธเธฒเธเน  เธจเธดเธฃเธฐเนเธกเธ•เธฃเธตเธเธฑเธ•เธฃ (เน€เธเธฃเธดเธ)",
+    "user": "เนลินญาน์  ศิระไมตรีฉัตร (เนริน)",
     "position": "Personal Assistant to CEO",
     "itemType": "Macbook",
     "deviceSerial": "MacBookAir-027",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 7,
     "date": "",
-    "user": "เธญเธชเธกเธฒเธ เธฃเธ“เน เธขเนเธฒเธเน€เธ”เธดเธก ( เน€เธเธก )",
+    "user": "อสมาภรณ์ ย่านเดิม ( เนม )",
     "position": "Personal Assistant to CEO",
     "itemType": "IPhone",
     "deviceSerial": "iPhone-010",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 1,
     "date": "",
-    "user": "เธชเธธเธ”เธเธดเธ”เธฒ เน€เธเนเธฒเธซเธญเธก (เธ•เนเธฒเธข) (KT)",
+    "user": "สุดธิดา เผ่าหอม (ต่าย) (KT)",
     "position": "HR",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 41,
     "date": "",
-    "user": "เธเธคเธฉเธ“เธฒ เธฅเธณเน€เธเนเธ ( เธเธฅเธญเธข )",
+    "user": "กฤษณา ลำเพ็ง ( พลอย )",
     "position": "HR",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-038",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 42,
     "date": "",
-    "user": "เธเธฒเธฃเธตเธฃเธฑเธ•เธเน เธเธฑเธเธ—เธญเธ ( เธญเธญเธข )",
+    "user": "นารีรัตน์ ขันทอง ( ออย )",
     "position": "HR",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-022",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 74,
     "date": "",
-    "user": "เธเธฒเธฃเธตเธฃเธฑเธ•เธเน เธเธฑเธเธ—เธญเธ ( เธญเธญเธข )",
+    "user": "นารีรัตน์ ขันทอง ( ออย )",
     "position": "HR",
     "itemType": "Ipad",
     "deviceSerial": "iPad-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 88,
     "date": "10/07/2569",
-    "user": "เธจเธฃเธฑเธเธเธฒ เธเธฃเธฃเธกเน€เธเธตเธขเธกเธ เธฑเธเธ”เธต ( เนเธเธ )",
+    "user": "ศรัญญา ธรรมเนียมภักดี ( แนน )",
     "position": "HR",
     "itemType": "Ipad",
     "deviceSerial": "iPad-015",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 320,
     "date": "17/06/2569",
-    "user": "เธเธฒเธฃเธตเธฃเธฑเธ•เธเน เธเธฑเธเธ—เธญเธ ( เธญเธญเธข )",
+    "user": "นารีรัตน์ ขันทอง ( ออย )",
     "position": "HR",
     "itemType": "Ipad",
     "deviceSerial": "iPad-005",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 48,
     "date": "",
-    "user": "เธจเธฃเธฑเธเธเธฒ เธเธฃเธฃเธกเน€เธเธตเธขเธกเธ เธฑเธเธ”เธต ( เนเธเธ )",
+    "user": "ศรัญญา ธรรมเนียมภักดี ( แนน )",
     "position": "HR",
     "itemType": "Notebook HP",
     "deviceSerial": "HP-016",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 49,
     "date": "",
-    "user": "เธ“เธฑเธเธเธฒเธเธ•เน เธเธดเธ”เธเธฃเธฒเธเธเน (เน€เธ•เธขเธซเธญเธก)",
+    "user": "ณัฐกานต์ ชิดปรางค์ (เตยหอม)",
     "position": "Photographer",
     "itemType": "IMac",
     "deviceSerial": "MC-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 368,
     "date": "",
-    "user": "เธงเธดเธเธดเธ•เธฃเธฒเธ เธฃเธ“เน เธเธถเนเธเธเธฑเธเธ”เธธเธก (เธเธฅเธญเธข)",
+    "user": "วิจิตราภรณ์ พึ่งจันดุม (พลอย)",
     "position": "Photographer",
     "itemType": "IMac",
     "deviceSerial": "MC-010",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 242,
     "date": "16/07/2569",
-    "user": "เธ“เธฑเธเธเธฒเธเธ•เน เธเธดเธ”เธเธฃเธฒเธเธเน (เน€เธ•เธขเธซเธญเธก)",
+    "user": "ณัฐกานต์ ชิดปรางค์ (เตยหอม)",
     "position": "Photographer",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-MKT-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 75,
     "date": "",
-    "user": "เธชเธฃเธงเธดเธเธเน เธชเธดเธ—เธเธด ( เธเธญเธก )",
+    "user": "สรวิชญ์ สิทธิ ( บอม )",
     "position": "Sale",
     "itemType": "Ipad",
     "deviceSerial": "iPad-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 81,
     "date": "",
-    "user": "เธญเธฒเธ—เธดเธ•เธขเน เธชเธกเธเธฒเธฃ ( เน€เธเนเธฒเธเธฒเธข )",
+    "user": "อาทิตย์ สมการ ( เจ้านาย )",
     "position": "Sale",
     "itemType": "Ipad",
     "deviceSerial": "iPad-008",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 82,
     "date": "",
-    "user": "เธชเธธเธเธ—เธฃเธต เธเธธเธเธเธฒเธ ( เธ•เธฒเธฅ )",
+    "user": "สุนทรี บุญนาค ( ตาล )",
     "position": "Sale",
     "itemType": "Ipad",
     "deviceSerial": "iPad-009",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 95,
     "date": "",
-    "user": "เธชเธธเธเธ—เธฃเธต เธเธธเธเธเธฒเธ ( เธ•เธฒเธฅ )",
+    "user": "สุนทรี บุญนาค ( ตาล )",
     "position": "Sale",
     "itemType": "Apple Pancill",
     "deviceSerial": "Pencil-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 100,
     "date": "",
-    "user": "เธชเธฃเธงเธดเธเธเน เธชเธดเธ—เธเธด ( เธเธญเธก )",
+    "user": "สรวิชญ์ สิทธิ ( บอม )",
     "position": "Sale",
     "itemType": "Apple Pancill",
     "deviceSerial": "Pencil-007",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 6,
     "date": "",
-    "user": "เธเธคเธ•เธดเธ เธงเธดเธเธฑเธขเธ”เธดเธฉเธ (เธญเนเธ)crm",
+    "user": "กฤติน วิชัยดิษฐ (อ้น)crm",
     "position": "CRM Officer",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-019",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 46,
     "date": "",
-    "user": "เธเธคเธ•เธดเธเธฒ เธ—เธฒเธฃเธฐเธเธฑเธเธเน (เนเธเธเธเธตเน) crm",
+    "user": "กฤติญา ทาระพันธ์ (แจนนี่) crm",
     "position": "CRM Officer",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-026",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 321,
     "date": "18/05/2569",
-    "user": "เธเธเธฑเธเธเธฃ เธญเธดเธเธเธณ (เนเธญเธเน)crm",
+    "user": "ชนันพร อินขำ (ไอซ์)crm",
     "position": "CRM Officer",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-003",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 361,
     "date": "",
-    "user": "เธเธคเธ•เธดเธเธฒ เธ—เธฒเธฃเธฐเธเธฑเธเธเน (เนเธเธเธเธตเน) crm",
+    "user": "กฤติญา ทาระพันธ์ (แจนนี่) crm",
     "position": "CRM Officer",
     "itemType": "Samsung",
     "deviceSerial": "Samsung Galaxy-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 307,
     "date": "27/05/2569",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Computer (Pc)",
     "deviceSerial": "AS-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 309,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Computer (Pc)",
     "deviceSerial": "LG-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 311,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Computer (Pc)",
     "deviceSerial": "MSI-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 350,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Notebook Asus",
     "deviceSerial": "Asus-024",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 223,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Mornitor",
     "deviceSerial": "Asus-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 243,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-003",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 244,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-004",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 245,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-005",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 251,
     "date": "28/05/2569",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Keyboard",
     "deviceSerial": "KBD-002",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 262,
     "date": "",
-    "user": "เธเธฑเธ“เธ“เธงเธดเธเธเน เธ—เธญเธเธงเธฑเธ (เธเธญเธข)",
+    "user": "ปัณณวิชญ์ ทองวัน (บอย)",
     "position": "Data Analysis",
     "itemType": "Keyboard",
     "deviceSerial": "-",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 337,
     "date": "04/06/2569",
-    "user": "เธญเธ เธดเธชเธดเธ—เธเธดเน เธเธฃเธเธฑเธเธ—เธฃเธฒเธงเธฑเธ’เธเน (เธเธธเนเธข)",
+    "user": "อภิสิทธิ์ พรจันทราวัฒน์ (จุ้ย)",
     "position": "Video Content Tiktok",
     "itemType": "IMac",
     "deviceSerial": "MC-005",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 310,
     "date": "",
-    "user": "เธเธเธจเธเธฃ เธเนเธญเธเนเธช (เธเธญเธ)",
+    "user": "พงศกร ผ่องใส (ปอน)",
     "position": "Live Producer",
     "itemType": "Computer (Pc)",
     "deviceSerial": "LG-002",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 266,
     "date": "09/06/2569",
-    "user": "เธเธดเธชเธดเธฉเธเน เธกเธเธเธฅเธชเธกเธเธฑเธ•เธดเธจเธดเธฃเธด (เน€เธเธกเธชเน)",
+    "user": "พิสิษฐ์ มงคลสมบัติศิริ (เจมส์)",
     "position": "Live Producer",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-021",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 280,
     "date": "",
-    "user": "เธเธเธจเธเธฃ เธเนเธญเธเนเธช (เธเธญเธ)",
+    "user": "พงศกร ผ่องใส (ปอน)",
     "position": "Live Producer",
     "itemType": "Mornitor",
     "deviceSerial": "MSI-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 367,
     "date": "",
-    "user": "เธเธฒเธขเธเธเธจเธเธฃ เธเนเธญเธเนเธช",
+    "user": "นายพงศกร ผ่องใส",
     "position": "Live Producer",
     "itemType": "Mornitor",
     "deviceSerial": "LG-006",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 30,
     "date": "01/06/2569",
-    "user": "เน€เธขเนเธเธคเธ”เธต เธกเธฒเธฃเธฐเธงเธฑเธ (เธเนเธฒเธข)",
+    "user": "เย็นฤดี มาระวัง (ฝ้าย)",
     "position": "Live Producer",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-013",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 31,
     "date": "05/05/2569",
-    "user": "เธเธเธจเธเธฃ เธเนเธญเธเนเธช (เธเธญเธ)",
+    "user": "พงศกร ผ่องใส (ปอน)",
     "position": "Live Producer",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-039",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 343,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "usb-a to c",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 240,
     "date": "",
-    "user": "เธเธเธจเธเธฃ เธเนเธญเธเนเธช (เธเธญเธ)",
+    "user": "พงศกร ผ่องใส (ปอน)",
     "position": "Live Producer",
     "itemType": "Capture Card",
     "deviceSerial": "VCS-LIVE-0001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 253,
     "date": "",
-    "user": "เธเธเธจเธเธฃ เธเนเธญเธเนเธช (เธเธญเธ)",
+    "user": "พงศกร ผ่องใส (ปอน)",
     "position": "Live Producer",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-007",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 342,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
     "itemType": "Cable HDMI",
     "deviceSerial": "hdmi Canon",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 315,
     "date": "",
-    "user": "เธเธเธจเธเธฃ เธเนเธญเธเนเธช (เธเธญเธ)",
+    "user": "พงศกร ผ่องใส (ปอน)",
     "position": "Live Producer",
     "itemType": "Reez Live",
-    "deviceSerial": "เนเธกเนเธกเธตเธซเธกเธฒเธขเน€เธฅเธ เธญเธธเธเธเธฃเธ“เน",
-    "status": "เนเธเนเธเธฒเธ",
+    "deviceSerial": "ไม่มีหมายเลข อุปกรณ์",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 344,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
-    "itemType": "เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน",
-    "deviceSerial": "เธชเธฒเธข aux branding",
-    "status": "เนเธเนเธเธฒเธ",
+    "itemType": "อุปกรณ์เสริม/อื่นๆ",
+    "deviceSerial": "สาย aux branding",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 345,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
-    "itemType": "เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน",
-    "deviceSerial": "hdmi เธ•เนเธญเธเธญเธกเธญเธเธดเน€เธ•เธญเธฃเนเนเธฅเธเน",
-    "status": "เนเธเนเธเธฒเธ",
+    "itemType": "อุปกรณ์เสริม/อื่นๆ",
+    "deviceSerial": "hdmi ต่อจอมอนิเตอร์ไลฟ์",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 346,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
-    "itemType": "เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน",
+    "itemType": "อุปกรณ์เสริม/อื่นๆ",
     "deviceSerial": "hdmi it-002",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 347,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
-    "itemType": "เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน",
+    "itemType": "อุปกรณ์เสริม/อื่นๆ",
     "deviceSerial": "adc-006",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 348,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
-    "itemType": "เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน",
-    "deviceSerial": "เนเธกเธเนเธฅเนเธญเธข dji-branding",
-    "status": "เนเธเนเธเธฒเธ",
+    "itemType": "อุปกรณ์เสริม/อื่นๆ",
+    "deviceSerial": "ไมค์ล่อย dji-branding",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 349,
     "date": "",
-    "user": "เธ—เธตเธก live Producer",
+    "user": "ทีม live Producer",
     "position": "Live Producer",
-    "itemType": "เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน",
-    "deviceSerial": "เนเธกเธเนเธฅเนเธญเธข dji-mkt",
-    "status": "เนเธเนเธเธฒเธ",
+    "itemType": "อุปกรณ์เสริม/อื่นๆ",
+    "deviceSerial": "ไมค์ล่อย dji-mkt",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 235,
     "date": "",
-    "user": "เธซเนเธญเธเธเธฃเธฐเธเธธเธก เธเนเธฒเธ 18 เธเธฑเนเธ 4",
+    "user": "ห้องประชุม บ้าน 18 ชั้น 4",
     "position": "Meeting Room",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-MKT-004",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 54,
     "date": "",
-    "user": "เธญเธ เธดเธเธเธฒ เธจเธฃเธตเธ•เธฐเธงเธฑเธ ( เธเธญเธชเธ•เนเธ )",
+    "user": "อภิญญา ศรีตะวัน ( บอสต้น )",
     "position": "Boss",
     "itemType": "IMac",
     "deviceSerial": "MC-006",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 55,
     "date": "",
-    "user": "เธญเธ เธดเธเธเธฒ เธจเธฃเธตเธ•เธฐเธงเธฑเธ ( เธเธญเธชเธ•เนเธ )",
+    "user": "อภิญญา ศรีตะวัน ( บอสต้น )",
     "position": "Boss",
     "itemType": "IMac",
     "deviceSerial": "MC-007",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 232,
     "date": "",
-    "user": "เธญเธ เธดเธเธเธฒ เธจเธฃเธตเธ•เธฐเธงเธฑเธ ( เธเธญเธชเธ•เนเธ )",
+    "user": "อภิญญา ศรีตะวัน ( บอสต้น )",
     "position": "Boss",
     "itemType": "Hub USB-TypeC",
-    "deviceSerial": "Fernclinic-เธบBoss-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "deviceSerial": "Fernclinic-ฺBoss-001",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 241,
     "date": "",
-    "user": "เธญเธ เธดเธเธเธฒ เธจเธฃเธตเธ•เธฐเธงเธฑเธ ( เธเธญเธชเธ•เนเธ )",
+    "user": "อภิญญา ศรีตะวัน ( บอสต้น )",
     "position": "Boss",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 233,
     "date": "",
-    "user": "เธซเนเธญเธ Studio เธเนเธฒเธ 18 เธเธฑเนเธ 1",
+    "user": "ห้อง Studio บ้าน 18 ชั้น 1",
     "position": "Studio",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-Studio-001",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 277,
     "date": "26/12/2568",
-    "user": "เธเธเธ—เนเธชเธดเธฃเธต เธเธฅเธทเนเธกเธ—เธฃเธฑเธเธขเน (เนเธเธเธฅเธน)",
+    "user": "นนท์สิรี ปลื้มทรัพย์ (ใบพลู)",
     "position": "Data Entry",
     "itemType": "Notebook Asus",
     "deviceSerial": "Asus-041",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 29,
     "date": "",
-    "user": "เธเธ เธฒเธงเธต เธเธฑเธเธ—เธฃเนเธเธงเธฒเธ (เธเธฃเธตเธก)",
+    "user": "ปภาวี จันทร์ขวาง (ครีม)",
     "position": "Data Entry",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-012",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 125,
     "date": "16/06/2569",
-    "user": "เธญเธฒเธฃเธขเธฒ เธเธเธเธฑเธเธเธธเนเธเธฒเธ“เธดเธเธขเน (เธซเธเธธเธเธซเธเธดเธ)",
+    "user": "อารยา ธนพันธุ์พาณิชย์ (หนุงหนิง)",
     "position": "Sale Manager",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-032",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 363,
     "date": "19/01/2569",
-    "user": "เธ“เธฑเธเธ“เธดเธเธฒ เธจเธฃเธตเธงเธฃเธญเธฃเธฃเธ–เธดเธเธธเธฅ (เนเธเธ•เธญเธ)",
+    "user": "ณัฐณิชา ศรีวรอรรถิกุล (ใบตอง)",
     "position": "KOL & Event Marketing",
     "itemType": "Iphone",
     "deviceSerial": "IPhone -005",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 283,
     "date": "19/01/2569",
-    "user": "เธ“เธฑเธเธ“เธดเธเธฒ เธจเธฃเธตเธงเธฃเธญเธฃเธฃเธ–เธดเธเธธเธฅ (เนเธเธ•เธญเธ)",
+    "user": "ณัฐณิชา ศรีวรอรรถิกุล (ใบตอง)",
     "position": "KOL & Event Marketing",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "Lenovo-001",
-    "status": "เนเธเนเธเธฒเธ",
-    "notes": "เธฃเธญเธ•เธฃเธงเธเธชเธญเธ"
+    "status": "ใช้งาน",
+    "notes": "รอตรวจสอบ"
   },
   {
     "sn": 45,
     "date": "",
-    "user": "เธเธฑเธ—เธเธเธฑเธเธ—เน เธเธฒเน€เธ”เธตเธขเธฃเน  (เธเธฒเน€เธ”เธตเธขเธฃเน )",
+    "user": "พัทธนันท์ นาเดียร์  (นาเดียร์ )",
     "position": "OR",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-025",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 60,
     "date": "",
-    "user": "เธซเธกเธญเธเธฒเธ",
+    "user": "หมอฟาง",
     "position": "CEO",
     "itemType": "Macbook",
     "deviceSerial": "MacBookAir-030",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": "     "
   },
   {
     "sn": 215,
     "date": "",
-    "user": "เธซเธกเธญเธเธฒเธ",
+    "user": "หมอฟาง",
     "position": "CEO",
     "itemType": "Macbook",
     "deviceSerial": "MAcbook Pro-034",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 269,
     "date": "",
-    "user": "เธซเธกเธญเธเธฒเธ",
+    "user": "หมอฟาง",
     "position": "CEO",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-MKT-005",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
@@ -1458,7 +1458,7 @@ const initialAssetsData = [
     "position": "Center Storage",
     "itemType": "External HDD",
     "deviceSerial": "Segate Station 10 TB",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
@@ -1468,7 +1468,7 @@ const initialAssetsData = [
     "position": "Center Storage",
     "itemType": "External HDD",
     "deviceSerial": "ETN-001  WD My Book 4TB",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
@@ -1478,7 +1478,7 @@ const initialAssetsData = [
     "position": "TV Center",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-006",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
@@ -1488,7 +1488,7 @@ const initialAssetsData = [
     "position": "TV Center",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-008",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
@@ -1498,7 +1498,7 @@ const initialAssetsData = [
     "position": "TV Center",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-009",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
@@ -1508,147 +1508,147 @@ const initialAssetsData = [
     "position": "TV Center",
     "itemType": "Cable HDMI",
     "deviceSerial": "Fernclinic-IT-010",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 340,
     "date": "06/07/2569",
-    "user": "เธเธฒเธขเธชเธธเธ—เธเธดเธฃเธเธเน เน€เธเธฃเธทเธญเนเธเธเธนเธฅเธขเนเธเธธเธฅ ( เน€เธเธเธเน )",
+    "user": "นายสุทธิรงค์ เครือไพบูลย์กุล ( เบนซ์ )",
     "position": "Senior Digital Marketing",
     "itemType": "Notebook Lenovo",
     "deviceSerial": "LENOVO-042",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 369,
     "date": "10/07/2569",
-    "user": "เธชเธธเธฃเธงเธดเธเธเน เนเธเธเธดเนเธ•เธฒเธ (เนเธกเธเนเน€เธกเนเธฅเธ”เธตเน)",
+    "user": "สุรวิชญ์ โพธิ์ตาก (ไมค์เมโลดี้)",
     "position": "Operation Department",
     "itemType": "Macbook",
     "deviceSerial": "Macbook-044",
-    "status": "เนเธเนเธเธฒเธ",
+    "status": "ใช้งาน",
     "notes": ""
   },
   {
     "sn": 308,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Computer (Pc)",
     "deviceSerial": "LG-003",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 264,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-036",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 316,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Notebook Asus",
     "deviceSerial": "ASUS-018",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 328,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Macbook",
     "deviceSerial": "MacBook air-035",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 50,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Ipad",
     "deviceSerial": "iPad-004",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 80,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Ipad",
     "deviceSerial": "iPad-007",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 84,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Ipad",
     "deviceSerial": "iPad-011",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 131,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Ipad",
     "deviceSerial": "iPad-006",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 117,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Printer",
     "deviceSerial": "PT-001",
-    "status": "เธฃเธญเธเนเธญเธก",
+    "status": "รอซ่อม",
     "notes": ""
   },
   {
     "sn": 230,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Hub USB-TypeC",
     "deviceSerial": "Fernclinic-MKT-003",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 335,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Mouse",
     "deviceSerial": "MC-009",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   },
   {
     "sn": 261,
     "date": "",
-    "user": "เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ",
+    "user": "ส่วนกลาง/ไม่ระบุ",
     "position": "-",
     "itemType": "Keyboard",
     "deviceSerial": "KBD-001",
-    "status": "เธงเนเธฒเธ",
+    "status": "ว่าง",
     "notes": ""
   }
 ];
@@ -1686,7 +1686,7 @@ const initialDashboardData = {
     recommendations: [],
     ticketsList: []
   }
-};
+};;
 
 
 
@@ -1709,7 +1709,7 @@ const AssetTags = ({ value, empty = '-' }) => {
   );
 };
 
-const AssetTagEditor = ({ value, onChange, single = false, placeholder = 'เธเธดเธกเธเน Tag เนเธฅเนเธงเธเธ” Enter' }) => {
+const AssetTagEditor = ({ value, onChange, single = false, placeholder = 'พิมพ์ Tag แล้วกด Enter' }) => {
   const [draft, setDraft] = useState('');
   const tags = String(value || '').split(/[,\n]+/).map((item) => item.trim()).filter(Boolean);
 
@@ -1726,7 +1726,7 @@ const AssetTagEditor = ({ value, onChange, single = false, placeholder = 'เธ
         {tags.map((tag, index) => (
           <span key={`${tag}-${index}`} className={`asset-tag asset-tag-${[...tag].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 6}`}>
             {tag}
-            <button type="button" onClick={() => onChange(tags.filter((_, tagIndex) => tagIndex !== index).join(', '))} aria-label={`เธฅเธ Tag ${tag}`}>ร—</button>
+            <button type="button" onClick={() => onChange(tags.filter((_, tagIndex) => tagIndex !== index).join(', '))} aria-label={`ลบ Tag ${tag}`}>×</button>
           </span>
         ))}
       </div>
@@ -1741,7 +1741,7 @@ const AssetTagEditor = ({ value, onChange, single = false, placeholder = 'เธ
           }
         }}
         onBlur={addDraft}
-        placeholder={tags.length ? 'เน€เธเธดเนเธก Tag...' : placeholder}
+        placeholder={tags.length ? 'เพิ่ม Tag...' : placeholder}
       />
     </div>
   );
@@ -1759,7 +1759,7 @@ const AssetTagPicker = ({ value, onChange, options, single = false, onClose }) =
 
   return (
     <div className="asset-tag-picker" onClick={(event) => event.stopPropagation()}>
-      <div className="asset-tag-picker-title">เน€เธฅเธทเธญเธ Tag เธ—เธตเนเธกเธตเธญเธขเธนเน</div>
+      <div className="asset-tag-picker-title">เลือก Tag ที่มีอยู่</div>
       <div className="asset-tag-picker-options">
         {options.map((option) => (
           <button
@@ -1772,35 +1772,35 @@ const AssetTagPicker = ({ value, onChange, options, single = false, onClose }) =
           </button>
         ))}
       </div>
-      <div className="asset-tag-picker-title">เธซเธฃเธทเธญเน€เธเธดเนเธก Tag เนเธซเธกเน</div>
+      <div className="asset-tag-picker-title">หรือเพิ่ม Tag ใหม่</div>
       <AssetTagEditor value={value} onChange={onChange} single={single} />
       <div className="asset-tag-picker-footer">
-        <span>เธเธ”เธเธฑเธเธ—เธถเธเธ”เนเธฒเธเธเธเน€เธเธทเนเธญเธขเธทเธเธขเธฑเธ</span>
-        <button type="button" onClick={onClose}>เน€เธชเธฃเนเธเธชเธดเนเธ</button>
+        <span>กดบันทึกด้านบนเพื่อยืนยัน</span>
+        <button type="button" onClick={onClose}>เสร็จสิ้น</button>
       </div>
     </div>
   );
 };
 
 const seedSoftwareLicenses = [
-  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'เธฃเธฒเธขเธเธต', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
-  { name: 'Adobe', owner: 'เธเธฃเธฒเธเธเธดเธ', price: 2592, paymentChannel: 'เธเธฑเธ•เธฃ', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ), เธฃเธงเธกเธเธดเธ•เธ•เน เธเธฑเธเธ—เธฃเนเน€เธเธดเธ”เนเธเธ (เน€เธเธเธเน)' },
-  { name: 'Freepik', owner: 'เธเธฃเธฒเธเธเธดเธ', price: 11250, paymentChannel: 'เธเธฑเธ•เธฃ', paymentDate: '11/05/2026-2027 (1 เธเธต)', expiringDate: '2027-06-11', registeredEmail: 'graphicfernclinic@gmail.com', currentUsers: 'เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ), เธฃเธงเธกเธเธดเธ•เธ•เน เธเธฑเธเธ—เธฃเนเน€เธเธดเธ”เนเธเธ (เน€เธเธเธเน), เธเธฑเธขเธเธฑเธ เธเธฑเธขเธงเธฑเธ’เธเน (เธกเธฒเธฃเนเธ)' },
-  { name: 'Kumoo', owner: 'เธเธฃเธฒเธเธเธดเธ', price: 3077, paymentChannel: 'เธเธฑเธ•เธฃ', paymentDate: '06/01/2026', expiringDate: '2027-01-07', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'เธญเธฒเธ—เธดเธ•เธขเธฒ เธกเธธเธกเธ—เธญเธ (เธเธกเธดเนเธ), เธฃเธงเธกเธเธดเธ•เธ•เน เธเธฑเธเธ—เธฃเนเน€เธเธดเธ”เนเธเธ (เน€เธเธเธเน), เธเธฑเธขเธเธฑเธ เธเธฑเธขเธงเธฑเธ’เธเน (เธกเธฒเธฃเนเธ)' },
-  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 345, paymentChannel: 'Apple', paymentDate: '31/07/2026', expiringDate: '2026-08-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'เธเธธเธฉเธเธฃ เธเธฑเธงเธชเธงเธฃเธฃเธเน (เน€เธฃเธเธเธตเน), เธญเธ เธดเธชเธดเธ—เธเธดเน เธเธฃเธเธฑเธเธ—เธฃเนเธงเธฑเธ’เธเน (เธเธธเนเธข)' },
+  { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1290, paymentChannel: 'Apple', paymentDate: 'รายปี', expiringDate: '', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: '' },
+  { name: 'Adobe', owner: 'กราฟฟิก', price: 2592, paymentChannel: 'บัตร', paymentDate: '02/07/2026', expiringDate: '2026-07-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์)' },
+  { name: 'Freepik', owner: 'กราฟฟิก', price: 11250, paymentChannel: 'บัตร', paymentDate: '11/05/2026-2027 (1 ปี)', expiringDate: '2027-06-11', registeredEmail: 'graphicfernclinic@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
+  { name: 'Kumoo', owner: 'กราฟฟิก', price: 3077, paymentChannel: 'บัตร', paymentDate: '06/01/2026', expiringDate: '2027-01-07', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'อาทิตยา มุมทอง (ขมิ้น), รวมจิตต์ จันทร์เกิดโชค (เบนซ์), ชัยธัช ชัยวัฒน์ (มาร์ค)' },
+  { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 345, paymentChannel: 'Apple', paymentDate: '31/07/2026', expiringDate: '2026-08-31', registeredEmail: 'drfernaesthetique@gmail.com', currentUsers: 'บุษกร บัวสวรรค์ (เรนนี่), อภิสิทธิ์ พรจันทร์วัฒน์ (จุ้ย)' },
   { name: 'Microsoft Office 365', owner: 'IT', price: 3690, paymentChannel: 'Microsoft Office', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
   { name: 'Lark', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
   { name: 'Google Suite', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
   { name: 'Chat GPT', owner: 'IT', price: 0, paymentChannel: '', paymentDate: '', expiringDate: '', registeredEmail: '', currentUsers: '' },
-  { name: 'Adobe', owner: 'เธเธฃเธฒเธเธเธดเธ', price: 11105, paymentChannel: 'เธเธฑเธ•เธฃ', paymentDate: '2025-12-01', expiringDate: '2026-12-01', registeredEmail: 'fernclinic.it@gmail.com', currentUsers: 'เธเธฑเธขเธเธฑเธ เธเธฑเธขเธงเธฑเธ’เธเน (เธกเธฒเธฃเนเธ), เธเธดเธเธเธฒเธเธฃ เธเธฅเธญเธงเธ (เธเธตเนเน€เธเธ)' },
+  { name: 'Adobe', owner: 'กราฟฟิก', price: 11105, paymentChannel: 'บัตร', paymentDate: '2025-12-01', expiringDate: '2026-12-01', registeredEmail: 'fernclinic.it@gmail.com', currentUsers: 'ชัยธัช ชัยวัฒน์ (มาร์ค), พิชญาพร คลอวง (พี่เจน)' },
   { name: 'Cupcut', owner: 'Tiktok Content Creator', price: 1810, paymentChannel: 'Apple', paymentDate: '25/06/2027', expiringDate: '2027-07-23', registeredEmail: 'drfernbussiness@gmail.com', currentUsers: '' },
   { name: 'Meitu', owner: 'Tiktok Content Creator', price: 1190, paymentChannel: 'Applepay', paymentDate: '22/01/2027', expiringDate: '2027-01-22', registeredEmail: 'drfernbussiness@gmail.com', currentUsers: '' },
-  { name: 'PEAK', owner: 'Accounting', price: 12480, paymentChannel: '', paymentDate: 'เธฃเธฒเธขเธเธต', expiringDate: '2070-03-30', registeredEmail: '', currentUsers: '' },
-  { name: 'empeo', owner: 'HR', price: 132515, paymentChannel: '', paymentDate: 'เธฃเธฒเธขเธเธต', expiringDate: '2070-06-09', registeredEmail: '', currentUsers: '' },
-  { name: 'Chromecast Premium', owner: 'HR', price: 399, paymentChannel: '', paymentDate: 'เธฃเธฒเธขเน€เธ”เธทเธญเธ', expiringDate: '', registeredEmail: '', currentUsers: '' },
+  { name: 'PEAK', owner: 'Accounting', price: 12480, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-03-30', registeredEmail: '', currentUsers: '' },
+  { name: 'empeo', owner: 'HR', price: 132515, paymentChannel: '', paymentDate: 'รายปี', expiringDate: '2070-06-09', registeredEmail: '', currentUsers: '' },
+  { name: 'Chromecast Premium', owner: 'HR', price: 399, paymentChannel: '', paymentDate: 'รายเดือน', expiringDate: '', registeredEmail: '', currentUsers: '' },
 ].map((item) => {
   const used = item.currentUsers ? item.currentUsers.split(',').filter(Boolean).length : 0;
-  return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'เนเธเนเธเธฒเธ', isLicenseRecord: true, sourceVersion: 'software-image-v2' };
+  return { ...item, used, vacant: 0, licenses: used, monthlyCost: item.price, status: 'ใช้งาน', isLicenseRecord: true, sourceVersion: 'software-image-v2' };
 });
 
 const isValidDashboardData = (value) => {
@@ -1924,14 +1924,14 @@ function Dashboard() {
   const [larkTicketCause, setLarkTicketCause] = useState('');
   const [larkTicketDuration, setLarkTicketDuration] = useState('00:30');
   const [larkTicketResponder, setLarkTicketResponder] = useState('');
-  const [larkTicketStatus, setLarkTicketStatus] = useState('เน€เธชเธฃเนเธเธชเธดเนเธ');
+  const [larkTicketStatus, setLarkTicketStatus] = useState('เสร็จสิ้น');
   const [larkTicketCost, setLarkTicketCost] = useState('0');
 
   const [larkAssetUser, setLarkAssetUser] = useState('');
   const [larkAssetPosition, setLarkAssetPosition] = useState('');
   const [larkAssetItemType, setLarkAssetItemType] = useState('');
   const [larkAssetSerial, setLarkAssetSerial] = useState('');
-  const [larkAssetStatus, setLarkAssetStatus] = useState('เนเธเนเธเธฒเธ');
+  const [larkAssetStatus, setLarkAssetStatus] = useState('ใช้งาน');
   const [larkAssetNotes, setLarkAssetNotes] = useState('');
 
   const [larkSubmitted, setLarkSubmitted] = useState(false);
@@ -1974,7 +1974,7 @@ function Dashboard() {
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error('Error fetching external devices:', error);
-          if (!cancelled) setExternalDevicesSyncError('เธเธดเธเธเนเนเธกเนเธชเธณเน€เธฃเนเธ');
+          if (!cancelled) setExternalDevicesSyncError('ซิงค์ไม่สำเร็จ');
         }
       } finally {
         activeController = null;
@@ -2014,7 +2014,7 @@ function Dashboard() {
   }, [activeModal]);
 
   const requireAdminAccess = async (openMenu) => {
-    const password = window.prompt('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธฃเธซเธฑเธชเธเนเธฒเธเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT');
+    const password = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT');
     if (password === null) return;
     if (await verifyAdminPasswordLocally(password)) {
       openMenu();
@@ -2030,7 +2030,7 @@ function Dashboard() {
         signal: controller.signal
       });
       if (!response.ok) {
-        alert('เธฃเธซเธฑเธชเธเนเธฒเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ');
+        alert('รหัสผ่านไม่ถูกต้อง');
         return;
       }
       openMenu();
@@ -2040,7 +2040,7 @@ function Dashboard() {
         openMenu();
         return;
       }
-      alert('เธฃเธซเธฑเธชเธเนเธฒเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ');
+      alert('รหัสผ่านไม่ถูกต้อง');
     } finally {
       window.clearTimeout(timeoutId);
     }
@@ -2075,12 +2075,12 @@ function Dashboard() {
         body: JSON.stringify(assetRequestForm)
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'เธชเนเธเธเธณเธเธญเนเธกเนเธชเธณเน€เธฃเนเธ');
+      if (!response.ok) throw new Error(result.error || 'ส่งคำขอไม่สำเร็จ');
       setAssetRequestForm({ requester: '', department: '', itemType: '', purpose: '', requestedDate: new Date().toISOString().slice(0, 10), notes: '' });
       await loadAssetRequests();
       alert(result.count > 1
-        ? `เธชเนเธเธเธณเธเธญเน€เธเธดเธ ${result.count} เน€เธเธฃเธทเนเธญเธเธชเธณเน€เธฃเนเธ เน€เธฅเธเธ—เธตเน #${result.ids.join(', #')}`
-        : `เธชเนเธเธเธณเธเธญเน€เธเธดเธเน€เธฅเธเธ—เธตเน #${result.id} เธชเธณเน€เธฃเนเธ`);
+        ? `ส่งคำขอเบิก ${result.count} เครื่องสำเร็จ เลขที่ #${result.ids.join(', #')}`
+        : `ส่งคำขอเบิกเลขที่ #${result.id} สำเร็จ`);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -2089,24 +2089,24 @@ function Dashboard() {
   };
 
   const editAssetRequest = async (request) => {
-    const requester = window.prompt('เธเธทเนเธญเธเธนเนเธเธญ', request.requester || '');
+    const requester = window.prompt('ชื่อผู้ขอ', request.requester || '');
     if (requester === null) return;
-    const department = window.prompt('เนเธเธเธ', request.department || '');
+    const department = window.prompt('แผนก', request.department || '');
     if (department === null) return;
-    const itemType = window.prompt('เธเธฃเธฐเน€เธ เธ—เธญเธธเธเธเธฃเธ“เน', request.item_type || '');
+    const itemType = window.prompt('ประเภทอุปกรณ์', request.item_type || '');
     if (itemType === null) return;
-    const purpose = window.prompt('เน€เธซเธ•เธธเธเธฅเธเธฒเธฃเนเธเนเธเธฒเธ', request.purpose || '');
+    const purpose = window.prompt('เหตุผลการใช้งาน', request.purpose || '');
     if (purpose === null) return;
-    const dueDate = window.prompt('เธเธณเธซเธเธ”เธเธทเธ (YYYY-MM-DD เธซเธฃเธทเธญเน€เธงเนเธเธงเนเธฒเธ)', request.due_date ? String(request.due_date).slice(0, 10) : '');
+    const dueDate = window.prompt('กำหนดคืน (YYYY-MM-DD หรือเว้นว่าง)', request.due_date ? String(request.due_date).slice(0, 10) : '');
     if (dueDate === null) return;
-    const notes = window.prompt('เธซเธกเธฒเธขเน€เธซเธ•เธธ', request.notes || '');
+    const notes = window.prompt('หมายเหตุ', request.notes || '');
     if (notes === null) return;
 
     if (![requester, department, itemType, purpose].every(value => value.trim())) {
-      alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธเธทเนเธญเธเธนเนเธเธญ เนเธเธเธ เธเธฃเธฐเน€เธ เธ—เธญเธธเธเธเธฃเธ“เน เนเธฅเธฐเน€เธซเธ•เธธเธเธฅเนเธซเนเธเธฃเธ');
+      alert('กรุณากรอกชื่อผู้ขอ แผนก ประเภทอุปกรณ์ และเหตุผลให้ครบ');
       return;
     }
-    if (!window.confirm(`เธขเธทเธเธขเธฑเธเธเธฑเธเธ—เธถเธเธเธฒเธฃเนเธเนเนเธเธเธณเธเธญ #${request.id} เธซเธฃเธทเธญเนเธกเน?`)) return;
+    if (!window.confirm(`ยืนยันบันทึกการแก้ไขคำขอ #${request.id} หรือไม่?`)) return;
 
     setAssetRequestLoading(true);
     try {
@@ -2116,9 +2116,9 @@ function Dashboard() {
         body: JSON.stringify({ requester, department, itemType, purpose, dueDate, notes })
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'เนเธเนเนเธเธเธณเธเธญเนเธกเนเธชเธณเน€เธฃเนเธ');
+      if (!response.ok) throw new Error(result.error || 'แก้ไขคำขอไม่สำเร็จ');
       await loadAssetRequests();
-      alert(`เนเธเนเนเธเธเธณเธเธญ #${request.id} เธชเธณเน€เธฃเนเธ`);
+      alert(`แก้ไขคำขอ #${request.id} สำเร็จ`);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -2129,38 +2129,38 @@ function Dashboard() {
   const runAssetRequestAction = async (request, action) => {
     const payload = { action };
     if (action === 'approve') {
-      const vacantAssets = assetsList.filter(asset => asset.status === 'เธงเนเธฒเธ');
-      if (vacantAssets.length === 0) return alert('เนเธกเนเธกเธตเธญเธธเธเธเธฃเธ“เนเธชเธ–เธฒเธเธฐเธงเนเธฒเธเธชเธณเธซเธฃเธฑเธเธญเธเธธเธกเธฑเธ•เธด');
+      const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
+      if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
       const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
-      const selected = window.prompt(`เธเธฃเธญเธเธฅเธณเธ”เธฑเธเธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเธเธญเธ\n\n${choices}`);
+      const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
       if (selected === null) return;
-      if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('เธฅเธณเธ”เธฑเธเธญเธธเธเธเธฃเธ“เนเนเธกเนเธ–เธนเธเธ•เนเธญเธเธซเธฃเธทเธญเน€เธเธฃเธทเนเธญเธเนเธกเนเธงเนเธฒเธ');
+      if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
       payload.assetSn = Number(selected);
-      payload.reviewer = window.prompt('เธเธทเนเธญเธเธนเนเธญเธเธธเธกเธฑเธ•เธด / เน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT') || 'IT';
+      payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
     } else if (action === 'reject') {
-      const note = window.prompt('เธฃเธฐเธเธธเน€เธซเธ•เธธเธเธฅเธ—เธตเนเนเธกเนเธญเธเธธเธกเธฑเธ•เธด');
+      const note = window.prompt('ระบุเหตุผลที่ไม่อนุมัติ');
       if (note === null) return;
       payload.note = note;
-      payload.reviewer = window.prompt('เธเธทเนเธญเธเธนเนเธเธดเธเธฒเธฃเธ“เธฒ') || 'IT';
+      payload.reviewer = window.prompt('ชื่อผู้พิจารณา') || 'IT';
     } else if (action === 'issue') {
-      if (!window.confirm(`เธขเธทเธเธขเธฑเธเธชเนเธเธกเธญเธเธญเธธเธเธเธฃเธ“เนเนเธซเน ${request.requester}?`)) return;
-      payload.reviewer = window.prompt('เธเธทเนเธญเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเนเธเธนเนเธชเนเธเธกเธญเธ') || request.reviewer || 'IT';
+      if (!window.confirm(`ยืนยันส่งมอบอุปกรณ์ให้ ${request.requester}?`)) return;
+      payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ส่งมอบ') || request.reviewer || 'IT';
     } else if (action === 'request_return') {
-      if (!assetReturnIdentity.trim()) return alert('เธเธฃเธธเธ“เธฒเธฃเธฐเธเธธเธเธทเนเธญเธเธนเนเธเธทเธเธเนเธญเธ');
-      if (!window.confirm(`เธขเธทเธเธขเธฑเธเนเธเนเธเธเธญเธเธทเธเธญเธธเธเธเธฃเธ“เน ${request.device_serial || request.item_type} เนเธซเน IT เธ•เธฃเธงเธเธฃเธฑเธเนเธเนเธซเธฃเธทเธญเนเธกเน?`)) return;
+      if (!assetReturnIdentity.trim()) return alert('กรุณาระบุชื่อผู้คืนก่อน');
+      if (!window.confirm(`ยืนยันแจ้งขอคืนอุปกรณ์ ${request.device_serial || request.item_type} ให้ IT ตรวจรับใช่หรือไม่?`)) return;
       payload.requesterIdentity = assetReturnIdentity.trim();
       payload.reviewer = assetReturnIdentity.trim();
-      payload.note = 'เธเธนเนเนเธเนเธเธฒเธเนเธเนเธเธเธญเธเธทเธเธญเธธเธเธเธฃเธ“เน เธฃเธญเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT เธ•เธฃเธงเธเธฃเธฑเธ';
+      payload.note = 'ผู้ใช้งานแจ้งขอคืนอุปกรณ์ รอเจ้าหน้าที่ IT ตรวจรับ';
     } else if (action === 'return') {
-      const adminPassword = window.prompt('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธฃเธซเธฑเธชเธเนเธฒเธเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT เน€เธเธทเนเธญเธขเธทเธเธขเธฑเธเธฃเธฑเธเธเธทเธ');
+      const adminPassword = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT เพื่อยืนยันรับคืน');
       if (adminPassword === null) return;
-      const condition = window.prompt('เธชเธ เธฒเธเธ•เธญเธเธเธทเธ: เธเธเธ•เธด, เธเธณเธฃเธธเธ” เธซเธฃเธทเธญ เธชเธนเธเธซเธฒเธข', 'เธเธเธ•เธด');
+      const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
       if (condition === null) return;
-      if (!['เธเธเธ•เธด', 'เธเธณเธฃเธธเธ”', 'เธชเธนเธเธซเธฒเธข'].includes(condition)) return alert('เธเธฃเธธเธ“เธฒเธฃเธฐเธเธธ เธเธเธ•เธด, เธเธณเธฃเธธเธ” เธซเธฃเธทเธญ เธชเธนเธเธซเธฒเธข');
+      if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
       payload.adminPassword = adminPassword;
       payload.condition = condition;
-      payload.reviewer = window.prompt('เธเธทเนเธญเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเนเธเธนเนเธ•เธฃเธงเธเธฃเธฑเธ') || 'IT';
-      payload.note = window.prompt('เธซเธกเธฒเธขเน€เธซเธ•เธธเธเธฒเธฃเธฃเธฑเธเธเธทเธ (เธ–เนเธฒเธกเธต)') || '';
+      payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
+      payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
     }
 
     setAssetRequestLoading(true);
@@ -2171,10 +2171,10 @@ function Dashboard() {
         body: JSON.stringify(payload)
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'เธ”เธณเน€เธเธดเธเธเธฒเธฃเนเธกเนเธชเธณเน€เธฃเนเธ');
+      if (!response.ok) throw new Error(result.error || 'ดำเนินการไม่สำเร็จ');
       await Promise.all([loadAssetRequests(), refreshOperationalStateFromDb()]);
-      if (action === 'request_return') alert('เนเธเนเธเธเธญเธเธทเธเธญเธธเธเธเธฃเธ“เนเธชเธณเน€เธฃเนเธ เธเธฃเธธเธ“เธฒเธเธณเธญเธธเธเธเธฃเธ“เนเนเธซเนเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT เธ•เธฃเธงเธเธฃเธฑเธ');
-      if (action === 'return') alert('IT เธ•เธฃเธงเธเธฃเธฑเธเธญเธธเธเธเธฃเธ“เนเนเธฅเธฐเธญเธฑเธเน€เธ”เธ•เธชเธ–เธฒเธเธฐเธเธฅเธฑเธเธชเธณเน€เธฃเนเธ');
+      if (action === 'request_return') alert('แจ้งขอคืนอุปกรณ์สำเร็จ กรุณานำอุปกรณ์ให้เจ้าหน้าที่ IT ตรวจรับ');
+      if (action === 'return') alert('IT ตรวจรับอุปกรณ์และอัปเดตสถานะคลังสำเร็จ');
     } catch (err) {
       alert(err.message);
     } finally {
@@ -2227,14 +2227,14 @@ function Dashboard() {
         }
         if (attempt < 2) await new Promise(resolve => window.setTimeout(resolve, 1200));
       }
-      throw lastError || new Error('เนเธกเนเธชเธฒเธกเธฒเธฃเธ–เน€เธเธทเนเธญเธกเธ•เนเธญเธเธฒเธเธเนเธญเธกเธนเธฅเนเธ”เน');
+      throw lastError || new Error('ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
     });
     syncQueueRef.current = operation;
     try {
       return await operation;
     } catch (err) {
       console.error('Failed to sync state to PostgreSQL database:', err);
-      if (err.name === 'AbortError') throw new Error('เน€เธเธดเธฃเนเธเน€เธงเธญเธฃเนเนเธเนเน€เธงเธฅเธฒเธเธฑเธเธ—เธถเธเธเธฒเธเน€เธเธดเธ 30 เธงเธดเธเธฒเธ—เธต เธเธฃเธธเธ“เธฒเธฅเธญเธเนเธซเธกเน');
+      if (err.name === 'AbortError') throw new Error('เซิร์ฟเวอร์ใช้เวลาบันทึกนานเกิน 30 วินาที กรุณาลองใหม่');
       throw err;
     }
   }, []);
@@ -2297,7 +2297,7 @@ function Dashboard() {
             const pendingResult = await pendingResponse.json().catch(() => ({}));
             if (!pendingResponse.ok) throw new Error(pendingResult.error || `API ${pendingResponse.status}`);
             localStorage.removeItem('it_dashboard_pending_sync');
-            setConsoleSaveMessage('เธเธดเธเธเนเธซเธกเธฒเธขเน€เธซเธ•เธธเธ—เธตเนเธฃเธญเธเธฑเธเธ—เธถเธเธเธถเนเธเธเธฒเธเธเนเธญเธกเธนเธฅเธชเธณเน€เธฃเนเธเนเธฅเนเธง');
+            setConsoleSaveMessage('ซิงค์หมายเหตุที่รอบันทึกขึ้นฐานข้อมูลสำเร็จแล้ว');
           }
         }
 
@@ -2401,8 +2401,8 @@ function Dashboard() {
           announce({
             key: `ticket-${id}`,
             type: 'ticket',
-            title: `เนเธเนเธ Ticket เนเธซเธกเน #${id}`,
-            message: `${ticket.complainant || 'เธเธนเนเนเธเนเธเนเธกเนเธฃเธฐเธเธธเธเธทเนเธญ'}: ${ticket.issue || 'เนเธกเนเธกเธตเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”'}`,
+            title: `แจ้ง Ticket ใหม่ #${id}`,
+            message: `${ticket.complainant || 'ผู้แจ้งไม่ระบุชื่อ'}: ${ticket.issue || 'ไม่มีรายละเอียด'}`,
             createdAt: new Date().toISOString()
           });
         });
@@ -2414,8 +2414,8 @@ function Dashboard() {
           announce({
             key: `asset-request-${id}`,
             type: 'asset',
-            title: `เธเธณเธเธญเน€เธเธดเธเธญเธธเธเธเธฃเธ“เนเนเธซเธกเน #${id}`,
-            message: `${request.requester || 'เธเธนเนเธเธญเนเธกเนเธฃเธฐเธเธธเธเธทเนเธญ'} เธเธญ ${request.item_type || 'เธญเธธเธเธเธฃเธ“เน IT'}`,
+            title: `คำขอเบิกอุปกรณ์ใหม่ #${id}`,
+            message: `${request.requester || 'ผู้ขอไม่ระบุชื่อ'} ขอ ${request.item_type || 'อุปกรณ์ IT'}`,
             createdAt: new Date().toISOString()
           });
         });
@@ -2487,7 +2487,7 @@ function Dashboard() {
   const [newAssetItemType, setNewAssetItemType] = useState('');
   const [newAssetAdditionalEquipment, setNewAssetAdditionalEquipment] = useState('');
   const [newAssetSerial, setNewAssetSerial] = useState('');
-  const [newAssetStatus, setNewAssetStatus] = useState('เนเธเนเธเธฒเธ');
+  const [newAssetStatus, setNewAssetStatus] = useState('ใช้งาน');
   const [newAssetNotes, setNewAssetNotes] = useState('');
   const [newAssetSubmittedOn, setNewAssetSubmittedOn] = useState('');
   const [newAssetRespondent, setNewAssetRespondent] = useState('');
@@ -2510,7 +2510,7 @@ function Dashboard() {
   const [newTicketCause, setNewTicketCause] = useState('');
   const [newTicketDuration, setNewTicketDuration] = useState('00:30');
   const [newTicketResponder, setNewTicketResponder] = useState('');
-  const [newTicketStatus, setNewTicketStatus] = useState('เน€เธชเธฃเนเธเธชเธดเนเธ');
+  const [newTicketStatus, setNewTicketStatus] = useState('เสร็จสิ้น');
   const [newTicketCost, setNewTicketCost] = useState('0');
 
   // Form input states
@@ -2553,30 +2553,30 @@ function Dashboard() {
       
       const cost = Number(ticket.cost) || 0;
       totalCost += cost;
-      if (cost > 0 || ticket.status === 'เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง') {
+      if (cost > 0 || ticket.status === 'จ่ายเงินแล้ว') {
         repairCount++;
       }
 
       // Track broken devices by category
       const issue = String(ticket.issue).toLowerCase();
-      let matchedDevice = 'เธญเธทเนเธ เน';
+      let matchedDevice = 'อื่น ๆ';
       if (issue.includes('notebook') || issue.includes('lenovo') || issue.includes('asus') || issue.includes('hp')) matchedDevice = 'Notebook';
       else if (issue.includes('computer') || issue.includes('pc')) matchedDevice = 'PC';
       else if (issue.includes('ipad')) matchedDevice = 'iPad';
       else if (issue.includes('iphone')) matchedDevice = 'iPhone';
-      else if (issue.includes('printer') || issue.includes('เธเธฃเธดเนเธเน€เธ•เธญเธฃเน')) matchedDevice = 'Printer';
-      else if (issue.includes('mornitor') || issue.includes('เธเธญ')) matchedDevice = 'Monitor';
+      else if (issue.includes('printer') || issue.includes('ปริ้นเตอร์')) matchedDevice = 'Printer';
+      else if (issue.includes('mornitor') || issue.includes('จอ')) matchedDevice = 'Monitor';
       else if (issue.includes('imac')) matchedDevice = 'iMac';
       else if (issue.includes('macbook')) matchedDevice = 'MacBook';
-      else if (issue.includes('network') || issue.includes('lan') || issue.includes('wifi') || issue.includes('เน€เธเนเธ•')) matchedDevice = 'Network';
+      else if (issue.includes('network') || issue.includes('lan') || issue.includes('wifi') || issue.includes('เน็ต')) matchedDevice = 'Network';
 
-      if (ticket.status !== 'เน€เธชเธฃเนเธเธชเธดเนเธ' || cost > 0) {
+      if (ticket.status !== 'เสร็จสิ้น' || cost > 0) {
         deviceCounts[matchedDevice] = (deviceCounts[matchedDevice] || 0) + 1;
       }
 
       // Department costs mapping
       const borrowerAsset = assets.find(a => String(a.user).trim() === String(ticket.complainant).trim());
-      const dept = borrowerAsset ? borrowerAsset.position : 'เธชเนเธงเธเธเธฅเธฒเธ';
+      const dept = borrowerAsset ? borrowerAsset.position : 'ส่วนกลาง';
       if (cost > 0) {
         deptCosts[dept] = (deptCosts[dept] || 0) + cost;
       }
@@ -2587,9 +2587,9 @@ function Dashboard() {
     const calculatedResponseTime = Math.max(5, Math.round(resolutionTimeHours * 12));
     const calculatedCsat = Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1));
 
-    const brokenAssetsCount = assets.filter(a => a.status === 'เธฃเธญเธเนเธญเธก').length;
-    const lostAssetsCount = assets.filter(a => a.status === 'เธชเธนเธเธซเธฒเธข').length;
-    const vacantAssetsCount = assets.filter(a => a.status === 'เธงเนเธฒเธ').length;
+    const brokenAssetsCount = assets.filter(a => a.status === 'รอซ่อม').length;
+    const lostAssetsCount = assets.filter(a => a.status === 'สูญหาย').length;
+    const vacantAssetsCount = assets.filter(a => a.status === 'ว่าง').length;
 
     const topBrokenDevices = Object.entries(deviceCounts)
       .map(([name, count]) => ({ name, count }))
@@ -2659,11 +2659,11 @@ function Dashboard() {
   const handleAddMonth = (e) => {
     e.preventDefault();
     if (!newMonthKey || !newMonthName) {
-      alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธเนเธญเธกเธนเธฅเนเธซเนเธเธฃเธเธ–เนเธงเธ');
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
     if (data[newMonthKey]) {
-      alert('เธกเธตเธฃเธซเธฑเธชเน€เธ”เธทเธญเธเธเธตเนเนเธเธฃเธฐเธเธเธญเธขเธนเนเนเธฅเนเธง');
+      alert('มีรหัสเดือนนี้ในระบบอยู่แล้ว');
       return;
     }
     const latestMonthKey = Object.keys(data).sort((a, b) => b.localeCompare(a))[0];
@@ -2708,16 +2708,16 @@ function Dashboard() {
     // Force immediate sync so it doesn't get lost on quick refresh
     syncStateToDb(updatedData, assetsList).catch(err => console.error(err));
     
-    alert(`เน€เธเธดเนเธกเน€เธ”เธทเธญเธ ${newMonthName} เธชเธณเน€เธฃเนเธ!`);
+    alert(`เพิ่มเดือน ${newMonthName} สำเร็จ!`);
   };
 
   const handleDeleteMonth = (key) => {
     const keys = Object.keys(data);
     if (keys.length <= 1) {
-      alert('เนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธฅเธเน€เธ”เธทเธญเธเธชเธธเธ”เธ—เนเธฒเธขเธเธญเธเธฃเธฐเธเธเนเธ”เน');
+      alert('ไม่สามารถลบเดือนสุดท้ายของระบบได้');
       return;
     }
-    if (window.confirm(`เธเธธเธ“เนเธเนเนเธเธงเนเธฒเธ•เนเธญเธเธเธฒเธฃเธฅเธเน€เธ”เธทเธญเธ ${data[key].monthName} เนเธเนเธซเธฃเธทเธญเนเธกเน?`)) {
+    if (window.confirm(`คุณแน่ใจว่าต้องการลบเดือน ${data[key].monthName} ใช่หรือไม่?`)) {
       setData(prev => {
         const copy = { ...prev };
         delete copy[key];
@@ -2808,7 +2808,7 @@ function Dashboard() {
   // Assets Inventory Editor (Dual-Mode: Create / Update)
   const handleAddAsset = () => {
     if (!newAssetItemType) {
-      alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธเธฃเธฐเน€เธ เธ—เธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ');
+      alert('กรุณากรอกประเภทอุปกรณ์หลัก');
       return;
     }
 
@@ -2817,7 +2817,7 @@ function Dashboard() {
       setAssetsList(prev => {
         const updated = prev.map(a => a.sn === editingAssetSn ? {
           ...a,
-          user: newAssetUser || 'เธชเนเธงเธเธเธฅเธฒเธ',
+          user: newAssetUser || 'ส่วนกลาง',
           position: newAssetPosition || '-',
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
@@ -2840,12 +2840,12 @@ function Dashboard() {
         return updated;
       });
       setEditingAssetSn(null);
-      alert('เนเธเนเนเธเธเนเธญเธกเธนเธฅเธ—เธฃเธฑเธเธขเนเธชเธดเธเธชเธณเน€เธฃเนเธ!');
+      alert('แก้ไขข้อมูลทรัพย์สินสำเร็จ!');
     } else {
       // Create mode
       const newAsset = {
         sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
-        user: newAssetUser || 'เธชเนเธงเธเธเธฅเธฒเธ',
+        user: newAssetUser || 'ส่วนกลาง',
         position: newAssetPosition || '-',
         itemType: newAssetItemType,
         additionalEquipment: newAssetAdditionalEquipment,
@@ -2869,7 +2869,7 @@ function Dashboard() {
         runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
         return updated;
       });
-      alert('เน€เธเธดเนเธกเธ—เธฃเธฑเธเธขเนเธชเธดเธเน€เธเนเธฒเธเธฅเธฑเธเธชเธณเน€เธฃเนเธ!');
+      alert('เพิ่มทรัพย์สินเข้าคลังสำเร็จ!');
     }
 
     setNewAssetUser('');
@@ -2877,7 +2877,7 @@ function Dashboard() {
     setNewAssetItemType('');
     setNewAssetAdditionalEquipment('');
     setNewAssetSerial('');
-    setNewAssetStatus('เนเธเนเธเธฒเธ');
+    setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
     setNewAssetSubmittedOn('');
     setNewAssetRespondent('');
@@ -2900,7 +2900,7 @@ function Dashboard() {
     setNewAssetItemType(asset.itemType);
     setNewAssetAdditionalEquipment(asset.additionalEquipment || '');
     setNewAssetSerial(asset.deviceSerial || '');
-    setNewAssetStatus(asset.status || 'เนเธเนเธเธฒเธ');
+    setNewAssetStatus(asset.status || 'ใช้งาน');
     setNewAssetNotes(asset.notes || '');
     setNewAssetSubmittedOn(asset.submittedOn || '');
     setNewAssetRespondent(asset.respondent || '');
@@ -2923,7 +2923,7 @@ function Dashboard() {
     setNewAssetItemType('');
     setNewAssetAdditionalEquipment('');
     setNewAssetSerial('');
-    setNewAssetStatus('เนเธเนเธเธฒเธ');
+    setNewAssetStatus('ใช้งาน');
     setNewAssetNotes('');
     setNewAssetSubmittedOn('');
     setNewAssetRespondent('');
@@ -2939,7 +2939,7 @@ function Dashboard() {
   };
 
   const handleDeleteAsset = (sn) => {
-    if (window.confirm('เธเธธเธ“เธ•เนเธญเธเธเธฒเธฃเธฅเธเธญเธธเธเธเธฃเธ“เนเธเธตเนเธญเธญเธเธเธฒเธเธ—เธฐเน€เธเธตเธขเธเธเธฅเธฑเธเนเธเนเธซเธฃเธทเธญเนเธกเน?')) {
+    if (window.confirm('คุณต้องการลบอุปกรณ์นี้ออกจากทะเบียนคลังใช่หรือไม่?')) {
       setAssetsList(prev => {
         const updated = prev.filter(a => a.sn !== sn);
         runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
@@ -2954,7 +2954,7 @@ function Dashboard() {
   // Ticket Log Editor (Dual-Mode: Create / Update)
   const handleAddTicket = () => {
     if (!newTicketIssue) {
-      alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธญเธฒเธเธฒเธฃเน€เธชเธตเธข/เธเธฑเธเธซเธฒ');
+      alert('กรุณากรอกอาการเสีย/ปัญหา');
       return;
     }
 
@@ -2964,7 +2964,7 @@ function Dashboard() {
       // Edit mode
       const updatedTickets = tickets.map(t => t.sn === editingTicketSn ? {
         ...t,
-        complainant: newTicketComplainant || 'เนเธกเนเธฃเธฐเธเธธเธเธทเนเธญ',
+        complainant: newTicketComplainant || 'ไม่ระบุชื่อ',
         email: newTicketEmail || '-',
         anydesk: newTicketAnydesk || '-',
         issue: newTicketIssue,
@@ -2977,13 +2977,13 @@ function Dashboard() {
 
       runRecalculation(consoleMonth, updatedTickets, assetsList);
       setEditingTicketSn(null);
-      alert('เนเธเนเนเธเธเนเธญเธกเธนเธฅเธเธฒเธเนเธเนเธเธเนเธญเธกเธชเธณเน€เธฃเนเธ!');
+      alert('แก้ไขข้อมูลงานแจ้งซ่อมสำเร็จ!');
     } else {
       // Create mode
       const newTicket = {
         sn: tickets.length > 0 ? Math.max(...tickets.map(t => Number(t.sn) || 0)) + 1 : 1,
         date: new Date().toLocaleString('th-TH', { hour12: false }).replace(',', ''),
-        complainant: newTicketComplainant || 'เนเธกเนเธฃเธฐเธเธธเธเธทเนเธญ',
+        complainant: newTicketComplainant || 'ไม่ระบุชื่อ',
         email: newTicketEmail || '-',
         anydesk: newTicketAnydesk || '-',
         issue: newTicketIssue,
@@ -2996,7 +2996,7 @@ function Dashboard() {
 
       const updatedTickets = [...tickets, newTicket];
       runRecalculation(consoleMonth, updatedTickets, assetsList);
-      alert('เน€เธเธดเนเธกเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธเนเธเนเธเธเนเธญเธกเธชเธณเน€เธฃเนเธ!');
+      alert('เพิ่มประวัติงานแจ้งซ่อมสำเร็จ!');
     }
 
     setNewTicketComplainant('');
@@ -3006,7 +3006,7 @@ function Dashboard() {
     setNewTicketCause('');
     setNewTicketDuration('00:30');
     setNewTicketResponder('');
-    setNewTicketStatus('เน€เธชเธฃเนเธเธชเธดเนเธ');
+    setNewTicketStatus('เสร็จสิ้น');
     setNewTicketCost('0');
   };
 
@@ -3032,12 +3032,12 @@ function Dashboard() {
     setNewTicketCause('');
     setNewTicketDuration('00:30');
     setNewTicketResponder('');
-    setNewTicketStatus('เน€เธชเธฃเนเธเธชเธดเนเธ');
+    setNewTicketStatus('เสร็จสิ้น');
     setNewTicketCost('0');
   };
 
   const handleDeleteTicket = (sn) => {
-    if (window.confirm('เธเธธเธ“เธ•เนเธญเธเธเธฒเธฃเธฅเธเธฃเธฒเธขเธเธฒเธฃเนเธเนเธเธเนเธญเธกเธเธตเนเนเธเนเธซเธฃเธทเธญเนเธกเน?')) {
+    if (window.confirm('คุณต้องการลบรายการแจ้งซ่อมนี้ใช่หรือไม่?')) {
       const updatedTickets = (data[consoleMonth]?.ticketsList || []).filter(t => t.sn !== sn);
       runRecalculation(consoleMonth, updatedTickets, assetsList);
       if (editingTicketSn === sn) {
@@ -3071,25 +3071,25 @@ function Dashboard() {
         if (parsed.data && parsed.assetsList) {
           setData(parsed.data);
           setAssetsList(parsed.assetsList);
-          alert('เธเธณเน€เธเนเธฒเธเนเธญเธกเธนเธฅเธชเธณเธฃเธญเธเธชเธณเน€เธฃเนเธ!');
+          alert('นำเข้าข้อมูลสำรองสำเร็จ!');
         } else {
-          alert('เธฃเธนเธเนเธเธเนเธเธฅเนเธชเธณเธฃเธญเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ');
+          alert('รูปแบบไฟล์สำรองไม่ถูกต้อง');
         }
       } catch (err) {
-        alert('เน€เธเธดเธ”เธเนเธญเธเธดเธ”เธเธฅเธฒเธ”เนเธเธเธฒเธฃเธญเนเธฒเธเนเธเธฅเน: ' + err.message);
+        alert('เกิดข้อผิดพลาดในการอ่านไฟล์: ' + err.message);
       }
     };
     reader.readAsText(file);
   };
 
   const handleResetToDefault = async () => {
-    if (window.confirm('เธเธณเน€เธ•เธทเธญเธ: เธเธธเธ“เธ•เนเธญเธเธเธฒเธฃเธฅเธเธเนเธญเธกเธนเธฅเธ—เธฑเนเธเธซเธกเธ”เนเธเธฃเธฐเธเธเนเธเนเธซเธฃเธทเธญเนเธกเน? เธเนเธญเธกเธนเธฅเธ—เธฑเนเธเธซเธกเธ”เธ—เธตเนเธเธฑเธเธ—เธถเธเนเธงเนเนเธเธเธฒเธเธเนเธญเธกเธนเธฅเธเธฐเธ–เธนเธเธฅเนเธฒเธเนเธฅเธฐเนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธเธนเนเธเธทเธเนเธ”เน!')) {
+    if (window.confirm('คำเตือน: คุณต้องการลบข้อมูลทั้งหมดในระบบใช่หรือไม่? ข้อมูลทั้งหมดที่บันทึกไว้ในฐานข้อมูลจะถูกล้างและไม่สามารถกู้คืนได้!')) {
       try {
         const response = await fetch(`${API_BASE}/api/reset-database`, {
           method: 'POST'
         });
         if (!response.ok) {
-          throw new Error('เนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธฅเธเธเนเธญเธกเธนเธฅเธเธฒเธเธเนเธญเธกเธนเธฅเนเธ”เน');
+          throw new Error('ไม่สามารถลบข้อมูลฐานข้อมูลได้');
         }
         localStorage.removeItem('it_dashboard_data');
         localStorage.removeItem('it_dashboard_assets');
@@ -3099,11 +3099,11 @@ function Dashboard() {
         setConsoleMonth('2026-07');
         setEditingAssetSn(null);
         setEditingTicketSn(null);
-        alert('เธฅเธเธเนเธญเธกเธนเธฅเธ—เธฑเนเธเธซเธกเธ”เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง เธฃเธฐเธเธเธงเนเธฒเธเน€เธเธฅเนเธฒเน€เธซเธกเธทเธญเธเน€เธฃเธดเนเธกเธ•เนเธเนเธซเธกเน');
+        alert('ลบข้อมูลทั้งหมดเรียบร้อยแล้ว ระบบว่างเปล่าเหมือนเริ่มต้นใหม่');
         window.location.reload();
       } catch (error) {
         console.error('Error resetting database:', error);
-        alert('เน€เธเธดเธ”เธเนเธญเธเธดเธ”เธเธฅเธฒเธ”เนเธเธเธฒเธฃเธฅเธเธเนเธญเธกเธนเธฅ: ' + error.message);
+        alert('เกิดข้อผิดพลาดในการลบข้อมูล: ' + error.message);
       }
     }
   };
@@ -3113,11 +3113,11 @@ function Dashboard() {
     if (larkFormType === 'ticket') {
       if (larkTicketRole === 'it') {
         if (!selectedPendingTicketSn) {
-          alert('เธเธฃเธธเธ“เธฒเน€เธฅเธทเธญเธเนเธเธเธฒเธเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเธเธดเธ”เธเธฒเธ');
+          alert('กรุณาเลือกใบงานที่ต้องการปิดงาน');
           return;
         }
         if (!larkTicketResponder) {
-          alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธเธทเนเธญเธเธนเนเธ”เธณเน€เธเธดเธเธเธฒเธ (เธเนเธฒเธ IT)');
+          alert('กรุณากรอกชื่อผู้ดำเนินงาน (ช่าง IT)');
           return;
         }
         
@@ -3135,7 +3135,7 @@ function Dashboard() {
             })
           });
           const result = await response.json();
-          if (!response.ok) throw new Error(result.error || 'เธเธดเธ”เธเธฒเธเนเธกเนเธชเธณเน€เธฃเนเธ');
+          if (!response.ok) throw new Error(result.error || 'ปิดงานไม่สำเร็จ');
           await refreshOperationalStateFromDb();
         } catch (error) {
           alert(error.message);
@@ -3147,19 +3147,19 @@ function Dashboard() {
         setLarkTicketDuration('00:30');
         setLarkTicketCause('');
         setLarkTicketCost('0');
-        setLarkTicketStatus('เน€เธชเธฃเนเธเธชเธดเนเธ');
+        setLarkTicketStatus('เสร็จสิ้น');
         setLarkSubmitted(true);
       } else {
         // User Submit Mode
         if (!larkTicketIssue) {
-          alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธญเธฒเธเธฒเธฃเน€เธชเธตเธข/เธเธฑเธเธซเธฒ');
+          alert('กรุณากรอกอาการเสีย/ปัญหา');
           return;
         }
         const linkedAsset = larkTicketAssetSerial
           ? assetsList.find(asset => String(asset.deviceSerial || '').toLocaleLowerCase('th-TH') === larkTicketAssetSerial.trim().toLocaleLowerCase('th-TH'))
           : null;
         if (larkTicketAssetSerial && !linkedAsset) {
-          alert('เนเธกเนเธเธเธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธเธเธตเนเนเธเธ—เธฐเน€เธเธตเธขเธเธ—เธฃเธฑเธเธขเนเธชเธดเธ');
+          alert('ไม่พบหมายเลขเครื่องนี้ในทะเบียนทรัพย์สิน');
           return;
         }
         try {
@@ -3167,8 +3167,8 @@ function Dashboard() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name: larkTicketComplainant || 'เนเธกเนเธฃเธฐเธเธธเธเธทเนเธญ',
-              department: linkedAsset?.position || 'เนเธกเนเธฃเธฐเธเธธ',
+              name: larkTicketComplainant || 'ไม่ระบุชื่อ',
+              department: linkedAsset?.position || 'ไม่ระบุ',
               date: `${currentMonth}-01`,
               deviceType: linkedAsset?.itemType || 'Other',
               assetSerial: larkTicketAssetSerial.trim(),
@@ -3179,7 +3179,7 @@ function Dashboard() {
             })
           });
           const result = await response.json();
-          if (!response.ok) throw new Error(result.error || 'เธเธฑเธเธ—เธถเธเธเธณเธฃเนเธญเธเนเธกเนเธชเธณเน€เธฃเนเธ');
+          if (!response.ok) throw new Error(result.error || 'บันทึกคำร้องไม่สำเร็จ');
           await Promise.all([refreshOperationalStateFromDb(), loadAssetRequests()]);
         } catch (error) {
           alert(error.message);
@@ -3196,13 +3196,13 @@ function Dashboard() {
       }
     } else {
       if (!larkAssetItemType) {
-        alert('เธเธฃเธธเธ“เธฒเธเธฃเธญเธเธเธฃเธฐเน€เธ เธ—เธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ');
+        alert('กรุณากรอกประเภทอุปกรณ์หลัก');
         return;
       }
       const newAsset = {
         sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
         date: new Date().toLocaleDateString('th-TH'),
-        user: larkAssetUser || 'เธชเนเธงเธเธเธฅเธฒเธ',
+        user: larkAssetUser || 'ส่วนกลาง',
         position: larkAssetPosition || '-',
         itemType: larkAssetItemType,
         deviceSerial: larkAssetSerial || '-',
@@ -3221,7 +3221,7 @@ function Dashboard() {
       setLarkAssetPosition('');
       setLarkAssetItemType('');
       setLarkAssetSerial('');
-      setLarkAssetStatus('เนเธเนเธเธฒเธ');
+      setLarkAssetStatus('ใช้งาน');
       setLarkAssetNotes('');
       setLarkSubmitted(true);
     }
@@ -3281,7 +3281,7 @@ function Dashboard() {
         };
         assetsToSave = assetsList.map(asset => asset.sn === editingAssetSn ? {
           ...asset,
-          user: newAssetUser || 'เธชเนเธงเธเธเธฅเธฒเธ',
+          user: newAssetUser || 'ส่วนกลาง',
           position: newAssetPosition || '-',
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
@@ -3306,9 +3306,9 @@ function Dashboard() {
           [consoleMonth]: {
             ...data[consoleMonth],
             totalAssets: assetsToSave.length,
-            assetsBroken: assetsToSave.filter(asset => asset.status === 'เธฃเธญเธเนเธญเธก').length,
-            assetsLost: assetsToSave.filter(asset => asset.status === 'เธชเธนเธเธซเธฒเธข').length,
-            assetsVacant: assetsToSave.filter(asset => asset.status === 'เธงเนเธฒเธ').length
+            assetsBroken: assetsToSave.filter(asset => asset.status === 'รอซ่อม').length,
+            assetsLost: assetsToSave.filter(asset => asset.status === 'สูญหาย').length,
+            assetsVacant: assetsToSave.filter(asset => asset.status === 'ว่าง').length
           }
         };
       }
@@ -3329,7 +3329,7 @@ function Dashboard() {
           })
         });
         const assetResult = await assetResponse.json();
-        if (!assetResponse.ok) throw new Error(assetResult.error || 'เนเธเนเนเธเธชเธ–เธฒเธเธฐเธ—เธฃเธฑเธเธขเนเธชเธดเธเนเธกเนเธชเธณเน€เธฃเนเธ');
+        if (!assetResponse.ok) throw new Error(assetResult.error || 'แก้ไขสถานะทรัพย์สินไม่สำเร็จ');
       }
       const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
       if (!response.ok) throw new Error(`API server returned ${response.status}`);
@@ -3345,7 +3345,7 @@ function Dashboard() {
         setNewAssetItemType('');
         setNewAssetAdditionalEquipment('');
         setNewAssetSerial('');
-        setNewAssetStatus('เนเธเนเธเธฒเธ');
+        setNewAssetStatus('ใช้งาน');
         setNewAssetNotes('');
         setNewAssetSubmittedOn('');
         setNewAssetRespondent('');
@@ -3359,11 +3359,11 @@ function Dashboard() {
         setNewAssetWarrantyExpiry('');
         setNewAssetCost('');
       }
-      setConsoleSaveMessage('เธเธฑเธเธ—เธถเธเธชเธณเน€เธฃเนเธเนเธฅเธฐเธญเธฑเธเน€เธ”เธ•เนเธ”เธเธเธญเธฃเนเธ”เนเธฅเนเธง');
+      setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตแดชบอร์ดแล้ว');
     } catch (error) {
       console.error('Failed to save console changes:', error);
       const databaseUnavailable = [500, 502, 503].includes(Number(error?.status)) ||
-        /500|502|503|internal server error|database|connection|เน€เธเธทเนเธญเธกเธ•เนเธญ/i.test(String(error?.message || ''));
+        /500|502|503|internal server error|database|connection|เชื่อมต่อ/i.test(String(error?.message || ''));
       if (databaseUnavailable && editingAssetSn !== null && pendingAssetPatch) {
         localStorage.setItem('it_dashboard_pending_sync', JSON.stringify({
           type: 'asset_patch',
@@ -3374,11 +3374,11 @@ function Dashboard() {
         setData(dataToSave);
         setAssetsList(assetsToSave);
         if (editingAssetSn !== null) handleCancelEditAsset();
-        setConsoleSaveMessage('เธเธฑเธเธ—เธถเธเธซเธกเธฒเธขเน€เธซเธ•เธธเนเธงเนเนเธเน€เธเธฃเธทเนเธญเธเนเธฅเนเธง เนเธฅเธฐเธเธฐเธเธดเธเธเนเธเธถเนเธเธเธฒเธเธเนเธญเธกเธนเธฅเธญเธฑเธ•เนเธเธกเธฑเธ•เธดเน€เธกเธทเนเธญเธฃเธฐเธเธเธเธฃเนเธญเธก');
+        setConsoleSaveMessage('บันทึกหมายเหตุไว้ในเครื่องแล้ว และจะซิงค์ขึ้นฐานข้อมูลอัตโนมัติเมื่อระบบพร้อม');
       } else if (databaseUnavailable) {
-        setConsoleSaveMessage('เธขเธฑเธเนเธกเนเธเธฑเธเธ—เธถเธ: เธเธฒเธเธเนเธญเธกเธนเธฅเนเธกเนเธเธฃเนเธญเธกเนเธเนเธเธฒเธ เธเธฃเธธเธ“เธฒเธ•เธฃเธงเธเธชเธญเธ Render PostgreSQL เนเธฅเนเธงเธฅเธญเธเนเธซเธกเน');
+        setConsoleSaveMessage('ยังไม่บันทึก: ฐานข้อมูลไม่พร้อมใช้งาน กรุณาตรวจสอบ Render PostgreSQL แล้วลองใหม่');
       } else {
-        setConsoleSaveMessage(`เธเธฑเธเธ—เธถเธเนเธกเนเธชเธณเน€เธฃเนเธ: ${error?.message || 'เธเธฃเธธเธ“เธฒเธฅเธญเธเนเธซเธกเน'}`);
+        setConsoleSaveMessage(`บันทึกไม่สำเร็จ: ${error?.message || 'กรุณาลองใหม่'}`);
       }
     } finally {
       isPendingSyncRef.current = false;
@@ -3404,10 +3404,10 @@ function Dashboard() {
     count: assetsList.filter((asset) => category.match(String(asset.itemType || ''))).length,
   }));
 
-  const vacantStockAssets = assetsList.filter((asset) => asset.status === 'เธงเนเธฒเธ');
+  const vacantStockAssets = assetsList.filter((asset) => asset.status === 'ว่าง');
   const vacantStockCount = vacantStockAssets.length;
   const vacantStockBreakdown = Array.from(vacantStockAssets.reduce((groups, asset) => {
-    const type = String(asset.itemType || 'เนเธกเนเธฃเธฐเธเธธ').trim() || 'เนเธกเนเธฃเธฐเธเธธ';
+    const type = String(asset.itemType || 'ไม่ระบุ').trim() || 'ไม่ระบุ';
     const mainCategory = mainAssetCategories.find((category) => category.match(type));
     const label = mainCategory?.label || type;
     groups.set(label, (groups.get(label) || 0) + 1);
@@ -3437,7 +3437,7 @@ function Dashboard() {
     const type = String(asset.itemType || '');
     const category = mainAssetCategories.find((item) => item.match(type));
     const startDate = parseAssetDate(asset.purchaseDate) || parseAssetDate(asset.date);
-    if (!category || !startDate || asset.status === 'เธชเธนเธเธซเธฒเธข') return false;
+    if (!category || !startDate || asset.status === 'สูญหาย') return false;
 
     const modelExpiryDate = new Date(startDate);
     modelExpiryDate.setFullYear(modelExpiryDate.getFullYear() + category.usefulLifeYears);
@@ -3489,7 +3489,7 @@ function Dashboard() {
       paymentDate: softwarePaymentDate.trim(),
       registeredEmail: softwareRegisteredEmail.trim(),
       currentUsers: softwareCurrentUsers.trim(),
-      status: 'เนเธเนเธเธฒเธ',
+      status: 'ใช้งาน',
       isLicenseRecord: true,
     };
     if (!license.name) return;
@@ -3522,7 +3522,7 @@ function Dashboard() {
   };
 
   const deleteSoftwareLicense = (index) => {
-    if (!window.confirm('เธ•เนเธญเธเธเธฒเธฃเธฅเธเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ” License เธเธตเนเนเธเนเธซเธฃเธทเธญเนเธกเน?')) return;
+    if (!window.confirm('ต้องการลบรายละเอียด License นี้ใช่หรือไม่?')) return;
     setData((previous) => {
       const monthData = previous[currentMonth] || { ...initialDashboardData['2026-07'] };
       const currentList = monthData.softwareExpiringDetails || [];
@@ -3555,7 +3555,7 @@ function Dashboard() {
       assetChartInst.current = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: ['เธเธเธ•เธด', 'เนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ', 'เธเธณเธฃเธธเธ”', 'เธชเธนเธเธซเธฒเธข'],
+          labels: ['ปกติ', 'ใกล้หมดอายุ', 'ชำรุด', 'สูญหาย'],
           datasets: [{
             data: [normalAssets, primaryExpiringAssets, activeData.assetsBroken, activeData.assetsLost],
             backgroundColor: [
@@ -3593,17 +3593,17 @@ function Dashboard() {
       softwareChartInst.current = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['เธชเธดเธ—เธเธดเนเนเธเนเธเธฒเธ (Licenses)'],
+          labels: ['สิทธิ์ใช้งาน (Licenses)'],
           datasets: [
             {
-              label: 'เนเธเนเธเธฒเธเธญเธขเธนเน (In Use)',
+              label: 'ใช้งานอยู่ (In Use)',
               data: [calculatedLicensesInUse],
               backgroundColor: 'rgba(59, 130, 246, 0.75)',
               borderColor: '#3b82f6',
               borderWidth: 1
             },
             {
-              label: 'เธงเนเธฒเธ (Vacant)',
+              label: 'ว่าง (Vacant)',
               data: [calculatedLicensesVacant],
               backgroundColor: 'rgba(6, 182, 212, 0.75)',
               borderColor: '#06b6d4',
@@ -3654,7 +3654,7 @@ function Dashboard() {
         data: {
           labels: depts,
           datasets: [{
-            label: 'เธเนเธฒเนเธเนเธเนเธฒเธขเธเนเธญเธก (เธเธฒเธ—)',
+            label: 'ค่าใช้จ่ายซ่อม (บาท)',
             data: values,
             backgroundColor: 'rgba(245, 158, 11, 0.7)',
             borderColor: '#f59e0b',
@@ -3696,38 +3696,38 @@ function Dashboard() {
 
   // Define the field mapping for the main "Dashboard" sheet
   const FIELD_MAP = [
-    { key: 'monthName', header: 'เน€เธ”เธทเธญเธ (Month Name)', example: 'เธเธฃเธเธเธฒเธเธก 2026' },
-    { key: 'monthKey', header: 'เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key, เน€เธเนเธ 2026-07)', example: '2026-07' },
+    { key: 'monthName', header: 'เดือน (Month Name)', example: 'กรกฎาคม 2026' },
+    { key: 'monthKey', header: 'รหัสเดือน (Month Key, เช่น 2026-07)', example: '2026-07' },
     // Asset
-    { key: 'totalAssets', header: 'เธเธณเธเธงเธเธญเธธเธเธเธฃเธ“เนเธ—เธฑเนเธเธซเธกเธ”', example: 1450 },
-    { key: 'assetValue', header: 'เธกเธนเธฅเธเนเธฒเธ—เธฃเธฑเธเธขเนเธชเธดเธ IT (เธเธฒเธ—)', example: 85200000 },
-    { key: 'assetsExpiring', header: 'เธญเธธเธเธเธฃเธ“เนเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ', example: 38 },
-    { key: 'assetsBroken', header: 'เธญเธธเธเธเธฃเธ“เนเธเธณเธฃเธธเธ”', example: 8 },
-    { key: 'assetsLost', header: 'เธญเธธเธเธเธฃเธ“เนเธชเธนเธเธซเธฒเธข', example: 1 },
+    { key: 'totalAssets', header: 'จำนวนอุปกรณ์ทั้งหมด', example: 1450 },
+    { key: 'assetValue', header: 'มูลค่าทรัพย์สิน IT (บาท)', example: 85200000 },
+    { key: 'assetsExpiring', header: 'อุปกรณ์ใกล้หมดอายุ', example: 38 },
+    { key: 'assetsBroken', header: 'อุปกรณ์ชำรุด', example: 8 },
+    { key: 'assetsLost', header: 'อุปกรณ์สูญหาย', example: 1 },
     // Support
-    { key: 'ticketsCount', header: 'เธเธณเธเธงเธ Ticket', example: 280 },
+    { key: 'ticketsCount', header: 'จำนวน Ticket', example: 280 },
     { key: 'slaPercent', header: 'SLA Compliance (%)', example: 98.8 },
-    { key: 'responseTime', header: 'Response Time เน€เธเธฅเธตเนเธข (เธเธฒเธ—เธต)', example: 8 },
-    { key: 'resolutionTime', header: 'Resolution Time เน€เธเธฅเธตเนเธข (เธเธก.)', example: 1.8 },
-    { key: 'csat', header: 'CSAT เธเธฐเนเธเธเธเธงเธฒเธกเธเธถเธเธเธญเนเธ (เธเธฒเธ 5)', example: 4.9 },
+    { key: 'responseTime', header: 'Response Time เฉลี่ย (นาที)', example: 8 },
+    { key: 'resolutionTime', header: 'Resolution Time เฉลี่ย (ชม.)', example: 1.8 },
+    { key: 'csat', header: 'CSAT คะแนนความพึงพอใจ (จาก 5)', example: 4.9 },
     // Software
-    { key: 'totalSoftware', header: 'เนเธเธฃเนเธเธฃเธกเธ—เธฑเนเธเธซเธกเธ”', example: 45 },
-    { key: 'licensesInUse', header: 'License เนเธเนเธเธฒเธ', example: 2450 },
-    { key: 'licensesVacant', header: 'License เธงเนเธฒเธ', example: 350 },
-    { key: 'softwareCost', header: 'เธเนเธฒเนเธเนเธเนเธฒเธข Software (เธเธฒเธ—/เน€เธ”เธทเธญเธ)', example: 1280000 },
-    { key: 'softwareExpiring', header: 'เนเธเธฃเนเธเธฃเธกเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ', example: 3 },
+    { key: 'totalSoftware', header: 'โปรแกรมทั้งหมด', example: 45 },
+    { key: 'licensesInUse', header: 'License ใช้งาน', example: 2450 },
+    { key: 'licensesVacant', header: 'License ว่าง', example: 350 },
+    { key: 'softwareCost', header: 'ค่าใช้จ่าย Software (บาท/เดือน)', example: 1280000 },
+    { key: 'softwareExpiring', header: 'โปรแกรมใกล้หมดอายุ', example: 3 },
     // Security
-    { key: 'backupSuccess', header: 'Backup เธชเธณเน€เธฃเนเธ (%)', example: 99.98 },
-    { key: 'securityIncidents', header: 'Security Incident (เธเธฃเธฑเนเธ)', example: 0 },
+    { key: 'backupSuccess', header: 'Backup สำเร็จ (%)', example: 99.98 },
+    { key: 'securityIncidents', header: 'Security Incident (ครั้ง)', example: 0 },
     { key: 'antivirusCoverage', header: 'Antivirus Coverage (%)', example: 100 },
     { key: 'mfaCoverage', header: 'MFA Coverage (%)', example: 100 },
     // Repair
-    { key: 'repairCount', header: 'เธเธณเธเธงเธเธเธฒเธฃเธเนเธญเธก', example: 12 },
-    { key: 'repairCost', header: 'เธเนเธฒเนเธเนเธเนเธฒเธขเธเธฒเธฃเธเนเธญเธก (เธเธฒเธ—)', example: 145000 },
+    { key: 'repairCount', header: 'จำนวนการซ่อม', example: 12 },
+    { key: 'repairCost', header: 'ค่าใช้จ่ายการซ่อม (บาท)', example: 145000 },
     // Improvement
-    { key: 'automationsDone', header: 'Automation เธ—เธตเนเธ—เธณเน€เธชเธฃเนเธ', example: 5 },
-    { key: 'aiApps', header: 'AI เธ—เธตเนเธเธณเธกเธฒเนเธเน', example: 4 },
-    { key: 'hoursSaved', header: 'เธเธฑเนเธงเนเธกเธเธ—เธตเนเธฅเธ”เธฅเธเธเธฒเธ Automation', example: 320 },
+    { key: 'automationsDone', header: 'Automation ที่ทำเสร็จ', example: 5 },
+    { key: 'aiApps', header: 'AI ที่นำมาใช้', example: 4 },
+    { key: 'hoursSaved', header: 'ชั่วโมงที่ลดลงจาก Automation', example: 320 },
   ];
 
   // Download a blank .xlsx template
@@ -3742,58 +3742,58 @@ function Dashboard() {
     dashWs['!cols'] = dashHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
     XLSX.utils.book_append_sheet(wb, dashWs, 'Dashboard');
 
-    // Sheet 2: Top 10 เธญเธธเธเธเธฃเธ“เนเน€เธชเธตเธขเธเนเธญเธข
-    const repairHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key)', 'เธเธทเนเธญเธญเธธเธเธเธฃเธ“เน', 'เธเธณเธเธงเธเธเธฃเธฑเนเธเธ—เธตเนเน€เธชเธตเธข', 'เธเนเธฒเนเธเนเธเนเธฒเธขเธเนเธญเธก (เธเธฒเธ—)'];
+    // Sheet 2: Top 10 อุปกรณ์เสียบ่อย
+    const repairHeaders = ['รหัสเดือน (Month Key)', 'ชื่ออุปกรณ์', 'จำนวนครั้งที่เสีย', 'ค่าใช้จ่ายซ่อม (บาท)'];
     const repairExample = ['2026-07', 'Google TPU v5e Node', 4, 80000];
     const repairWs = XLSX.utils.aoa_to_sheet([repairHeaders, repairExample]);
     repairWs['!cols'] = repairHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
-    XLSX.utils.book_append_sheet(wb, repairWs, 'Top10 เธญเธธเธเธเธฃเธ“เนเน€เธชเธตเธขเธเนเธญเธข');
+    XLSX.utils.book_append_sheet(wb, repairWs, 'Top10 อุปกรณ์เสียบ่อย');
 
-    // Sheet 3: เธเนเธฒเนเธเนเธเนเธฒเธขเธ•เนเธญเนเธเธเธ
-    const deptHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key)', 'เธเธทเนเธญเนเธเธเธ', 'เธเนเธฒเนเธเนเธเนเธฒเธขเธเนเธญเธก (เธเธฒเธ—)'];
+    // Sheet 3: ค่าใช้จ่ายต่อแผนก
+    const deptHeaders = ['รหัสเดือน (Month Key)', 'ชื่อแผนก', 'ค่าใช้จ่ายซ่อม (บาท)'];
     const deptExample = ['2026-07', 'AI Research', 85000];
     const deptWs = XLSX.utils.aoa_to_sheet([deptHeaders, deptExample]);
     deptWs['!cols'] = deptHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
-    XLSX.utils.book_append_sheet(wb, deptWs, 'เธเนเธฒเนเธเนเธเนเธฒเธขเธ•เนเธญเนเธเธเธ');
+    XLSX.utils.book_append_sheet(wb, deptWs, 'ค่าใช้จ่ายต่อแผนก');
 
-    // Sheet 4: เนเธเธฃเธเธเธฒเธฃเธ—เธตเนเธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ
-    const projHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key)', 'เธเธทเนเธญเนเธเธฃเธเธเธฒเธฃ', 'เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธเธงเธฒเธกเธเธทเธเธซเธเนเธฒ'];
-    const projExample = ['2026-07', 'Gemini Auto-IT Agent', 'เธเธณเนเธกเน€เธ”เธฅ Gemini เธกเธฒเธเนเธงเธขเธ•เธญเธเนเธฅเธฐเนเธเนเธเธฑเธเธซเธฒเนเธญเธ—เธต เธเธทเธเธซเธเนเธฒ 85%'];
+    // Sheet 4: โครงการที่กำลังดำเนินการ
+    const projHeaders = ['รหัสเดือน (Month Key)', 'ชื่อโครงการ', 'รายละเอียดความคืบหน้า'];
+    const projExample = ['2026-07', 'Gemini Auto-IT Agent', 'นำโมเดล Gemini มาช่วยตอบและแก้ปัญหาไอที คืบหน้า 85%'];
     const projWs = XLSX.utils.aoa_to_sheet([projHeaders, projExample]);
     projWs['!cols'] = projHeaders.map(h => ({ wch: Math.max(h.length + 4, 25) }));
-    XLSX.utils.book_append_sheet(wb, projWs, 'เนเธเธฃเธเธเธฒเธฃเธ”เธณเน€เธเธดเธเธเธฒเธฃ');
+    XLSX.utils.book_append_sheet(wb, projWs, 'โครงการดำเนินการ');
 
     // Sheet 5: Recommendation
-    const recHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key)', 'เธเนเธญเน€เธชเธเธญเนเธเธฐ'];
-    const recExample = ['2026-07', 'เนเธเธฐเธเธณเธเธฑเธ”เธ—เธณเนเธเธเธเธเธเธฃเธฐเธกเธฒเธ“เน€เธเธทเนเธญเน€เธเธฅเธตเนเธขเธเธเนเธฒเธเธเธฒเธ TPU v4 Nodes'];
+    const recHeaders = ['รหัสเดือน (Month Key)', 'ข้อเสนอแนะ'];
+    const recExample = ['2026-07', 'แนะนำจัดทำแผนงบประมาณเพื่อเปลี่ยนผ่านจาก TPU v4 Nodes'];
     const recWs = XLSX.utils.aoa_to_sheet([recHeaders, recExample]);
     recWs['!cols'] = recHeaders.map(h => ({ wch: Math.max(h.length + 4, 40) }));
     XLSX.utils.book_append_sheet(wb, recWs, 'Recommendation');
 
-    // Sheet 6: เธญเธธเธเธเธฃเธ“เนเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ (Expiring Assets Details)
-    const expAssetHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key)', 'เธฃเธซเธฑเธชเธ—เธฃเธฑเธเธขเนเธชเธดเธ', 'เธเธฃเธฐเน€เธ เธ—', 'เธฃเธธเนเธ/เนเธกเน€เธ”เธฅ', 'เนเธเธเธ', 'เธงเธฑเธเธ—เธตเนเธซเธกเธ”เธญเธฒเธขเธธ'];
-    const expAssetExample = ['2026-07', 'AST-TPU-042', 'Server Node', 'Google TPU v4 Node', 'AI Research', '10 เธช.เธ. 2026'];
+    // Sheet 6: อุปกรณ์ใกล้หมดอายุ (Expiring Assets Details)
+    const expAssetHeaders = ['รหัสเดือน (Month Key)', 'รหัสทรัพย์สิน', 'ประเภท', 'รุ่น/โมเดล', 'แผนก', 'วันที่หมดอายุ'];
+    const expAssetExample = ['2026-07', 'AST-TPU-042', 'Server Node', 'Google TPU v4 Node', 'AI Research', '10 ส.ค. 2026'];
     const expAssetWs = XLSX.utils.aoa_to_sheet([expAssetHeaders, expAssetExample]);
     expAssetWs['!cols'] = expAssetHeaders.map(h => ({ wch: Math.max(h.length + 4, 20) }));
-    XLSX.utils.book_append_sheet(wb, expAssetWs, 'เธญเธธเธเธเธฃเธ“เนเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ');
+    XLSX.utils.book_append_sheet(wb, expAssetWs, 'อุปกรณ์ใกล้หมดอายุ');
 
-    // Sheet 7: เนเธเธฃเนเธเธฃเธกเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ (Expiring Software Details)
-    const expSwHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ (Month Key)', 'เธเธทเนเธญเธเธญเธเธ•เนเนเธงเธฃเน', 'เธเธณเธเธงเธ Licenses', 'เธงเธฑเธเธซเธกเธ”เธชเธฑเธเธเธฒ', 'เธชเธ–เธฒเธเธฐ'];
-    const expSwExample = ['2026-07', 'Google Cloud Platform', 500, '15 เธช.เธ. 2026', 'เนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ'];
+    // Sheet 7: โปรแกรมใกล้หมดอายุ (Expiring Software Details)
+    const expSwHeaders = ['รหัสเดือน (Month Key)', 'ชื่อซอฟต์แวร์', 'จำนวน Licenses', 'วันหมดสัญญา', 'สถานะ'];
+    const expSwExample = ['2026-07', 'Google Cloud Platform', 500, '15 ส.ค. 2026', 'ใกล้หมดอายุ'];
     const expSwWs = XLSX.utils.aoa_to_sheet([expSwHeaders, expSwExample]);
     expSwWs['!cols'] = expSwHeaders.map(h => ({ wch: Math.max(h.length + 4, 22) }));
-    XLSX.utils.book_append_sheet(wb, expSwWs, 'เนเธเธฃเนเธเธฃเธกเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ');
+    XLSX.utils.book_append_sheet(wb, expSwWs, 'โปรแกรมใกล้หมดอายุ');
 
     XLSX.writeFile(wb, 'IT_Dashboard_Template.xlsx');
   };
 
   const exportAssetsToExcel = (assetsToExport, monthToExport) => {
     if (!assetsToExport || assetsToExport.length === 0) {
-      alert('เนเธกเนเธกเธตเธเนเธญเธกเธนเธฅเธชเธณเธซเธฃเธฑเธ Export');
+      alert('ไม่มีข้อมูลสำหรับ Export');
       return;
     }
     const wb = XLSX.utils.book_new();
-    const headers = ['Number', 'เธงเธฑเธเธ—เธตเน Submit', 'เธเธนเนเธฃเธฑเธเธเธดเธ”เธเธญเธ', 'เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ', 'เธเธนเนเน€เธเธดเธเนเธเนเธเธฒเธ', 'เธ•เธณเนเธซเธเนเธ/เนเธเธเธ', 'เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ', 'เธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก', 'เธเธญเธเธ•เนเนเธงเธฃเน/App', 'เธญเธตเน€เธกเธฅเธ—เธตเนเธฅเธเธ—เธฐเน€เธเธตเธขเธ', 'เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เน', 'เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก', 'เธเธณเธซเธเธ”เธเธทเธ', 'เธชเธ–เธฒเธเธฐ', 'เธซเธกเธฒเธขเน€เธซเธ•เธธ', 'เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ', 'เธงเธฑเธเธ—เธตเนเธเธทเนเธญ', 'เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ', 'เธเนเธฒเนเธเนเธเนเธฒเธข'];
+    const headers = ['Number', 'วันที่ Submit', 'ผู้รับผิดชอบ', 'วันที่เบิกใช้งาน', 'ผู้เบิกใช้งาน', 'ตำแหน่ง/แผนก', 'รายการอุปกรณ์หลัก', 'อุปกรณ์เพิ่มเติม', 'ซอฟต์แวร์/App', 'อีเมลที่ลงทะเบียน', 'หมายเลขอุปกรณ์', 'หมายเลขอุปกรณ์เพิ่มเติม', 'กำหนดคืน', 'สถานะ', 'หมายเหตุ', 'วันที่ตรวจสอบ', 'วันที่ซื้อ', 'วันหมดประกัน', 'ค่าใช้จ่าย'];
     
     const rows = assetsToExport.map((asset, idx) => [
       idx + 1,
@@ -3850,7 +3850,7 @@ function Dashboard() {
     XLSX.utils.book_append_sheet(wb, dashWs, 'Dashboard');
 
     // Sheet 2: Top 10 broken devices (all months)
-    const repairHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ', 'เธเธทเนเธญเธญเธธเธเธเธฃเธ“เน', 'เธเธณเธเธงเธเธเธฃเธฑเนเธเธ—เธตเนเน€เธชเธตเธข', 'เธเนเธฒเนเธเนเธเนเธฒเธขเธเนเธญเธก (เธเธฒเธ—)'];
+    const repairHeaders = ['รหัสเดือน', 'ชื่ออุปกรณ์', 'จำนวนครั้งที่เสีย', 'ค่าใช้จ่ายซ่อม (บาท)'];
     const repairRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       (d.topBrokenDevices || []).forEach(dev => {
@@ -3859,10 +3859,10 @@ function Dashboard() {
     });
     const repairWs = XLSX.utils.aoa_to_sheet([repairHeaders, ...repairRows]);
     repairWs['!cols'] = repairHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
-    XLSX.utils.book_append_sheet(wb, repairWs, 'Top10 เธญเธธเธเธเธฃเธ“เนเน€เธชเธตเธขเธเนเธญเธข');
+    XLSX.utils.book_append_sheet(wb, repairWs, 'Top10 อุปกรณ์เสียบ่อย');
 
     // Sheet 3: Department costs (all months)
-    const deptHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ', 'เธเธทเนเธญเนเธเธเธ', 'เธเนเธฒเนเธเนเธเนเธฒเธขเธเนเธญเธก (เธเธฒเธ—)'];
+    const deptHeaders = ['รหัสเดือน', 'ชื่อแผนก', 'ค่าใช้จ่ายซ่อม (บาท)'];
     const deptRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       Object.entries(d.deptCosts || {}).forEach(([dept, cost]) => {
@@ -3871,10 +3871,10 @@ function Dashboard() {
     });
     const deptWs = XLSX.utils.aoa_to_sheet([deptHeaders, ...deptRows]);
     deptWs['!cols'] = deptHeaders.map(h => ({ wch: Math.max(h.length + 4, 18) }));
-    XLSX.utils.book_append_sheet(wb, deptWs, 'เธเนเธฒเนเธเนเธเนเธฒเธขเธ•เนเธญเนเธเธเธ');
+    XLSX.utils.book_append_sheet(wb, deptWs, 'ค่าใช้จ่ายต่อแผนก');
 
     // Sheet 4: Ongoing projects (all months)
-    const projHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ', 'เธเธทเนเธญเนเธเธฃเธเธเธฒเธฃ', 'เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธเธงเธฒเธกเธเธทเธเธซเธเนเธฒ'];
+    const projHeaders = ['รหัสเดือน', 'ชื่อโครงการ', 'รายละเอียดความคืบหน้า'];
     const projRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       (d.ongoingProjects || []).forEach(proj => {
@@ -3883,10 +3883,10 @@ function Dashboard() {
     });
     const projWs = XLSX.utils.aoa_to_sheet([projHeaders, ...projRows]);
     projWs['!cols'] = projHeaders.map(h => ({ wch: Math.max(h.length + 4, 25) }));
-    XLSX.utils.book_append_sheet(wb, projWs, 'เนเธเธฃเธเธเธฒเธฃเธ”เธณเน€เธเธดเธเธเธฒเธฃ');
+    XLSX.utils.book_append_sheet(wb, projWs, 'โครงการดำเนินการ');
 
     // Sheet 5: Recommendations (all months)
-    const recHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ', 'เธเนเธญเน€เธชเธเธญเนเธเธฐ'];
+    const recHeaders = ['รหัสเดือน', 'ข้อเสนอแนะ'];
     const recRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       (d.recommendations || []).forEach(rec => {
@@ -3898,7 +3898,7 @@ function Dashboard() {
     XLSX.utils.book_append_sheet(wb, recWs, 'Recommendation');
 
     // Sheet 6: Expiring assets details (all months)
-    const expAssetHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ', 'เธฃเธซเธฑเธชเธ—เธฃเธฑเธเธขเนเธชเธดเธ', 'เธเธฃเธฐเน€เธ เธ—', 'เธฃเธธเนเธ/เนเธกเน€เธ”เธฅ', 'เนเธเธเธ', 'เธงเธฑเธเธ—เธตเนเธซเธกเธ”เธญเธฒเธขเธธ'];
+    const expAssetHeaders = ['รหัสเดือน', 'รหัสทรัพย์สิน', 'ประเภท', 'รุ่น/โมเดล', 'แผนก', 'วันที่หมดอายุ'];
     const expAssetRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       (d.assetsExpiringDetails || []).forEach(a => {
@@ -3907,10 +3907,10 @@ function Dashboard() {
     });
     const expAssetWs = XLSX.utils.aoa_to_sheet([expAssetHeaders, ...expAssetRows]);
     expAssetWs['!cols'] = expAssetHeaders.map(h => ({ wch: Math.max(h.length + 4, 20) }));
-    XLSX.utils.book_append_sheet(wb, expAssetWs, 'เธญเธธเธเธเธฃเธ“เนเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ');
+    XLSX.utils.book_append_sheet(wb, expAssetWs, 'อุปกรณ์ใกล้หมดอายุ');
 
     // Sheet 7: Expiring software details (all months)
-    const expSwHeaders = ['เธฃเธซเธฑเธชเน€เธ”เธทเธญเธ', 'เธเธทเนเธญเธเธญเธเธ•เนเนเธงเธฃเน', 'เธเธณเธเธงเธ Licenses', 'เธงเธฑเธเธซเธกเธ”เธชเธฑเธเธเธฒ', 'เธชเธ–เธฒเธเธฐ'];
+    const expSwHeaders = ['รหัสเดือน', 'ชื่อซอฟต์แวร์', 'จำนวน Licenses', 'วันหมดสัญญา', 'สถานะ'];
     const expSwRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       (d.softwareExpiringDetails || []).forEach(s => {
@@ -3919,7 +3919,7 @@ function Dashboard() {
     });
     const expSwWs = XLSX.utils.aoa_to_sheet([expSwHeaders, ...expSwRows]);
     expSwWs['!cols'] = expSwHeaders.map(h => ({ wch: Math.max(h.length + 4, 22) }));
-    XLSX.utils.book_append_sheet(wb, expSwWs, 'เนเธเธฃเนเธเธฃเธกเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ');
+    XLSX.utils.book_append_sheet(wb, expSwWs, 'โปรแกรมใกล้หมดอายุ');
 
     XLSX.writeFile(wb, `IT_Dashboard_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
   };
@@ -3972,31 +3972,31 @@ function Dashboard() {
 
           const parsedAssets = inventoryRows.map((row, i) => {
             let dateIssued = '';
-            if (row['เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ']) {
-              const dObj = parseExcelDate(row['เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ']);
+            if (row['วันที่เบิกใช้งาน']) {
+              const dObj = parseExcelDate(row['วันที่เบิกใช้งาน']);
               if (dObj) dateIssued = formatDate(dObj);
             }
             
             return {
               sn: row['Nember'] || (i + 1),
               date: dateIssued,
-              user: row['เธเธธเธเธเธฅเน€เธเธดเธเนเธเนเธญเธธเธเธเธฃเธ“เน'] || 'เธชเนเธงเธเธเธฅเธฒเธ/เนเธกเนเธฃเธฐเธเธธ',
-              position: row['เธ•เธณเนเธซเธเนเธ'] || '-',
-              itemType: row['เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ'] || 'เธญเธธเธเธเธฃเธ“เนเน€เธชเธฃเธดเธก/เธญเธทเนเธเน',
-              deviceSerial: row['เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เน (เน€เธเนเธ  Ipad 016)'] || '-',
-              status: row['เธชเธ–เธฒเธเธฐ'] || 'เนเธเนเธเธฒเธ',
-              notes: row['เธซเธกเธฒเธขเน€เธซเธ•เธธ'] || '',
+              user: row['บุคคลเบิกใช้อุปกรณ์'] || 'ส่วนกลาง/ไม่ระบุ',
+              position: row['ตำแหน่ง'] || '-',
+              itemType: row['รายการอุปกรณ์หลัก'] || 'อุปกรณ์เสริม/อื่นๆ',
+              deviceSerial: row['หมายเลขอุปกรณ์ (เช่น  Ipad 016)'] || '-',
+              status: row['สถานะ'] || 'ใช้งาน',
+              notes: row['หมายเหตุ'] || '',
               submittedOn: row['Submitted on'] || '',
               respondent: row['Respondents'] || '',
-              additionalEquipment: row['เธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธกเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเน€เธเธดเธ'] || '',
-              softwareApp: row['เธเธญเธ•เนเธเนเธงเธฃเน/ App'] || '',
-              registeredEmail: row['เน€เธกเธฅเธ—เธตเนเธฅเธเธ—เธฐเน€เธเธตเธขเธ'] || '',
-              additionalSerial: row['เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เน เน€เธเธดเนเธกเน€เธ•เธดเธก  (เน€เธเนเธ  เธชเธฒเธข เธญเธฐเน€เน€เธ”เธเน€เธ•เธญเธฃเน ipad-011))'] || '',
-              returnDueDate: row['เธเธณเธซเธเธ”เธเธทเธเธญเธธเธเธเธฃเธ“เน'] || '',
-              inspectionDate: row['เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ'] || '',
-              purchaseDate: row['เธงเธฑเธเธ—เธตเนเธเธทเนเธญ'] || '',
-              warrantyEndDate: row['เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ'] || '',
-              expense: Number(row['เธเนเธฒเนเธเนเธเนเธฒเธข']) || 0
+              additionalEquipment: row['อุปกรณ์เพิ่มเติมที่ต้องการเบิก'] || '',
+              softwareApp: row['ซอต์ฟแวร์/ App'] || '',
+              registeredEmail: row['เมลที่ลงทะเบียน'] || '',
+              additionalSerial: row['หมายเลขอุปกรณ์ เพิ่มเติม  (เช่น  สาย อะเเดปเตอร์ ipad-011))'] || '',
+              returnDueDate: row['กำหนดคืนอุปกรณ์'] || '',
+              inspectionDate: row['วันที่ตรวจสอบ'] || '',
+              purchaseDate: row['วันที่ซื้อ'] || '',
+              warrantyEndDate: row['วันหมดประกัน'] || '',
+              expense: Number(row['ค่าใช้จ่าย']) || 0
             };
           }).map(repairThaiTextDeep);
 
@@ -4032,12 +4032,12 @@ function Dashboard() {
 
           let calculatedAssetValue = 0;
           inventoryRows.forEach(row => {
-            const cat = String(row['เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ'] || '').trim();
+            const cat = String(row['รายการอุปกรณ์หลัก'] || '').trim();
             calculatedAssetValue += CATEGORY_VALUES[cat] || 1500;
           });
 
-          const brokenInventory = parsedAssets.filter(a => a.status === 'เธฃเธญเธเนเธญเธก').length;
-          const lostInventory = parsedAssets.filter(a => a.status === 'เธชเธนเธเธซเธฒเธข').length;
+          const brokenInventory = parsedAssets.filter(a => a.status === 'รอซ่อม').length;
+          const lostInventory = parsedAssets.filter(a => a.status === 'สูญหาย').length;
 
           // Update data metrics
           setData(prev => {
@@ -4055,7 +4055,7 @@ function Dashboard() {
           });
 
           setAssetsList(parsedAssets);
-          setImportStatus({ type: 'success', message: `เธเธณเน€เธเนเธฒเธเนเธญเธกเธนเธฅเธเธฅเธฑเธเธญเธธเธเธเธฃเธ“เนเธชเธณเน€เธฃเนเธ! เธเธเธญเธธเธเธเธฃเธ“เน ${parsedAssets.length} เธฃเธฒเธขเธเธฒเธฃ` });
+          setImportStatus({ type: 'success', message: `นำเข้าข้อมูลคลังอุปกรณ์สำเร็จ! พบอุปกรณ์ ${parsedAssets.length} รายการ` });
           setTimeout(() => setImportStatus(null), 4000);
           return;
         }
@@ -4063,7 +4063,7 @@ function Dashboard() {
         if (wb.SheetNames.includes('Form')) {
           // --- Parse Custom Form & IT Expenses Structure ---
           const formRows = XLSX.utils.sheet_to_json(wb.Sheets['Form']);
-          const costRows = XLSX.utils.sheet_to_json(wb.Sheets['เธเนเธฒเนเธเนเธเนเธฒเธข IT'] || wb.Sheets[wb.SheetNames[1]]);
+          const costRows = XLSX.utils.sheet_to_json(wb.Sheets['ค่าใช้จ่าย IT'] || wb.Sheets[wb.SheetNames[1]]);
           
           const parseExcelDate = (serial) => {
             if (typeof serial === 'string') {
@@ -4102,8 +4102,8 @@ function Dashboard() {
           };
 
           const THAI_MONTHS = [
-            'เธกเธเธฃเธฒเธเธก', 'เธเธธเธกเธ เธฒเธเธฑเธเธเน', 'เธกเธตเธเธฒเธเธก', 'เน€เธกเธฉเธฒเธขเธ', 'เธเธคเธฉเธ เธฒเธเธก', 'เธกเธดเธ–เธธเธเธฒเธขเธ',
-            'เธเธฃเธเธเธฒเธเธก', 'เธชเธดเธเธซเธฒเธเธก', 'เธเธฑเธเธขเธฒเธขเธ', 'เธ•เธธเธฅเธฒเธเธก', 'เธเธคเธจเธเธดเธเธฒเธขเธ', 'เธเธฑเธเธงเธฒเธเธก'
+            'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+            'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
           ];
 
           const formatDate = (date) => {
@@ -4153,12 +4153,12 @@ function Dashboard() {
                 topBrokenDevices: [],
                 deptCosts: {},
                 softwareExpiringDetails: [
-                  { name: "Microsoft 365 Copilot", licenses: 50, expiringDate: "30 เธช.เธ. 2026", status: "เนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ" },
-                  { name: "Adobe Creative Cloud", licenses: 15, expiringDate: "12 เธ.เธข. 2026", status: "เนเธเนเธเน€เธ•เธทเธญเธเธฅเนเธงเธเธซเธเนเธฒ" }
+                  { name: "Microsoft 365 Copilot", licenses: 50, expiringDate: "30 ส.ค. 2026", status: "ใกล้หมดอายุ" },
+                  { name: "Adobe Creative Cloud", licenses: 15, expiringDate: "12 ก.ย. 2026", status: "แจ้งเตือนล่วงหน้า" }
                 ],
                 assetsExpiringDetails: [
-                  { id: "AST-NB-001", type: "Laptop", model: "Lenovo ThinkPad L14", dept: "Operations", expDate: "15 เธช.เธ. 2026" },
-                  { id: "AST-PR-004", type: "Printer", model: "HP LaserJet Pro M404", dept: "Accounting", expDate: "22 เธช.เธ. 2026" }
+                  { id: "AST-NB-001", type: "Laptop", model: "Lenovo ThinkPad L14", dept: "Operations", expDate: "15 ส.ค. 2026" },
+                  { id: "AST-PR-004", type: "Printer", model: "HP LaserJet Pro M404", dept: "Accounting", expDate: "22 ส.ค. 2026" }
                 ],
                 ongoingProjects: [],
                 recommendations: [],
@@ -4174,7 +4174,7 @@ function Dashboard() {
             const monthData = newData[monthKey];
             monthData.ticketsCount++;
 
-            const durationMins = parseDurationToMinutes(row['เน€เธงเธฅเธฒเธ—เธตเนเนเธเนเนเธเธเธฒเธฃเธ—เธณเธเธฒเธ']);
+            const durationMins = parseDurationToMinutes(row['เวลาที่ใช้ในการทำงาน']);
             if (durationMins > 0) {
               monthData._durationSum += durationMins;
               monthData._durationCount++;
@@ -4186,34 +4186,34 @@ function Dashboard() {
             }
 
             // Determine issue type and save ticket
-            const hwIssue = row['เนเธเนเธ เธฎเธฒเธฃเนเธ”เนเธงเธฃเน เธเธฑเธ”เธเนเธญเธ'];
-            const swIssue = row['เนเธเนเธ เธเธญเธ•เนเธเนเธงเธฃเน เธเธฑเธ”เธเนเธญเธ'] || row['เนเธเนเธ เธะพเธ•เนเธเนเธงเธฃเน เธเธฑเธ”เธเนเธญเธ'];
-            const netIssue = row['เนเธเนเธ เธฃเธฐเธเธเน€เธเนเธ•เน€เธงเธดเธฃเนเธ เธเธฑเธ”เธเนเธญเธ'];
-            const acctIssue = row['เนเธเนเธเธเธญเธเธฑเธเธเธตเธเธฒเธฃเนเธเนเธเธฒเธเธ•เนเธฒเธ / เธเธฑเธ”เธเนเธญเธ'];
+            const hwIssue = row['แจ้ง ฮาร์ดแวร์ ขัดข้อง'];
+            const swIssue = row['แจ้ง ซอต์ฟแวร์ ขัดข้อง'] || row['แจ้ง ซоต์ฟแวร์ ขัดข้อง'];
+            const netIssue = row['แจ้ง ระบบเน็ตเวิร์ค ขัดข้อง'];
+            const acctIssue = row['แจ้งขอบัญชีการใช้งานต่าง / ขัดข้อง'];
             
             let issueSummary = [];
-            if (hwIssue) issueSummary.push(`เธฎเธฒเธฃเนเธ”เนเธงเธฃเน: ${hwIssue}`);
-            if (swIssue) issueSummary.push(`เธเธญเธเธ•เนเนเธงเธฃเน: ${swIssue}`);
-            if (netIssue) issueSummary.push(`เน€เธเนเธ•เน€เธงเธดเธฃเนเธ: ${netIssue}`);
-            if (acctIssue) issueSummary.push(`เธเธฑเธเธเธตเธเธนเนเนเธเน: ${acctIssue}`);
+            if (hwIssue) issueSummary.push(`ฮาร์ดแวร์: ${hwIssue}`);
+            if (swIssue) issueSummary.push(`ซอฟต์แวร์: ${swIssue}`);
+            if (netIssue) issueSummary.push(`เน็ตเวิร์ค: ${netIssue}`);
+            if (acctIssue) issueSummary.push(`บัญชีผู้ใช้: ${acctIssue}`);
             
-            const finalIssueText = issueSummary.join(', ') || row['เธญเธฒเธเธฒเธฃเน€เธชเธตเธขเธ•เนเธฒเธเน'] || 'เนเธเนเธเธ•เธดเธ”เธ•เธฑเนเธ/เธญเธทเนเธเน';
+            const finalIssueText = issueSummary.join(', ') || row['อาการเสียต่างๆ'] || 'แจ้งติดตั้ง/อื่นๆ';
 
             monthData.ticketsList.push({
               sn: row['SN'] || (rowIndex + 1),
               date: formatDate(dateObj),
-              complainant: row['เธเธทเนเธญ-เธเธฒเธกเธชเธเธธเธฅ'] || '',
+              complainant: row['ชื่อ-นามสกุล'] || '',
               email: row['Email'] || '-',
-              anydesk: row['เน€เธฅเธเธ—เธตเน Any Desk'] || '-',
+              anydesk: row['เลขที่ Any Desk'] || '-',
               issue: finalIssueText,
-              cause: row['เธชเธฒเน€เธซเธ•เธธเธเธฒเธฃเน€เธชเธตเธข'] || '-',
-              duration: row['เน€เธงเธฅเธฒเธ—เธตเนเนเธเนเนเธเธเธฒเธฃเธ—เธณเธเธฒเธ'] || '-',
+              cause: row['สาเหตุการเสีย'] || '-',
+              duration: row['เวลาที่ใช้ในการทำงาน'] || '-',
               responder: row['Respondents'] || '-',
-              status: row['เธเธงเธฒเธกเธเธทเธเธซเธเนเธฒ'] || 'เน€เธชเธฃเนเธเธชเธดเนเธ',
-              cost: Number(row['เธเธณเธเธงเธเน€เธเธดเธ']) || 0
+              status: row['ความคืบหน้า'] || 'เสร็จสิ้น',
+              cost: Number(row['จำนวนเงิน']) || 0
             });
 
-            const hwField = row['เนเธเนเธ เธฎเธฒเธฃเนเธ”เนเธงเธฃเน เธเธฑเธ”เธเนเธญเธ'] || row['เนเธเนเธเธ•เธดเธ”เธ•เธฑเนเธ เธฎเธฒเธฃเนเธ”เนเธงเธฃเน'];
+            const hwField = row['แจ้ง ฮาร์ดแวร์ ขัดข้อง'] || row['แจ้งติดตั้ง ฮาร์ดแวร์'];
             if (hwField) {
               const devices = String(hwField).split(',').map(d => d.trim()).filter(Boolean);
               devices.forEach(device => {
@@ -4223,7 +4223,7 @@ function Dashboard() {
                 monthData.repairCount++;
                 monthData._deviceCounts[device] = (monthData._deviceCounts[device] || 0) + 1;
                 
-                const ticketCost = Number(row['เธเธณเธเธงเธเน€เธเธดเธ']) || 0;
+                const ticketCost = Number(row['จำนวนเงิน']) || 0;
                 if (ticketCost > 0) {
                   monthData.repairCost += ticketCost;
                   monthData._deviceCosts[device] = (monthData._deviceCosts[device] || 0) + ticketCost;
@@ -4234,9 +4234,9 @@ function Dashboard() {
 
           if (costRows) {
             costRows.forEach((row, i) => {
-              let dateObj = parseExcelDate(row['เธงเธฑเธเธ—เธตเน']);
-              if (!dateObj && row['เน€เธ”เธทเธญเธ']) {
-                const mIdx = THAI_MONTHS.indexOf(row['เน€เธ”เธทเธญเธ'].trim());
+              let dateObj = parseExcelDate(row['วันที่']);
+              if (!dateObj && row['เดือน']) {
+                const mIdx = THAI_MONTHS.indexOf(row['เดือน'].trim());
                 if (mIdx !== -1) {
                   dateObj = new Date(2026, mIdx, 15);
                 }
@@ -4249,18 +4249,18 @@ function Dashboard() {
               const monthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
               
               if (newData[monthKey]) {
-                const amount = Number(row['เธเธณเธเธงเธเน€เธเธดเธ']) || 0;
+                const amount = Number(row['จำนวนเงิน']) || 0;
                 newData[monthKey].repairCost += amount;
                 newData[monthKey].repairCount++;
                 
                 newData[monthKey].ticketsList.push({
-                  sn: `EXP-${row['เธฅเธณเธ”เธฑเธ'] || (i + 1)}`,
+                  sn: `EXP-${row['ลำดับ'] || (i + 1)}`,
                   date: formatDate(dateObj),
-                  complainant: row['เธเธทเนเธญ-เธเธฒเธกเธชเธเธธเธฅ'] || 'IT Dept',
-                  issue: `เธเนเธฒเนเธเนเธเนเธฒเธข IT: ${row['เธเนเธฒเนเธเนเธเนเธฒเธข'] || 'เธเธทเนเธญเธญเธธเธเธเธฃเธ“เน'} (${row['เธชเธฒเน€เธซเธ•เธธเธเธฒเธฃเน€เธชเธตเธข'] || 'เน€เธชเธทเนเธญเธกเธ•เธฒเธกเธชเธ เธฒเธ'})`,
+                  complainant: row['ชื่อ-นามสกุล'] || 'IT Dept',
+                  issue: `ค่าใช้จ่าย IT: ${row['ค่าใช้จ่าย'] || 'ซื้ออุปกรณ์'} (${row['สาเหตุการเสีย'] || 'เสื่อมตามสภาพ'})`,
                   duration: '-',
                   responder: '-',
-                  status: 'เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง',
+                  status: 'จ่ายเงินแล้ว',
                   cost: amount
                 });
               }
@@ -4328,19 +4328,19 @@ function Dashboard() {
             monthData.aiApps = 2;
             monthData.hoursSaved = monthData.automationsDone * 15;
             monthData.ongoingProjects = [
-              { title: "IT Ticket Automation", desc: `เธเธฑเธ’เธเธฒเธชเธเธฃเธดเธเธ•เนเธเนเธงเธขเธเธฑเธ”เธเธฒเธฃเธเธฑเธเธซเธฒเธเนเธณเธเธฒเธ เธเธทเธเธซเธเนเธฒ ${Math.min(95, 40 + monthData.automationsDone * 5)}%` },
-              { title: "Asset Management System", desc: "เธฃเธฐเธเธเน€เธเนเธเธญเธดเธ-เน€เธเนเธเน€เธญเธฒเธ—เนเธญเธธเธเธเธฃเธ“เนเนเธญเธ—เธต เธเธทเธเธซเธเนเธฒ 60%" }
+              { title: "IT Ticket Automation", desc: `พัฒนาสคริปต์ช่วยจัดการปัญหาซ้ำซาก คืบหน้า ${Math.min(95, 40 + monthData.automationsDone * 5)}%` },
+              { title: "Asset Management System", desc: "ระบบเช็คอิน-เช็คเอาท์อุปกรณ์ไอที คืบหน้า 60%" }
             ];
 
             if (monthData.assetsBroken > 5) {
-              monthData.recommendations.push(`เธเธเธเธฑเธเธซเธฒเธญเธธเธเธเธฃเธ“เนเธเธฑเธ”เธเนเธญเธเธชเธนเธเธ–เธถเธ ${monthData.assetsBroken} เธเธฃเธฑเนเธเนเธเน€เธ”เธทเธญเธเธเธตเน เนเธเธฐเธเธณเธเธฑเธ”เธฃเธญเธเธเธณเธฃเธธเธเธฃเธฑเธเธฉเธฒเน€เธเธดเธเธเนเธญเธเธเธฑเธ (Preventive Maintenance) เนเธ”เธขเน€เธเธเธฒเธฐเธญเธธเธเธเธฃเธ“เนเธเธฃเธฐเน€เธ เธ— ${monthData.topBrokenDevices[0]?.name || 'Notebook'}`);
+              monthData.recommendations.push(`พบปัญหาอุปกรณ์ขัดข้องสูงถึง ${monthData.assetsBroken} ครั้งในเดือนนี้ แนะนำจัดรอบบำรุงรักษาเชิงป้องกัน (Preventive Maintenance) โดยเฉพาะอุปกรณ์ประเภท ${monthData.topBrokenDevices[0]?.name || 'Notebook'}`);
             }
             if (monthData.slaPercent < 95) {
-              monthData.recommendations.push(`เธญเธฑเธ•เธฃเธฒเธเธฒเธฃเธเธฃเธฃเธฅเธธเน€เธเนเธฒเธซเธกเธฒเธข SLA เธฅเธ”เธฅเธเน€เธซเธฅเธทเธญ ${monthData.slaPercent}% เนเธเธฐเธเธณเนเธซเนเธเธฃเธฑเธเธเธฃเธฐเธเธงเธเธเธฒเธฃเธเธฑเธ”เธเธฃเธญเธ Ticket เน€เธเธทเนเธญเน€เธเธดเนเธกเธเธงเธฒเธกเธฃเธงเธ”เน€เธฃเนเธงเนเธเธเธฒเธฃเนเธเนเธเธฑเธเธซเธฒ`);
+              monthData.recommendations.push(`อัตราการบรรลุเป้าหมาย SLA ลดลงเหลือ ${monthData.slaPercent}% แนะนำให้ปรับกระบวนการคัดกรอง Ticket เพื่อเพิ่มความรวดเร็วในการแก้ปัญหา`);
             } else {
-              monthData.recommendations.push("เธเธฒเธฃเธชเธเธฑเธเธชเธเธธเธเธเธนเนเนเธเนเธฃเธฐเธเธ IT เธญเธขเธนเนเนเธเน€เธเธ“เธ‘เนเธ”เธตเน€เธขเธตเนเธขเธก เธชเธฒเธกเธฒเธฃเธ–เธฃเธฑเธเธฉเธฒเธกเธฒเธ•เธฃเธเธฒเธ SLA เนเธ”เนเธ•เธฒเธกเน€เธเนเธฒเธซเธกเธฒเธข");
+              monthData.recommendations.push("การสนับสนุนผู้ใช้ระบบ IT อยู่ในเกณฑ์ดีเยี่ยม สามารถรักษามาตรฐาน SLA ได้ตามเป้าหมาย");
             }
-            monthData.recommendations.push("เนเธเธฐเธเธณเนเธซเนเธเธนเนเนเธเนเธญเธฑเธเน€เธเธฃเธ”เธเธงเธฒเธกเธเธฅเธญเธ”เธ เธฑเธขเธเธญเธเธเธฑเธเธเธตเธเนเธฒเธเธเธฒเธฃเน€เธเธดเธ”เนเธเนเธเธฒเธ MFA เธเธฃเธ 100%");
+            monthData.recommendations.push("แนะนำให้ผู้ใช้อัปเกรดความปลอดภัยของบัญชีผ่านการเปิดใช้งาน MFA ครบ 100%");
 
             delete monthData._durationSum;
             delete monthData._durationCount;
@@ -4352,11 +4352,11 @@ function Dashboard() {
         } else {
           // --- Parse Sheet 1: Dashboard (by column index) ---
           const dashSheet = wb.Sheets[wb.SheetNames[0]];
-          if (!dashSheet) throw new Error('เนเธกเนเธเธ Sheet เนเธฃเธ (Dashboard)');
+          if (!dashSheet) throw new Error('ไม่พบ Sheet แรก (Dashboard)');
           const allRows = XLSX.utils.sheet_to_json(dashSheet, { header: 1 });
           // Skip header row (index 0), data starts from row 1
           const dataRows = allRows.slice(1).filter(r => r && r.length > 1);
-          if (dataRows.length === 0) throw new Error('เนเธกเนเธเธเธเนเธญเธกเธนเธฅเนเธ Sheet Dashboard');
+          if (dataRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
 
           // Column order matches FIELD_MAP: 
           // 0=monthName, 1=monthKey, 2=totalAssets, 3=assetValue, ...
@@ -4494,14 +4494,14 @@ function Dashboard() {
 
         // Update state
         const monthKeys = Object.keys(newData);
-        if (monthKeys.length === 0) throw new Error('เนเธกเนเธเธเธเนเธญเธกเธนเธฅเน€เธ”เธทเธญเธเธ—เธตเนเธชเธฒเธกเธฒเธฃเธ–เธเธณเน€เธเนเธฒเนเธ”เน');
+        if (monthKeys.length === 0) throw new Error('ไม่พบข้อมูลเดือนที่สามารถนำเข้าได้');
 
         setData(newData);
         setCurrentMonth(monthKeys[0]);
-        setImportStatus({ type: 'success', message: `เธเธณเน€เธเนเธฒเธชเธณเน€เธฃเนเธ! เธเธเธเนเธญเธกเธนเธฅ ${monthKeys.length} เน€เธ”เธทเธญเธ` });
+        setImportStatus({ type: 'success', message: `นำเข้าสำเร็จ! พบข้อมูล ${monthKeys.length} เดือน` });
         setTimeout(() => setImportStatus(null), 4000);
       } catch (err) {
-        setImportStatus({ type: 'error', message: `เธเธณเน€เธเนเธฒเธฅเนเธกเน€เธซเธฅเธง: ${err.message}` });
+        setImportStatus({ type: 'error', message: `นำเข้าล้มเหลว: ${err.message}` });
         setTimeout(() => setImportStatus(null), 5000);
       }
     };
@@ -4626,7 +4626,7 @@ function Dashboard() {
     ['pending', 'need_info', 'approved'].includes(request.status)
   ).length;
   const pendingTicketCloseCount = (data[currentMonth]?.ticketsList || []).filter(ticket =>
-    ticket.status === 'เธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ'
+    ticket.status === 'กำลังดำเนินการ'
   ).length;
 
   const pendingTicketsCount = pendingTicketCloseCount;
@@ -4656,10 +4656,10 @@ function Dashboard() {
             className="sidebar-form-btn"
             style={{ position: 'relative' }}
           >
-            เนเธเนเธ Ticket
+            แจ้ง Ticket
             <span
               className={`menu-count-badge sidebar-notification-count ${pendingTicketsCount > 0 ? 'has-items' : ''}`}
-              aria-label={`Ticket เธ—เธตเนเธฃเธญเธ”เธณเน€เธเธดเธเธเธฒเธฃ ${pendingTicketsCount} เธฃเธฒเธขเธเธฒเธฃ`}
+              aria-label={`Ticket ที่รอดำเนินการ ${pendingTicketsCount} รายการ`}
             >
               {pendingTicketsCount}
             </span>
@@ -4670,10 +4670,10 @@ function Dashboard() {
             setActiveModal('assetWorkflow');
           }} className="sidebar-btn" style={{ backgroundColor: '#7c3aed', border: 'none', color: 'white', position: 'relative' }}>
             <Ticket size={16} />
-            เธเธญเน€เธเธดเธเธญเธธเธเธเธฃเธ“เน
+            ขอเบิกอุปกรณ์
             <span
               className={`menu-count-badge sidebar-notification-count ${pendingAssetRequestsCount > 0 ? 'has-items' : ''}`}
-              aria-label={`เธเธณเธเธญเน€เธเธดเธเธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธฃเธญเธญเธเธธเธกเธฑเธ•เธด ${pendingAssetRequestsCount} เธฃเธฒเธขเธเธฒเธฃ`}
+              aria-label={`คำขอเบิกอุปกรณ์ที่รออนุมัติ ${pendingAssetRequestsCount} รายการ`}
             >
               {pendingAssetRequestsCount}
             </span>
@@ -4686,14 +4686,14 @@ function Dashboard() {
             setActiveModal('assetReturns');
           }} className="sidebar-btn asset-return-menu-btn">
             <RotateCcw size={16} />
-            เธเธทเธเธญเธธเธเธเธฃเธ“เน
+            คืนอุปกรณ์
           </button>
 
         </div>
 
         {/* Month Dropdown Selection */}
         <div className="control-group">
-          <label className="control-label">เน€เธฅเธทเธญเธเน€เธ”เธทเธญเธเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเธฃเธฒเธขเธเธฒเธ</label>
+          <label className="control-label">เลือกเดือนที่ต้องการรายงาน</label>
           <select 
             className="month-selector"
             value={currentMonth}
@@ -4711,21 +4711,21 @@ function Dashboard() {
             onClick={() => setSidebarExpanded(prev => ({ ...prev, mgmt: !prev.mgmt }))}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
           >
-            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>๐ ๏ธ เธเธฒเธฃเธเธฑเธ”เธเธฒเธฃเธเนเธญเธกเธนเธฅ</label>
+            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>🛠️ การจัดการข้อมูล</label>
             {sidebarExpanded.mgmt ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
           </div>
           {sidebarExpanded.mgmt && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <button onClick={() => requireAdminAccess(openEditModal)} className="sidebar-btn">
                 <Edit3 size={16} />
-                เนเธเนเนเธเธ•เธฑเธงเน€เธฅเธเน€เธ”เธทเธญเธเธเธตเน
+                แก้ไขตัวเลขเดือนนี้
               </button>
               <button onClick={() => requireAdminAccess(() => {
                 setConsoleMonth(currentMonth);
                 setActiveModal('fullConsole');
               })} className="sidebar-btn secondary">
                 <Database size={16} />
-                เธเธฃเธฑเธเน€เธเธฅเธตเนเธขเธเธเนเธญเธกเธนเธฅเธ—เธฑเนเธเธซเธกเธ”
+                ปรับเปลี่ยนข้อมูลทั้งหมด
               </button>
 
               <button onClick={() => requireAdminAccess(() => {
@@ -4735,14 +4735,14 @@ function Dashboard() {
                 setActiveModal('larkForm');
               })} className="sidebar-btn" style={{ backgroundColor: '#06b6d4', border: 'none', color: 'white' }}>
                 <Laptop size={16} />
-                เธฅเธเธ—เธฐเน€เธเธตเธขเธเน€เธเธฃเธทเนเธญเธเน€เธเนเธฒเธเธฅเธฑเธ
+                ลงทะเบียนเครื่องเข้าคลัง
               </button>
               <button onClick={() => requireAdminAccess(() => {
                 setAssetWorkflowRole('it');
                 setActiveModal('assetWorkflow');
               })} className="sidebar-btn" style={{ backgroundColor: '#4338ca', border: 'none', color: 'white' }}>
                 <ShieldCheck size={16} />
-                IT เธญเธเธธเธกเธฑเธ•เธดเธเธฒเธฃเนเธเนเธเธฒเธ
+                IT อนุมัติการใช้งาน
                 <span className={`menu-count-badge ${pendingAssetApprovalCount > 0 ? 'has-items' : ''}`}>{pendingAssetApprovalCount}</span>
               </button>
               <button onClick={() => requireAdminAccess(() => {
@@ -4753,7 +4753,7 @@ function Dashboard() {
                 setActiveModal('larkForm');
               })} className="sidebar-btn" style={{ backgroundColor: '#f59e0b', border: 'none', color: 'white' }}>
                 <Wrench size={16} />
-                เน€เธกเธเธนเธเธดเธ”เธเธฒเธ (IT Close)
+                เมนูปิดงาน (IT Close)
                 <span className={`menu-count-badge ${pendingTicketCloseCount > 0 ? 'has-items' : ''}`}>{pendingTicketCloseCount}</span>
               </button>
             </div>
@@ -4766,7 +4766,7 @@ function Dashboard() {
             onClick={() => setSidebarExpanded(prev => ({ ...prev, excel: !prev.excel }))}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
           >
-            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>๐“ เธเธฒเธเธเนเธญเธกเธนเธฅ Excel (.xlsx)</label>
+            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>📊 ฐานข้อมูล Excel (.xlsx)</label>
             {sidebarExpanded.excel ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
           </div>
           {sidebarExpanded.excel && (
@@ -4780,15 +4780,15 @@ function Dashboard() {
               />
               <button onClick={() => requireAdminAccess(() => fileInputRef.current?.click())} className="sidebar-btn" style={{ backgroundColor: '#059669' }}>
                 <Upload size={16} />
-                เธเธณเน€เธเนเธฒเธเนเธญเธกเธนเธฅเธเธฒเธ Excel
+                นำเข้าข้อมูลจาก Excel
               </button>
               <button onClick={() => requireAdminAccess(exportToXlsx)} className="sidebar-btn secondary">
                 <Download size={16} />
-                เธชเนเธเธญเธญเธเธเนเธญเธกเธนเธฅเน€เธเนเธ Excel
+                ส่งออกข้อมูลเป็น Excel
               </button>
               <button onClick={downloadTemplate} className="sidebar-btn secondary">
                 <FileSpreadsheet size={16} />
-                เธ”เธฒเธงเธเนเนเธซเธฅเธ”เน€เธ—เธกเน€เธเธฅเธ• Excel
+                ดาวน์โหลดเทมเพลต Excel
               </button>
               {importStatus && (
                 <div style={{
@@ -4815,24 +4815,24 @@ function Dashboard() {
             onClick={() => setSidebarExpanded(prev => ({ ...prev, export: !prev.export }))}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
           >
-            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>๐“ เธชเนเธเธญเธญเธเน€เธญเธเธชเธฒเธฃ</label>
+            <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>📄 ส่งออกเอกสาร</label>
             {sidebarExpanded.export ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
           </div>
           {sidebarExpanded.export && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <button onClick={() => window.print()} className="sidebar-btn secondary">
                 <Printer size={16} />
-                เธเธฑเธเธ—เธถเธเน€เธเนเธ PDF / เธเธดเธกเธเน
+                บันทึกเป็น PDF / พิมพ์
               </button>
             </div>
           )}
         </div>
 
         <div className="org-info">
-          <p><strong>เธซเธเนเธงเธขเธเธฒเธ:</strong> เธเนเธฒเธขเน€เธ—เธเนเธเนเธฅเธขเธตเธชเธฒเธฃเธชเธเน€เธ—เธจ (IT)</p>
-          <p><strong>เธญเธเธเนเธเธฃ:</strong> Fern Aesthetique</p>
+          <p><strong>หน่วยงาน:</strong> ฝ่ายเทคโนโลยีสารสนเทศ (IT)</p>
+          <p><strong>องค์กร:</strong> Fern Aesthetique</p>
           <p style={{ marginTop: '8px', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-            เธเธฃเธฑเธเธเธฃเธธเธเธเนเธญเธกเธนเธฅเธฅเนเธฒเธชเธธเธ”: <br />18 เธเธฃเธเธเธฒเธเธก 2026
+            ปรับปรุงข้อมูลล่าสุด: <br />18 กรกฎาคม 2026
           </p>
         </div>
       </aside>
@@ -4849,14 +4849,14 @@ function Dashboard() {
               <Menu size={24} />
             </button>
             <div className="dashboard-title">
-              <h2>เธฃเธฒเธขเธเธฒเธเธชเธฃเธธเธเธเธฒเธฃเธ”เธณเน€เธเธดเธเธเธฒเธเน€เธ—เธเนเธเนเธฅเธขเธตเธชเธฒเธฃเธชเธเน€เธ—เธจ (IT Monthly Dashboard)</h2>
-              <p>เธเธฃเธฐเธเธณเน€เธ”เธทเธญเธ {activeData.monthName}</p>
+              <h2>รายงานสรุปการดำเนินงานเทคโนโลยีสารสนเทศ (IT Monthly Dashboard)</h2>
+              <p>ประจำเดือน {activeData.monthName}</p>
             </div>
           </div>
           <div className="header-status status-indicator" style={{ display: 'flex', gap: '15px', alignItems: 'center', background: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
               <span className="status-dot"></span>
-              <span>เธฃเธฐเธเธเธฃเธฒเธขเธเธฒเธเธเธฃเนเธญเธกเธ—เธณเธเธฒเธ</span>
+              <span>ระบบรายงานพร้อมทำงาน</span>
             </div>
           </div>
         </header>
@@ -4867,20 +4867,20 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--primary)' }} /></span>
-                เธ•เธดเธ”เธ•เธฒเธกเธชเธ–เธฒเธเธฐเธญเธธเธเธเธฃเธ“เน iOS (Device Monitor)
+                ติดตามสถานะอุปกรณ์ iOS (Device Monitor)
               </h3>
               <div style={{ display: 'flex', gap: '7px', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.8rem', color: externalDevicesSyncError ? 'var(--danger)' : isFetchingDevices ? 'var(--warning)' : 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
                   {externalDevicesSyncError || (isFetchingDevices
-                    ? 'เธเธณเธฅเธฑเธเธเธดเธเธเน...'
+                    ? 'กำลังซิงค์...'
                     : externalDevicesLastSynced
-                      ? `เธเธดเธเธเนเธฅเนเธฒเธชเธธเธ” ${externalDevicesLastSynced.toLocaleTimeString('th-TH')}`
-                      : 'เธฃเธญเธเธดเธเธเนเธเนเธญเธกเธนเธฅ')}
+                      ? `ซิงค์ล่าสุด ${externalDevicesLastSynced.toLocaleTimeString('th-TH')}`
+                      : 'รอซิงค์ข้อมูล')}
                 </span>
                 <button
                   type="button"
-                  title="เธเธดเธเธเน Device Monitor เธ•เธญเธเธเธตเน"
-                  aria-label="เธเธดเธเธเน Device Monitor เธ•เธญเธเธเธตเน"
+                  title="ซิงค์ Device Monitor ตอนนี้"
+                  aria-label="ซิงค์ Device Monitor ตอนนี้"
                   onClick={() => setExternalDevicesRefreshKey(previous => previous + 1)}
                   disabled={isFetchingDevices}
                   style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', padding: 0, borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-primary)', cursor: isFetchingDevices ? 'wait' : 'pointer' }}
@@ -4895,32 +4895,32 @@ function Dashboard() {
                 style={{ cursor: 'pointer' }}
                 onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
               >
-                <div className="metric-label">เธเธณเธฅเธฑเธเธ•เธดเธ”เธ•เธฒเธกเธฃเธงเธก</div>
-                <div className="metric-value highlight-primary">{monitoredTotal} เน€เธเธฃเธทเนเธญเธ</div>
+                <div className="metric-label">กำลังติดตามรวม</div>
+                <div className="metric-value highlight-primary">{monitoredTotal} เครื่อง</div>
               </div>
               <div 
                 className="metric-item"
                 style={{ cursor: 'pointer' }}
                 onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
               >
-                <div className="metric-label">เธ•เธฃเธงเธเธชเธญเธเนเธฅเนเธง (Active)</div>
-                <div className="metric-value highlight-success">{monitoredActive} เน€เธเธฃเธทเนเธญเธ</div>
+                <div className="metric-label">ตรวจสอบแล้ว (Active)</div>
+                <div className="metric-value highlight-success">{monitoredActive} เครื่อง</div>
               </div>
               <div 
                 className="metric-item"
                 style={{ cursor: 'pointer' }}
                 onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
               >
-                <div className="metric-label">เนเธเธฅเนเธเธฃเธเธเธณเธซเธเธ” (&le;7 เธงเธฑเธ)</div>
-                <div className="metric-value highlight-warning">{monitoredWarning} เน€เธเธฃเธทเนเธญเธ</div>
+                <div className="metric-label">ใกล้ครบกำหนด (&le;7 วัน)</div>
+                <div className="metric-value highlight-warning">{monitoredWarning} เครื่อง</div>
               </div>
               <div 
                 className="metric-item"
                 style={{ cursor: 'pointer' }}
                 onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
               >
-                <div className="metric-label">เธเนเธฒเธเธเธฒเธฃเธ•เธฃเธงเธเธชเธญเธ (Action Required)</div>
-                <div className="metric-value highlight-danger">{monitoredUnverified} เน€เธเธฃเธทเนเธญเธ</div>
+                <div className="metric-label">ค้างการตรวจสอบ (Action Required)</div>
+                <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
               </div>
             </div>
           </article>
@@ -4930,7 +4930,7 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Laptop size={18} style={{ color: 'var(--primary)' }} /></span>
-                เธ—เธฃเธฑเธเธขเนเธชเธดเธเนเธฅเธฐเธญเธธเธเธเธฃเธ“เน (Asset)
+                ทรัพย์สินและอุปกรณ์ (Asset)
               </h3>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button 
@@ -4938,13 +4938,13 @@ function Dashboard() {
                   className="btn-details"
                   style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: 'var(--primary)' }}
                 >
-                  เธ”เธนเธ—เธฐเน€เธเธตเธขเธเธญเธธเธเธเธฃเธ“เน
+                  ดูทะเบียนอุปกรณ์
                 </button>
                 <button 
                   onClick={() => setActiveModal('expiringAssets')} 
                   className="btn-details"
                 >
-                  เธ”เธนเธเนเธญเธกเธนเธฅเธซเธกเธ”เธญเธฒเธขเธธ
+                  ดูข้อมูลหมดอายุ
                 </button>
               </div>
             </div>
@@ -4952,17 +4952,17 @@ function Dashboard() {
               <div className="metric-item full-width">
                 <div className="asset-total-summary">
                   <div>
-                    <div className="metric-label">เธเธณเธเธงเธเธญเธธเธเธเธฃเธ“เนเธ—เธฑเนเธเธซเธกเธ”</div>
-                    <div className="metric-value highlight-primary">{activeData.totalAssets.toLocaleString()} เน€เธเธฃเธทเนเธญเธ</div>
+                    <div className="metric-label">จำนวนอุปกรณ์ทั้งหมด</div>
+                    <div className="metric-value highlight-primary">{activeData.totalAssets.toLocaleString()} เครื่อง</div>
                   </div>
                   <div className="asset-vacant-summary">
-                    <div className="metric-label">เน€เธเธฃเธทเนเธญเธเธงเนเธฒเธ</div>
-                    <div className="metric-value highlight-success">{vacantStockCount} เน€เธเธฃเธทเนเธญเธ</div>
+                    <div className="metric-label">เครื่องว่าง</div>
+                    <div className="metric-value highlight-success">{vacantStockCount} เครื่อง</div>
                     <div className="vacant-assets-breakdown">
                       {vacantStockBreakdown.length > 0 ? vacantStockBreakdown.map((asset) => (
                         <span key={asset.label}>{asset.label} <strong>{asset.count}</strong></span>
                       )) : (
-                        <span>เนเธกเนเธกเธตเน€เธเธฃเธทเนเธญเธเธงเนเธฒเธ</span>
+                        <span>ไม่มีเครื่องว่าง</span>
                       )}
                     </div>
                   </div>
@@ -4977,26 +4977,26 @@ function Dashboard() {
                 </div>
               </div>
               <div className="metric-item full-width">
-                <div className="metric-label">เธกเธนเธฅเธเนเธฒเธ—เธฃเธฑเธเธขเนเธชเธดเธ IT เธฃเธงเธก</div>
+                <div className="metric-label">มูลค่าทรัพย์สิน IT รวม</div>
                 <div className="metric-value">{formatThaiBaht(activeData.assetValue)}</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ</div>
-                <div className="metric-value highlight-warning">{primaryExpiringAssets} เน€เธเธฃเธทเนเธญเธ</div>
-                <div className="metric-note">เน€เธซเธฅเธทเธญเธญเธฒเธขเธธเธฃเธธเนเธเนเธกเนเน€เธเธดเธ 1 เธเธต</div>
+                <div className="metric-label">ใกล้หมดอายุ</div>
+                <div className="metric-value highlight-warning">{primaryExpiringAssets} เครื่อง</div>
+                <div className="metric-note">เหลืออายุรุ่นไม่เกิน 1 ปี</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เน€เธเธฃเธทเนเธญเธเธงเนเธฒเธ (เธเธฃเนเธญเธกเนเธเน)</div>
-                <div className="metric-value highlight-success">{vacantStockCount} เน€เธเธฃเธทเนเธญเธ</div>
-                <div className="metric-note">เธ•เธฒเธกเธชเธ–เธฒเธเธฐเธงเนเธฒเธเนเธเธ—เธฐเน€เธเธตเธขเธเธเธฅเธฑเธ</div>
+                <div className="metric-label">เครื่องว่าง (พร้อมใช้)</div>
+                <div className="metric-value highlight-success">{vacantStockCount} เครื่อง</div>
+                <div className="metric-note">ตามสถานะว่างในทะเบียนคลัง</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เธเธณเธฃเธธเธ”</div>
-                <div className="metric-value highlight-danger">{activeData.assetsBroken} เน€เธเธฃเธทเนเธญเธ</div>
+                <div className="metric-label">ชำรุด</div>
+                <div className="metric-value highlight-danger">{activeData.assetsBroken} เครื่อง</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เธชเธนเธเธซเธฒเธข</div>
-                <div className="metric-value highlight-danger">{activeData.assetsLost} เน€เธเธฃเธทเนเธญเธ</div>
+                <div className="metric-label">สูญหาย</div>
+                <div className="metric-value highlight-danger">{activeData.assetsLost} เครื่อง</div>
               </div>
             </div>
             <div className="card-chart-container">
@@ -5009,34 +5009,34 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Ticket size={18} style={{ color: 'var(--violet)' }} /></span>
-                เธเธฒเธฃเธชเธเธฑเธเธชเธเธธเธเธเธนเนเนเธเน (Support)
+                การสนับสนุนผู้ใช้ (Support)
               </h3>
               <button 
                 onClick={() => setActiveModal('ticketsList')} 
                 className="btn-details"
               >
-                เธ”เธนเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”
+                ดูรายละเอียด
               </button>
             </div>
             <div className="metrics-row">
               <div className="metric-item">
-                <div className="metric-label">เธเธณเธเธงเธ Ticket เธ—เธฑเนเธเธซเธกเธ”</div>
-                <div className="metric-value highlight-primary">{activeData.ticketsCount.toLocaleString()} เนเธ</div>
+                <div className="metric-label">จำนวน Ticket ทั้งหมด</div>
+                <div className="metric-value highlight-primary">{activeData.ticketsCount.toLocaleString()} ใบ</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เธชเธ–เธดเธ•เธด SLA Compliance</div>
+                <div className="metric-label">สถิติ SLA Compliance</div>
                 <div className="metric-value highlight-success">{activeData.slaPercent}%</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">Response Time เน€เธเธฅเธตเนเธข</div>
-                <div className="metric-value">{activeData.responseTime} เธเธฒเธ—เธต</div>
+                <div className="metric-label">Response Time เฉลี่ย</div>
+                <div className="metric-value">{activeData.responseTime} นาที</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">Resolution Time เน€เธเธฅเธตเนเธข</div>
-                <div className="metric-value">{activeData.resolutionTime} เธเธก.</div>
+                <div className="metric-label">Resolution Time เฉลี่ย</div>
+                <div className="metric-value">{activeData.resolutionTime} ชม.</div>
               </div>
               <div className="metric-item full-width">
-                <div className="metric-label">เธเธฐเนเธเธเธเธงเธฒเธกเธเธถเธเธเธญเนเธเธเธนเนเนเธเน (CSAT)</div>
+                <div className="metric-label">คะแนนความพึงพอใจผู้ใช้ (CSAT)</div>
                 <div className="metric-value highlight-warning">{activeData.csat.toFixed(1)} / 5.0</div>
               </div>
             </div>
@@ -5047,34 +5047,34 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><FileCode size={18} style={{ color: 'var(--secondary)' }} /></span>
-                เธเธญเธเธ•เนเนเธงเธฃเนเนเธฅเธฐเธฅเธดเธเธชเธดเธ—เธเธดเน (Software)
+                ซอฟต์แวร์และลิขสิทธิ์ (Software)
               </h3>
               <button 
                 onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
                 className="btn-details"
               >
-                เธ”เธนเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ” / เนเธเนเนเธ
+                ดูรายละเอียด / แก้ไข
               </button>
             </div>
             <div className="metrics-row">
               <div className="metric-item">
-                <div className="metric-label">เนเธเธฃเนเธเธฃเธกเธ—เธฑเนเธเธซเธกเธ”</div>
-                <div className="metric-value">{calculatedTotalSoftware} เนเธเธฃเนเธเธฃเธก</div>
+                <div className="metric-label">โปรแกรมทั้งหมด</div>
+                <div className="metric-value">{calculatedTotalSoftware} โปรแกรม</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เนเธเธฃเนเธเธฃเธกเนเธเธฅเนเธซเธกเธ”เธชเธฑเธเธเธฒ</div>
-                <div className="metric-value highlight-danger">{activeData.softwareExpiring} เนเธเธฃเนเธเธฃเธก</div>
+                <div className="metric-label">โปรแกรมใกล้หมดสัญญา</div>
+                <div className="metric-value highlight-danger">{activeData.softwareExpiring} โปรแกรม</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">License เนเธเนเธเธฒเธ</div>
+                <div className="metric-label">License ใช้งาน</div>
                 <div className="metric-value highlight-primary">{calculatedLicensesInUse.toLocaleString()} Core/User</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">License เธงเนเธฒเธ</div>
+                <div className="metric-label">License ว่าง</div>
                 <div className="metric-value highlight-secondary">{calculatedLicensesVacant.toLocaleString()} Core/User</div>
               </div>
               <div className="metric-item full-width">
-                <div className="metric-label">เธเนเธฒเนเธเนเธเนเธฒเธขเธเธญเธเธ•เนเนเธงเธฃเนเธฃเธงเธกเธฃเธฒเธขเน€เธ”เธทเธญเธ</div>
+                <div className="metric-label">ค่าใช้จ่ายซอฟต์แวร์รวมรายเดือน</div>
                 <div className="metric-value">{formatThaiBaht(calculatedSoftwareCost)}</div>
               </div>
             </div>
@@ -5088,19 +5088,19 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--success)' }} /></span>
-                เธเธงเธฒเธกเธเธฅเธญเธ”เธ เธฑเธขเธเนเธญเธกเธนเธฅ (Security)
+                ความปลอดภัยข้อมูล (Security)
               </h3>
             </div>
             <div className="metrics-row">
               <div className="metric-item full-width">
-                <div className="metric-label">Security Incident (เน€เธซเธ•เธธเธเธฒเธฃเธ“เนเธเธธเธเธเธฒเธก)</div>
+                <div className="metric-label">Security Incident (เหตุการณ์คุกคาม)</div>
                 <div className={`metric-value ${activeData.securityIncidents > 0 ? 'highlight-danger' : 'highlight-success'}`}>
-                  {activeData.securityIncidents} เธเธฃเธฑเนเธ
+                  {activeData.securityIncidents} ครั้ง
                 </div>
               </div>
             </div>
             <div className="gauges-container">
-              <CircularProgress value={activeData.backupSuccess} label="Backup เธชเธณเน€เธฃเนเธ" />
+              <CircularProgress value={activeData.backupSuccess} label="Backup สำเร็จ" />
               <CircularProgress value={activeData.antivirusCoverage} label="Antivirus Coverage" />
               <CircularProgress value={activeData.mfaCoverage} label="MFA Coverage" />
             </div>
@@ -5111,22 +5111,22 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Wrench size={18} style={{ color: 'var(--warning)' }} /></span>
-                เธเธฒเธฃเธเนเธญเธกเธเธณเธฃเธธเธเนเธฅเธฐเนเธเธเธ (Repair)
+                การซ่อมบำรุงและแผนก (Repair)
               </h3>
               <button 
                 onClick={() => setActiveModal('topBrokenDevices')} 
                 className="btn-details"
               >
-                เธ”เธน Top 10 เน€เธชเธตเธขเธเนเธญเธข
+                ดู Top 10 เสียบ่อย
               </button>
             </div>
             <div className="metrics-row">
               <div className="metric-item">
-                <div className="metric-label">เธเธณเธเธงเธเธเธฒเธเธเนเธญเธก</div>
-                <div className="metric-value highlight-warning">{activeData.repairCount} เธเธฃเธฑเนเธ</div>
+                <div className="metric-label">จำนวนงานซ่อม</div>
+                <div className="metric-value highlight-warning">{activeData.repairCount} ครั้ง</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">เธเนเธฒเธเนเธญเธกเธเธณเธฃเธธเธเธชเธฐเธชเธก</div>
+                <div className="metric-label">ค่าซ่อมบำรุงสะสม</div>
                 <div className="metric-value">{formatThaiBaht(activeData.repairCost)}</div>
               </div>
             </div>
@@ -5134,16 +5134,16 @@ function Dashboard() {
               <canvas ref={repairCanvasRef}></canvas>
             </div>
             <div className="repair-list-summary">
-              <div className="metric-label" style={{ marginBottom: '2px' }}>เธญเธธเธเธเธฃเธ“เนเนเธเนเธเธเนเธญเธกเธชเธนเธเธชเธธเธ” 3 เธญเธฑเธเธ”เธฑเธเนเธฃเธ:</div>
+              <div className="metric-label" style={{ marginBottom: '2px' }}>อุปกรณ์แจ้งซ่อมสูงสุด 3 อันดับแรก:</div>
               {activeData.topBrokenDevices.filter(d => d.count > 0).slice(0, 3).map((device, idx) => (
                 <div key={idx} className="repair-list-item">
                   <span className="repair-item-name">{device.name}</span>
-                  <span className="repair-item-count">{device.count} เน€เธเธฃเธทเนเธญเธ</span>
+                  <span className="repair-item-count">{device.count} เครื่อง</span>
                 </div>
               ))}
               {activeData.topBrokenDevices.filter(d => d.count > 0).length === 0 && (
                 <div className="repair-list-item">
-                  <span className="repair-item-name">เนเธกเนเธกเธตเธเธฃเธฐเธงเธฑเธ•เธดเธญเธธเธเธเธฃเธ“เนเธเธณเธฃเธธเธ”เนเธเน€เธ”เธทเธญเธเธเธตเน</span>
+                  <span className="repair-item-name">ไม่มีประวัติอุปกรณ์ชำรุดในเดือนนี้</span>
                 </div>
               )}
             </div>
@@ -5154,25 +5154,25 @@ function Dashboard() {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Lightbulb size={18} style={{ color: 'var(--danger)' }} /></span>
-                เธเธฒเธฃเธเธฃเธฑเธเธเธฃเธธเธเนเธฅเธฐเน€เธ—เธเนเธเนเธฅเธขเธต (Improvement)
+                การปรับปรุงและเทคโนโลยี (Improvement)
               </h3>
             </div>
             <div className="metrics-row">
               <div className="metric-item">
-                <div className="metric-label">Automation เธ—เธตเนเธ—เธณเน€เธชเธฃเนเธ</div>
-                <div className="metric-value highlight-primary">{activeData.automationsDone} เธฃเธฒเธขเธเธฒเธฃ</div>
+                <div className="metric-label">Automation ที่ทำเสร็จ</div>
+                <div className="metric-value highlight-primary">{activeData.automationsDone} รายการ</div>
               </div>
               <div className="metric-item">
-                <div className="metric-label">AI เธ—เธตเนเธเธณเธกเธฒเธเธฃเธฐเธขเธธเธเธ•เนเนเธเน</div>
-                <div className="metric-value highlight-secondary">{activeData.aiApps} เนเธกเน€เธ”เธฅ</div>
+                <div className="metric-label">AI ที่นำมาประยุกต์ใช้</div>
+                <div className="metric-value highlight-secondary">{activeData.aiApps} โมเดล</div>
               </div>
               <div className="metric-item full-width">
-                <div className="metric-label">เธเธฃเธฐเธซเธขเธฑเธ”เธเธฑเนเธงเนเธกเธเธเธฒเธฃเธ—เธณเธเธฒเธ</div>
-                <div className="metric-value highlight-success">{activeData.hoursSaved} เธเธฑเนเธงเนเธกเธ/เน€เธ”เธทเธญเธ</div>
+                <div className="metric-label">ประหยัดชั่วโมงการทำงาน</div>
+                <div className="metric-value highlight-success">{activeData.hoursSaved} ชั่วโมง/เดือน</div>
               </div>
             </div>
             <div className="project-list">
-              <div className="metric-label" style={{ marginBottom: '2px' }}>เนเธเธฃเธเธเธฒเธฃเธซเธฅเธฑเธเธ—เธตเนเธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ:</div>
+              <div className="metric-label" style={{ marginBottom: '2px' }}>โครงการหลักที่กำลังดำเนินการ:</div>
               {activeData.ongoingProjects.map((proj, idx) => (
                 <div key={idx} className="project-item">
                   <div className="project-item-title">{proj.title}</div>
@@ -5187,7 +5187,7 @@ function Dashboard() {
         <section className="card recommendation-card">
           <h3 className="card-title" style={{ color: 'white', marginBottom: '12px' }}>
             <span className="card-icon"><Lightbulb size={18} style={{ color: '#fff' }} /></span>
-            เธเนเธญเน€เธชเธเธญเนเธเธฐเนเธฅเธฐเนเธเธงเธ—เธฒเธเธเธเธดเธเธฑเธ•เธด (Recommendation)
+            ข้อเสนอแนะและแนวทางปฏิบัติ (Recommendation)
           </h3>
           <div className="recommendation-content">
             {activeData.recommendations.length > 0 ? (
@@ -5197,7 +5197,7 @@ function Dashboard() {
                 ))}
               </ul>
             ) : (
-              <p>เนเธกเนเธกเธตเธเนเธญเน€เธชเธเธญเนเธเธฐเน€เธเธดเนเธกเน€เธ•เธดเธกเธชเธณเธซเธฃเธฑเธเน€เธ”เธทเธญเธเธเธตเน เธฃเธฐเธเธเธญเธขเธนเนเนเธเน€เธเธ“เธ‘เนเธเธเธ•เธด</p>
+              <p>ไม่มีข้อเสนอแนะเพิ่มเติมสำหรับเดือนนี้ ระบบอยู่ในเกณฑ์ปกติ</p>
             )}
           </div>
         </section>
@@ -5205,8 +5205,8 @@ function Dashboard() {
 
       {activeModal === 'assetWorkflow' && (() => {
         const statusLabels = {
-          pending: 'เธฃเธญเธญเธเธธเธกเธฑเธ•เธด', approved: 'เธญเธเธธเธกเธฑเธ•เธดเนเธฅเนเธง', rejected: 'เนเธกเนเธญเธเธธเธกเธฑเธ•เธด',
-          issued: 'เธชเนเธเธกเธญเธเนเธฅเนเธง', overdue: 'เน€เธเธดเธเธเธณเธซเธเธ”', return_requested: 'เธฃเธญ IT เธ•เธฃเธงเธเธฃเธฑเธ', returned: 'เธเธทเธเนเธฅเนเธง', need_info: 'เธฃเธญเธเนเธญเธกเธนเธฅเน€เธเธดเนเธก'
+          pending: 'รออนุมัติ', approved: 'อนุมัติแล้ว', rejected: 'ไม่อนุมัติ',
+          issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', return_requested: 'รอ IT ตรวจรับ', returned: 'คืนแล้ว', need_info: 'รอข้อมูลเพิ่ม'
         };
         const requesterSearch = assetRequesterSearch.trim().toLocaleLowerCase('th-TH');
         const itUsageStatuses = ['pending', 'need_info', 'approved', 'issued', 'overdue'];
@@ -5220,12 +5220,12 @@ function Dashboard() {
             <div className="modal large dashboard-fullscreen-modal asset-workflow-modal">
               <header className="modal-header">
                 <div>
-                  <h3>{assetWorkflowRole === 'it' ? '๐ก๏ธ IT เธญเธเธธเธกเธฑเธ•เธดเธเธฒเธฃเนเธเนเธเธฒเธเนเธฅเธฐเธชเนเธเธกเธญเธ' : '๐ เธเธนเนเธเธญเนเธเนเธเธฃเธดเธเธฒเธฃเธญเธธเธเธเธฃเธ“เน IT'}</h3>
-                  <p className="workflow-subtitle">{assetWorkflowRole === 'it' ? 'เธ•เธฃเธงเธเธชเธญเธเธเธณเธเธญ โ’ เธญเธเธธเธกเธฑเธ•เธดเนเธฅเธฐเน€เธฅเธทเธญเธเน€เธเธฃเธทเนเธญเธ โ’ เธชเนเธเธกเธญเธเน€เธเธทเนเธญเนเธเนเธเธฒเธ' : 'เธชเนเธเธเธณเธเธญเนเธซเธกเนเนเธฅเธฐเธ•เธดเธ”เธ•เธฒเธกเธชเธ–เธฒเธเธฐเธเธฒเธฃเนเธเนเธเธฒเธ'}</p>
+                  <h3>{assetWorkflowRole === 'it' ? '🛡️ IT อนุมัติการใช้งานและส่งมอบ' : '🙋 ผู้ขอใช้บริการอุปกรณ์ IT'}</h3>
+                  <p className="workflow-subtitle">{assetWorkflowRole === 'it' ? 'ตรวจสอบคำขอ → อนุมัติและเลือกเครื่อง → ส่งมอบเพื่อใช้งาน' : 'ส่งคำขอใหม่และติดตามสถานะการใช้งาน'}</p>
                 </div>
                 <div className="workflow-header-actions">
                   <div className="workflow-role-switch">
-                    <button className={assetWorkflowRole === 'requester' ? 'active' : ''} onClick={() => setAssetWorkflowRole('requester')}>เธเธนเนเธเธญเนเธเนเธเธฃเธดเธเธฒเธฃ</button>
+                    <button className={assetWorkflowRole === 'requester' ? 'active' : ''} onClick={() => setAssetWorkflowRole('requester')}>ผู้ขอใช้บริการ</button>
                   </div>
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
                 </div>
@@ -5233,34 +5233,34 @@ function Dashboard() {
               <div className={`modal-body workflow-body workflow-role-${assetWorkflowRole}`}>
                 {assetWorkflowRole === 'requester' && <form className="workflow-request-form" onSubmit={submitAssetRequest}>
                   <div className="workflow-section-heading">
-                    <h4>เธชเธฃเนเธฒเธเธเธณเธเธญเน€เธเธดเธเธญเธธเธเธเธฃเธ“เน</h4>
-                    <span>เธฃเธฐเธเธธเนเธ”เนเธซเธฅเธฒเธขเน€เธเธฃเธทเนเธญเธ เนเธ”เธขเธเธฑเนเธเธซเธกเธฒเธขเน€เธฅเธเธ”เนเธงเธขเธเธธเธฅเธ เธฒเธเธซเธฃเธทเธญเธเธถเนเธเธเธฃเธฃเธ—เธฑเธ”เนเธซเธกเน</span>
+                    <h4>สร้างคำขอเบิกอุปกรณ์</h4>
+                    <span>ระบุได้หลายเครื่อง โดยคั่นหมายเลขด้วยจุลภาคหรือขึ้นบรรทัดใหม่</span>
                   </div>
                   <div className="workflow-form-grid">
-                    <label>เธเธทเนเธญเธเธนเนเธเธญ <input required value={assetRequestForm.requester} onChange={e => setAssetRequestForm(p => ({ ...p, requester: e.target.value }))} /></label>
-                    <label>เนเธเธเธ <input required value={assetRequestForm.department} onChange={e => setAssetRequestForm(p => ({ ...p, department: e.target.value }))} /></label>
-                    <label>เธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธ / เธเธฃเธฐเน€เธ เธ—เธญเธธเธเธเธฃเธ“เน <textarea required rows="2" placeholder="เน€เธเนเธ iPad-006, iPad-007" value={assetRequestForm.itemType} onChange={e => setAssetRequestForm(p => ({ ...p, itemType: e.target.value }))} /></label>
-                    <label>เธงเธฑเธเธ—เธตเนเน€เธเธดเธ <input required type="date" value={assetRequestForm.requestedDate} onChange={e => setAssetRequestForm(p => ({ ...p, requestedDate: e.target.value }))} /></label>
-                    <label className="workflow-span-2">เน€เธซเธ•เธธเธเธฅเธเธฒเธฃเนเธเนเธเธฒเธ <textarea required value={assetRequestForm.purpose} onChange={e => setAssetRequestForm(p => ({ ...p, purpose: e.target.value }))} /></label>
-                    <label className="workflow-span-2">เธซเธกเธฒเธขเน€เธซเธ•เธธ <input value={assetRequestForm.notes} onChange={e => setAssetRequestForm(p => ({ ...p, notes: e.target.value }))} /></label>
+                    <label>ชื่อผู้ขอ <input required value={assetRequestForm.requester} onChange={e => setAssetRequestForm(p => ({ ...p, requester: e.target.value }))} /></label>
+                    <label>แผนก <input required value={assetRequestForm.department} onChange={e => setAssetRequestForm(p => ({ ...p, department: e.target.value }))} /></label>
+                    <label>หมายเลขเครื่อง / ประเภทอุปกรณ์ <textarea required rows="2" placeholder="เช่น iPad-006, iPad-007" value={assetRequestForm.itemType} onChange={e => setAssetRequestForm(p => ({ ...p, itemType: e.target.value }))} /></label>
+                    <label>วันที่เบิก <input required type="date" value={assetRequestForm.requestedDate} onChange={e => setAssetRequestForm(p => ({ ...p, requestedDate: e.target.value }))} /></label>
+                    <label className="workflow-span-2">เหตุผลการใช้งาน <textarea required value={assetRequestForm.purpose} onChange={e => setAssetRequestForm(p => ({ ...p, purpose: e.target.value }))} /></label>
+                    <label className="workflow-span-2">หมายเหตุ <input value={assetRequestForm.notes} onChange={e => setAssetRequestForm(p => ({ ...p, notes: e.target.value }))} /></label>
                   </div>
-                  <button className="workflow-primary-btn" type="submit" disabled={assetRequestLoading}>{assetRequestLoading ? 'เธเธณเธฅเธฑเธเธเธฑเธเธ—เธถเธ...' : 'เธชเนเธเธเธณเธเธญเน€เธเธดเธ'}</button>
+                  <button className="workflow-primary-btn" type="submit" disabled={assetRequestLoading}>{assetRequestLoading ? 'กำลังบันทึก...' : 'ส่งคำขอเบิก'}</button>
                 </form>}
 
                 <section className="workflow-list-section">
                   <div className="workflow-section-heading">
                     <div>
-                      <h4>{assetWorkflowRole === 'it' ? 'เธฃเธฒเธขเธเธฒเธฃเธฃเธญเธญเธเธธเธกเธฑเธ•เธดเนเธฅเธฐเธเธฒเธฃเนเธเนเธเธฒเธ' : 'เธ•เธดเธ”เธ•เธฒเธกเธเธณเธเธญเธเธญเธเธเธนเนเนเธเนเธเธฃเธดเธเธฒเธฃ'}</h4>
-                      {assetWorkflowRole === 'requester' && <input className="workflow-requester-search" placeholder="เธเนเธเธซเธฒเธ”เนเธงเธขเธเธทเนเธญเธเธนเนเธเธญ" value={assetRequesterSearch} onChange={event => setAssetRequesterSearch(event.target.value)} />}
+                      <h4>{assetWorkflowRole === 'it' ? 'รายการรออนุมัติและการใช้งาน' : 'ติดตามคำขอของผู้ใช้บริการ'}</h4>
+                      {assetWorkflowRole === 'requester' && <input className="workflow-requester-search" placeholder="ค้นหาด้วยชื่อผู้ขอ" value={assetRequesterSearch} onChange={event => setAssetRequesterSearch(event.target.value)} />}
                     </div>
-                    <span>{displayedRequests.length} เธฃเธฒเธขเธเธฒเธฃ{assetWorkflowRole === 'it' ? ` ยท เน€เธเธฃเธทเนเธญเธเธงเนเธฒเธ ${assetsList.filter(asset => asset.status === 'เธงเนเธฒเธ').length} เน€เธเธฃเธทเนเธญเธ` : ''}</span>
+                    <span>{displayedRequests.length} รายการ{assetWorkflowRole === 'it' ? ` · เครื่องว่าง ${assetsList.filter(asset => asset.status === 'ว่าง').length} เครื่อง` : ''}</span>
                   </div>
                   <div className="workflow-table-wrap">
                     <table className="details-table workflow-table">
-                      <thead><tr><th>เน€เธฅเธเธ—เธตเน</th><th>เธเธนเนเธเธญ/เนเธเธเธ</th><th>เธญเธธเธเธเธฃเธ“เน/เน€เธซเธ•เธธเธเธฅ</th><th>เธเธณเธซเธเธ”เธเธทเธ</th><th>เน€เธเธฃเธทเนเธญเธเธ—เธตเนเธเธฑเธ”เธชเธฃเธฃ</th><th>เธชเธ–เธฒเธเธฐ</th><th>เธเธฑเธ”เธเธฒเธฃ</th><th>เนเธเนเนเธ</th></tr></thead>
+                      <thead><tr><th>เลขที่</th><th>ผู้ขอ/แผนก</th><th>อุปกรณ์/เหตุผล</th><th>กำหนดคืน</th><th>เครื่องที่จัดสรร</th><th>สถานะ</th><th>จัดการ</th><th>แก้ไข</th></tr></thead>
                       <tbody>
                         {displayedRequests.length === 0 ? (
-                          <tr><td colSpan="8" className="workflow-empty">เธขเธฑเธเนเธกเนเธเธเธเธณเธเธญเน€เธเธดเธเธญเธธเธเธเธฃเธ“เน</td></tr>
+                          <tr><td colSpan="8" className="workflow-empty">ยังไม่พบคำขอเบิกอุปกรณ์</td></tr>
                         ) : displayedRequests.map(request => (
                           <tr key={request.id}>
                             <td><strong>#{request.id}</strong><small>{request.requested_date || request.created_at ? new Date(request.requested_date || request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
@@ -5274,10 +5274,10 @@ function Dashboard() {
                                 <span className="workflow-done">-</span>
                               ) : (
                               <div className="workflow-actions">
-                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>เธญเธเธธเธกเธฑเธ•เธด/เน€เธฅเธทเธญเธเน€เธเธฃเธทเนเธญเธ</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>เนเธกเนเธญเธเธธเธกเธฑเธ•เธด</button></>}
-                                {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>เธชเนเธเธกเธญเธ</button>}
-                                {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เน€เธชเธฃเนเธเธชเธดเนเธ</span>}
-                                {['issued', 'overdue'].includes(request.status) && <span className="workflow-done">เธเธณเธฅเธฑเธเนเธเนเธเธฒเธ</span>}
+                                {['pending', 'need_info'].includes(request.status) && <><button onClick={() => runAssetRequestAction(request, 'approve')} disabled={assetRequestLoading}>อนุมัติ/เลือกเครื่อง</button><button className="danger" onClick={() => runAssetRequestAction(request, 'reject')} disabled={assetRequestLoading}>ไม่อนุมัติ</button></>}
+                                {request.status === 'approved' && <button onClick={() => runAssetRequestAction(request, 'issue')} disabled={assetRequestLoading}>ส่งมอบ</button>}
+                                {['returned', 'rejected'].includes(request.status) && <span className="workflow-done">เสร็จสิ้น</span>}
+                                {['issued', 'overdue'].includes(request.status) && <span className="workflow-done">กำลังใช้งาน</span>}
                               </div>
                               )}
                             </td>
@@ -5304,13 +5304,13 @@ function Dashboard() {
 
       {activeModal === 'assetReturns' && (() => {
         const statusLabels = {
-          pending: 'เธฃเธญเธญเธเธธเธกเธฑเธ•เธด',
-          approved: 'เธฃเธญเธชเนเธเธกเธญเธ',
-          issued: 'เธชเนเธเธกเธญเธเนเธฅเนเธง',
-          rejected: 'เนเธกเนเธญเธเธธเธกเธฑเธ•เธด',
-          overdue: 'เน€เธเธดเธเธเธณเธซเธเธ”',
-          return_requested: 'เธฃเธญ IT เธ•เธฃเธงเธเธฃเธฑเธ',
-          returned: 'เธเธทเธเนเธฅเนเธง'
+          pending: 'รออนุมัติ',
+          approved: 'รอส่งมอบ',
+          issued: 'ส่งมอบแล้ว',
+          rejected: 'ไม่อนุมัติ',
+          overdue: 'เกินกำหนด',
+          return_requested: 'รอ IT ตรวจรับ',
+          returned: 'คืนแล้ว'
         };
         const search = assetReturnSearch.trim().toLocaleLowerCase('th-TH');
         const normalizeReturnIdentity = value => String(value || '')
@@ -5321,9 +5321,9 @@ function Dashboard() {
         const getReturnIdentityKeys = value => {
           const raw = String(value || '').replace(/[\u200B-\u200D\uFEFF]/g, '');
           const keys = [normalizeReturnIdentity(raw)];
-          const nameBeforeNickname = raw.split(/[๏ผ(]/, 1)[0];
+          const nameBeforeNickname = raw.split(/[（(]/, 1)[0];
           keys.push(normalizeReturnIdentity(nameBeforeNickname));
-          for (const match of raw.matchAll(/[๏ผ(]([^()๏ผ๏ผ]+)[)๏ผ]/g)) {
+          for (const match of raw.matchAll(/[（(]([^()（）]+)[)）]/g)) {
             keys.push(normalizeReturnIdentity(match[1]));
           }
           return new Set(keys.filter(Boolean));
@@ -5382,18 +5382,18 @@ function Dashboard() {
             <div className="modal large dashboard-fullscreen-modal asset-workflow-modal asset-returns-modal">
               <header className="modal-header">
                 <div>
-                  <h3>โฉ๏ธ เธเธทเธเธญเธธเธเธเธฃเธ“เน</h3>
-                  <p className="workflow-subtitle">เธเนเธเธซเธฒเธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธฃเธฑเธเนเธเนเธฅเนเธง เธขเธทเธเธขเธฑเธเธเธฒเธฃเธชเนเธเธเธทเธ เนเธฅเธฐเธ•เธฃเธงเธเธชเธญเธเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเธเธทเธ</p>
+                  <h3>↩️ คืนอุปกรณ์</h3>
+                  <p className="workflow-subtitle">ค้นหาอุปกรณ์ที่รับไปแล้ว ยืนยันการส่งคืน และตรวจสอบประวัติการคืน</p>
                 </div>
                 <div className="workflow-header-actions">
                   <div className="return-view-switch">
-                    <button className={assetReturnView === 'returns' ? 'active' : ''} onClick={() => setAssetReturnView('returns')}>เนเธเนเธเธเธญเธเธทเธ</button>
-                    <button className={assetReturnView === 'registry' ? 'active' : ''} onClick={() => setAssetReturnView('registry')}>เธ—เธฐเน€เธเธตเธขเธเธ—เธฃเธฑเธเธขเนเธชเธดเธเธ—เธฑเนเธเธซเธกเธ”</button>
+                    <button className={assetReturnView === 'returns' ? 'active' : ''} onClick={() => setAssetReturnView('returns')}>แจ้งขอคืน</button>
+                    <button className={assetReturnView === 'registry' ? 'active' : ''} onClick={() => setAssetReturnView('registry')}>ทะเบียนทรัพย์สินทั้งหมด</button>
                     <button
                       className={assetReturnView === 'inspection' ? 'active it-inspection' : 'it-inspection'}
                       onClick={() => requireAdminAccess(() => setAssetReturnView('inspection'))}
                     >
-                      IT เธ•เธฃเธงเธเธฃเธฑเธ
+                      IT ตรวจรับ
                     </button>
                   </div>
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
@@ -5403,45 +5403,45 @@ function Dashboard() {
                 {assetReturnView === 'returns' && <section className="workflow-list-section">
                   <div className="workflow-section-heading">
                     <div>
-                      <h4>เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธเธญเธเธเธนเนเธเธทเธ</h4>
+                      <h4>รายการอุปกรณ์ของผู้คืน</h4>
                       <label className="return-identity-field">
-                        <span>เธขเธทเธเธขเธฑเธเธ•เธฑเธงเธเธนเนเธเธทเธเธ”เนเธงเธขเธเธทเนเธญ-เธเธฒเธกเธชเธเธธเธฅ เธซเธฃเธทเธญเธเธทเนเธญเน€เธฅเนเธเนเธเธงเธเน€เธฅเนเธ</span>
+                        <span>ยืนยันตัวผู้คืนด้วยชื่อ-นามสกุล หรือชื่อเล่นในวงเล็บ</span>
                         <input
                           className="workflow-requester-search"
-                          placeholder="เธเธฃเธญเธเธเธทเนเธญ-เธเธฒเธกเธชเธเธธเธฅ เธซเธฃเธทเธญเธเธทเนเธญเน€เธฅเนเธ เน€เธเนเธ เธเธญเธ"
+                          placeholder="กรอกชื่อ-นามสกุล หรือชื่อเล่น เช่น ปอน"
                           value={assetReturnIdentity}
                           onChange={event => setAssetReturnIdentity(event.target.value)}
                         />
                       </label>
                       <input
                         className="workflow-requester-search"
-                        placeholder="เธเนเธเธซเธฒเนเธเธเธเธซเธฃเธทเธญเธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธเธเธญเธเธเธธเธ“"
+                        placeholder="ค้นหาแผนกหรือหมายเลขเครื่องของคุณ"
                         value={assetReturnSearch}
                         onChange={event => setAssetReturnSearch(event.target.value)}
                       />
                     </div>
-                    <span>เธฃเธญเธเธทเธ {waitingCount} เธฃเธฒเธขเธเธฒเธฃ ยท เธ—เธฑเนเธเธซเธกเธ” {returnRequests.length} เธฃเธฒเธขเธเธฒเธฃ</span>
+                    <span>รอคืน {waitingCount} รายการ · ทั้งหมด {returnRequests.length} รายการ</span>
                   </div>
                   <div className="workflow-table-wrap">
                     <table className="details-table workflow-table asset-return-table">
                       <thead>
                         <tr>
-                          <th>เน€เธฅเธเธ—เธตเน</th>
-                          <th>เธเธนเนเธเธญ/เนเธเธเธ</th>
-                          <th>เธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธฃเธฑเธเนเธ</th>
-                          <th>เธเธณเธซเธเธ”เธเธทเธ</th>
-                          <th>เธชเธ–เธฒเธเธฐ</th>
-                          <th>เธเธฑเธ”เธเธฒเธฃเธเธทเธ</th>
+                          <th>เลขที่</th>
+                          <th>ผู้ขอ/แผนก</th>
+                          <th>อุปกรณ์ที่รับไป</th>
+                          <th>กำหนดคืน</th>
+                          <th>สถานะ</th>
+                          <th>จัดการคืน</th>
                         </tr>
                       </thead>
                       <tbody>
                         {returnRequests.length === 0 ? (
                           <tr><td colSpan="6" className="workflow-empty">{
                             identity
-                              ? 'เนเธกเนเธเธเธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธ•เธฃเธเธเธฑเธเธเธทเนเธญเธเธนเนเธเธทเธ'
+                              ? 'ไม่พบอุปกรณ์ที่ตรงกับชื่อผู้คืน'
                               : search
-                                ? 'เนเธกเนเธเธเธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธ•เธฃเธเธเธฑเธเธเธณเธเนเธเธซเธฒ'
-                                : 'เธเธฃเธญเธเธเธทเนเธญเธเธนเนเธเธทเธ เธซเธฃเธทเธญเธเนเธเธซเธฒเธ”เนเธงเธขเธเธทเนเธญ เนเธเธเธ เนเธฅเธฐเธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธ'
+                                ? 'ไม่พบรายการที่ตรงกับคำค้นหา'
+                                : 'กรอกชื่อผู้คืน หรือค้นหาด้วยชื่อ แผนก และหมายเลขเครื่อง'
                           }</td></tr>
                         ) : returnRequests.map(request => (
                           <tr key={request.id}>
@@ -5464,14 +5464,14 @@ function Dashboard() {
                                     onClick={() => runAssetRequestAction(request, 'request_return')}
                                     disabled={assetRequestLoading}
                                   >
-                                    เนเธเนเธเธเธญเธเธทเธเธญเธธเธเธเธฃเธ“เน
+                                    แจ้งขอคืนอุปกรณ์
                                   </button>
                                 </div>
                               ) : request.status === 'return_requested' ? (
-                                <span className="workflow-done">เธฃเธญเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT เธ•เธฃเธงเธเธฃเธฑเธเน€เธเธฃเธทเนเธญเธ</span>
+                                <span className="workflow-done">รอเจ้าหน้าที่ IT ตรวจรับเครื่อง</span>
                               ) : (
                                 <span className="workflow-done">
-                                  เธเธทเธเน€เธกเธทเนเธญ {request.return_date ? new Date(request.return_date).toLocaleDateString('th-TH') : '-'}
+                                  คืนเมื่อ {request.return_date ? new Date(request.return_date).toLocaleDateString('th-TH') : '-'}
                                 </span>
                               )}
                             </td>
@@ -5485,37 +5485,37 @@ function Dashboard() {
                 {assetReturnView === 'inspection' && <section className="workflow-list-section return-inspection-section">
                   <div className="workflow-section-heading">
                     <div>
-                      <h4>เธฃเธฒเธขเธเธฒเธฃเธฃเธญเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน IT เธ•เธฃเธงเธเธฃเธฑเธ</h4>
-                      <p className="workflow-subtitle">เธ•เธฃเธงเธเธชเธ เธฒเธเน€เธเธฃเธทเนเธญเธเธเนเธญเธเธขเธทเธเธขเธฑเธ เธฃเธฐเธเธเธเธถเธเธเธฐเน€เธเธฅเธตเนเธขเธเธชเธ–เธฒเธเธฐเธเธฅเธฑเธเน€เธเนเธ เธงเนเธฒเธ / เธฃเธญเธเนเธญเธก / เธชเธนเธเธซเธฒเธข</p>
+                      <h4>รายการรอเจ้าหน้าที่ IT ตรวจรับ</h4>
+                      <p className="workflow-subtitle">ตรวจสภาพเครื่องก่อนยืนยัน ระบบจึงจะเปลี่ยนสถานะคลังเป็น ว่าง / รอซ่อม / สูญหาย</p>
                     </div>
-                    <span>เธฃเธญเธ•เธฃเธงเธเธฃเธฑเธ {inspectionRequests.length} เธฃเธฒเธขเธเธฒเธฃ</span>
+                    <span>รอตรวจรับ {inspectionRequests.length} รายการ</span>
                   </div>
                   <div className="workflow-table-wrap">
                     <table className="details-table workflow-table asset-return-table">
                       <thead>
                         <tr>
-                          <th>เน€เธฅเธเธ—เธตเน</th>
-                          <th>เธเธนเนเธเธทเธ/เนเธเธเธ</th>
-                          <th>เธญเธธเธเธเธฃเธ“เน</th>
-                          <th>เธเธณเธซเธเธ”เธเธทเธ</th>
-                          <th>เธชเธ–เธฒเธเธฐ</th>
-                          <th>เธ•เธฃเธงเธเธฃเธฑเธ</th>
+                          <th>เลขที่</th>
+                          <th>ผู้คืน/แผนก</th>
+                          <th>อุปกรณ์</th>
+                          <th>กำหนดคืน</th>
+                          <th>สถานะ</th>
+                          <th>ตรวจรับ</th>
                         </tr>
                       </thead>
                       <tbody>
                         {inspectionRequests.length === 0 ? (
-                          <tr><td colSpan="6" className="workflow-empty">เนเธกเนเธกเธตเธญเธธเธเธเธฃเธ“เนเธฃเธญเธ•เธฃเธงเธเธฃเธฑเธ</td></tr>
+                          <tr><td colSpan="6" className="workflow-empty">ไม่มีอุปกรณ์รอตรวจรับ</td></tr>
                         ) : inspectionRequests.map(request => (
                           <tr key={request.id}>
                             <td><strong>#{request.id}</strong><small>{request.requested_date || request.created_at ? new Date(request.requested_date || request.created_at).toLocaleDateString('th-TH') : '-'}</small></td>
                             <td><strong>{request.requester}</strong><small>{request.department}</small></td>
                             <td><strong>{request.device_serial || request.item_type}</strong><small>{request.assigned_item_type || request.purpose}</small></td>
                             <td>{request.due_date ? String(request.due_date).slice(0, 10) : '-'}</td>
-                            <td><span className="workflow-status status-return_requested">เธฃเธญ IT เธ•เธฃเธงเธเธฃเธฑเธ</span></td>
+                            <td><span className="workflow-status status-return_requested">รอ IT ตรวจรับ</span></td>
                             <td>
                               <div className="workflow-actions">
                                 <button className="return" onClick={() => runAssetRequestAction(request, 'return')} disabled={assetRequestLoading}>
-                                  เธ•เธฃเธงเธเธชเธ เธฒเธเนเธฅเธฐเธฃเธฑเธเธเธทเธ
+                                  ตรวจสภาพและรับคืน
                                 </button>
                               </div>
                             </td>
@@ -5529,23 +5529,23 @@ function Dashboard() {
                 {assetReturnView === 'registry' && <section className="workflow-list-section return-registry-section">
                   <div className="workflow-section-heading">
                     <div>
-                      <h4>เธ—เธฐเน€เธเธตเธขเธเธเธฅเธฑเธเธ—เธฃเธฑเธเธขเนเธชเธดเธเนเธฅเธฐเธญเธธเธเธเธฃเธ“เน IT (Asset Registry)</h4>
+                      <h4>ทะเบียนคลังทรัพย์สินและอุปกรณ์ IT (Asset Registry)</h4>
                       <input
                         className="workflow-requester-search"
-                        placeholder="เธเนเธเธซเธฒเธญเธธเธเธเธฃเธ“เน เธเธทเนเธญเธเธนเนเนเธเน เนเธเธเธ เธซเธฃเธทเธญเธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธ"
+                        placeholder="ค้นหาอุปกรณ์ ชื่อผู้ใช้ แผนก หรือหมายเลขเครื่อง"
                         value={assetSearch}
                         onChange={event => setAssetSearch(event.target.value)}
                       />
                     </div>
-                    <span>เนเธชเธ”เธ {registryAssets.length} เธเธฒเธเธ—เธฑเนเธเธซเธกเธ” {assetsList.length} เธญเธธเธเธเธฃเธ“เน</span>
+                    <span>แสดง {registryAssets.length} จากทั้งหมด {assetsList.length} อุปกรณ์</span>
                   </div>
                   <div className="return-registry-filters">
                     <select value={assetDeptFilter} onChange={event => setAssetDeptFilter(event.target.value)}>
-                      <option value="">เธ—เธฑเนเธเธซเธกเธ”เนเธเธเธ</option>
+                      <option value="">ทั้งหมดแผนก</option>
                       {uniquePositions.map(position => <option key={position} value={position}>{position}</option>)}
                     </select>
                     <select value={assetStatusFilter} onChange={event => setAssetStatusFilter(event.target.value)}>
-                      <option value="">เธ—เธฑเนเธเธซเธกเธ”เธชเธ–เธฒเธเธฐ</option>
+                      <option value="">ทั้งหมดสถานะ</option>
                       {uniqueStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                     </select>
                   </div>
@@ -5553,28 +5553,28 @@ function Dashboard() {
                     <table className="details-table return-registry-table">
                       <thead>
                         <tr>
-                          <th>เธฅเธณเธ”เธฑเธเธ—เธตเน</th>
-                          <th>เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ</th>
-                          <th>เธเธนเนเน€เธเธดเธเนเธเนเธเธฒเธ</th>
-                          <th>เธ•เธณเนเธซเธเนเธ/เนเธเธเธ</th>
-                          <th>เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ</th>
-                          <th>เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เน (Serial)</th>
-                          <th>เธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก</th>
-                          <th>เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก</th>
-                          <th>เธเธญเธเธ•เนเนเธงเธฃเน / App</th>
-                          <th>เธญเธตเน€เธกเธฅเธ—เธตเนเธฅเธเธ—เธฐเน€เธเธตเธขเธ</th>
-                          <th>เธเธณเธซเธเธ”เธเธทเธ</th>
-                          <th>เธชเธ–เธฒเธเธฐ</th>
-                          <th>เธซเธกเธฒเธขเน€เธซเธ•เธธ</th>
-                          <th>เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ</th>
-                          <th>เธงเธฑเธเธ—เธตเนเธเธทเนเธญ</th>
-                          <th>เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ</th>
-                          <th>เธเนเธฒเนเธเนเธเนเธฒเธข</th>
+                          <th>ลำดับที่</th>
+                          <th>วันที่เบิกใช้งาน</th>
+                          <th>ผู้เบิกใช้งาน</th>
+                          <th>ตำแหน่ง/แผนก</th>
+                          <th>รายการอุปกรณ์หลัก</th>
+                          <th>หมายเลขอุปกรณ์ (Serial)</th>
+                          <th>อุปกรณ์เพิ่มเติม</th>
+                          <th>หมายเลขอุปกรณ์เพิ่มเติม</th>
+                          <th>ซอฟต์แวร์ / App</th>
+                          <th>อีเมลที่ลงทะเบียน</th>
+                          <th>กำหนดคืน</th>
+                          <th>สถานะ</th>
+                          <th>หมายเหตุ</th>
+                          <th>วันที่ตรวจสอบ</th>
+                          <th>วันที่ซื้อ</th>
+                          <th>วันหมดประกัน</th>
+                          <th>ค่าใช้จ่าย</th>
                         </tr>
                       </thead>
                       <tbody>
                         {registryAssets.length === 0 ? (
-                          <tr><td colSpan="17" className="workflow-empty">เนเธกเนเธเธเธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธ•เธฃเธเธ•เธฒเธกเน€เธเธทเนเธญเธเนเธ</td></tr>
+                          <tr><td colSpan="17" className="workflow-empty">ไม่พบอุปกรณ์ที่ตรงตามเงื่อนไข</td></tr>
                         ) : registryAssets.map((asset, index) => (
                           <tr key={asset.sn ?? index}>
                             <td><strong>{index + 1}</strong></td>
@@ -5593,7 +5593,7 @@ function Dashboard() {
                             <td>{asset.inspectionDate || '-'}</td>
                             <td>{asset.purchaseDate || '-'}</td>
                             <td>{asset.warrantyEndDate || '-'}</td>
-                            <td>{Number(asset.expense || 0).toLocaleString('th-TH')} เธเธฒเธ—</td>
+                            <td>{Number(asset.expense || 0).toLocaleString('th-TH')} บาท</td>
                           </tr>
                         ))}
                       </tbody>
@@ -5611,7 +5611,7 @@ function Dashboard() {
         <div className="modal-overlay active">
           <div className="modal large">
             <header className="modal-header">
-              <h3>โ๏ธ เนเธเนเนเธเธเนเธญเธกเธนเธฅเธเธฃเธฐเธเธณเน€เธ”เธทเธญเธ <span style={{ color: 'var(--primary)' }}>{activeData.monthName}</span></h3>
+              <h3>✏️ แก้ไขข้อมูลประจำเดือน <span style={{ color: 'var(--primary)' }}>{activeData.monthName}</span></h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
@@ -5619,10 +5619,10 @@ function Dashboard() {
                 
                 {/* Hardware inputs */}
                 <div className="form-section">
-                  <h4 className="form-section-title">1. เธ—เธฃเธฑเธเธขเนเธชเธดเธเนเธฅเธฐเธฎเธฒเธฃเนเธ”เนเธงเธฃเน (Assets)</h4>
+                  <h4 className="form-section-title">1. ทรัพย์สินและฮาร์ดแวร์ (Assets)</h4>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>เธเธณเธเธงเธเธญเธธเธเธเธฃเธ“เนเธ—เธฑเนเธเธซเธกเธ” (เน€เธเธฃเธทเนเธญเธ)</label>
+                      <label>จำนวนอุปกรณ์ทั้งหมด (เครื่อง)</label>
                       <input 
                         type="number" 
                         value={formInputs.totalAssets ?? ''} 
@@ -5631,7 +5631,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธกเธนเธฅเธเนเธฒเธ—เธฃเธฑเธเธขเนเธชเธดเธเนเธญเธ—เธตเธฃเธงเธก (เธเธฒเธ—)</label>
+                      <label>มูลค่าทรัพย์สินไอทีรวม (บาท)</label>
                       <input 
                         type="number" 
                         value={formInputs.assetValue ?? ''} 
@@ -5640,7 +5640,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธญเธธเธเธเธฃเธ“เนเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ (เน€เธเธฃเธทเนเธญเธ)</label>
+                      <label>อุปกรณ์ใกล้หมดอายุ (เครื่อง)</label>
                       <input 
                         type="number" 
                         value={formInputs.assetsExpiring ?? ''} 
@@ -5649,7 +5649,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธญเธธเธเธเธฃเธ“เนเธเธณเธฃเธธเธ” (เน€เธเธฃเธทเนเธญเธ)</label>
+                      <label>อุปกรณ์ชำรุด (เครื่อง)</label>
                       <input 
                         type="number" 
                         value={formInputs.assetsBroken ?? ''} 
@@ -5658,7 +5658,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธญเธธเธเธเธฃเธ“เนเธชเธนเธเธซเธฒเธข (เน€เธเธฃเธทเนเธญเธ)</label>
+                      <label>อุปกรณ์สูญหาย (เครื่อง)</label>
                       <input 
                         type="number" 
                         value={formInputs.assetsLost ?? ''} 
@@ -5667,7 +5667,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธญเธธเธเธเธฃเธ“เนเธงเนเธฒเธ/เธเธฃเนเธญเธกเนเธเน (เน€เธเธฃเธทเนเธญเธ)</label>
+                      <label>อุปกรณ์ว่าง/พร้อมใช้ (เครื่อง)</label>
                       <input 
                         type="number" 
                         value={formInputs.assetsVacant ?? ''} 
@@ -5680,10 +5680,10 @@ function Dashboard() {
 
                 {/* Support inputs */}
                 <div className="form-section">
-                  <h4 className="form-section-title">2. เธเธฃเธดเธเธฒเธฃเธเนเธงเธขเน€เธซเธฅเธทเธญเธเธนเนเนเธเน (Support)</h4>
+                  <h4 className="form-section-title">2. บริการช่วยเหลือผู้ใช้ (Support)</h4>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>เธเธณเธเธงเธ Ticket เธ—เธฑเนเธเธซเธกเธ” (เนเธ)</label>
+                      <label>จำนวน Ticket ทั้งหมด (ใบ)</label>
                       <input 
                         type="number" 
                         value={formInputs.ticketsCount ?? ''} 
@@ -5692,7 +5692,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธชเธ–เธดเธ•เธดเธเธฒเธฃเธเธฃเธฃเธฅเธธเธเนเธญเธ•เธเธฅเธ SLA (%)</label>
+                      <label>สถิติการบรรลุข้อตกลง SLA (%)</label>
                       <input 
                         type="number" 
                         step="0.1" 
@@ -5702,7 +5702,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Response Time เน€เธเธฅเธตเนเธข (เธเธฒเธ—เธต)</label>
+                      <label>Response Time เฉลี่ย (นาที)</label>
                       <input 
                         type="number" 
                         value={formInputs.responseTime ?? ''} 
@@ -5711,7 +5711,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Resolution Time เน€เธเธฅเธตเนเธข (เธเธฑเนเธงเนเธกเธ)</label>
+                      <label>Resolution Time เฉลี่ย (ชั่วโมง)</label>
                       <input 
                         type="number" 
                         step="0.1" 
@@ -5721,7 +5721,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group full-width">
-                      <label>เธเธฐเนเธเธเธเธงเธฒเธกเธเธถเธเธเธญเนเธเธเธนเนเนเธเน CSAT (เธเธฐเนเธเธเน€เธ•เนเธก 5)</label>
+                      <label>คะแนนความพึงพอใจผู้ใช้ CSAT (คะแนนเต็ม 5)</label>
                       <input 
                         type="number" 
                         step="0.1" 
@@ -5736,10 +5736,10 @@ function Dashboard() {
 
                 {/* Software inputs */}
                 <div className="form-section">
-                  <h4 className="form-section-title">3. เธฅเธดเธเธชเธดเธ—เธเธดเนเธเธญเธเธ•เนเนเธงเธฃเน (Software)</h4>
+                  <h4 className="form-section-title">3. ลิขสิทธิ์ซอฟต์แวร์ (Software)</h4>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>เนเธเธฃเนเธเธฃเธกเธเธญเธเธ•เนเนเธงเธฃเนเธ—เธฑเนเธเธซเธกเธ”</label>
+                      <label>โปรแกรมซอฟต์แวร์ทั้งหมด</label>
                       <input 
                         type="number" 
                         value={formInputs.totalSoftware ?? ''} 
@@ -5748,7 +5748,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เนเธเธฃเนเธเธฃเธกเนเธเธฅเนเธชเธฑเธเธเธฒเธซเธกเธ”เธชเธฑเธเธเธฒ</label>
+                      <label>โปรแกรมใกล้สัญญาหมดสัญญา</label>
                       <input 
                         type="number" 
                         value={formInputs.softwareExpiring ?? ''} 
@@ -5757,7 +5757,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธชเธดเธ—เธเธดเน/เธเธฑเธเธเธตเนเธเนเธเธฒเธเธญเธขเธนเน (Licenses)</label>
+                      <label>สิทธิ์/บัญชีใช้งานอยู่ (Licenses)</label>
                       <input 
                         type="number" 
                         value={formInputs.licensesInUse ?? ''} 
@@ -5766,7 +5766,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธชเธดเธ—เธเธดเน/เธเธฑเธเธเธตเธงเนเธฒเธ (Licenses)</label>
+                      <label>สิทธิ์/บัญชีว่าง (Licenses)</label>
                       <input 
                         type="number" 
                         value={formInputs.licensesVacant ?? ''} 
@@ -5775,7 +5775,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group full-width">
-                      <label>เธเนเธฒเนเธเนเธเนเธฒเธขเธเธญเธเธ•เนเนเธงเธฃเนเธฃเธงเธก (เธเธฒเธ—)</label>
+                      <label>ค่าใช้จ่ายซอฟต์แวร์รวม (บาท)</label>
                       <input 
                         type="number" 
                         value={formInputs.softwareCost ?? ''} 
@@ -5788,10 +5788,10 @@ function Dashboard() {
 
                 {/* Security inputs */}
                 <div className="form-section">
-                  <h4 className="form-section-title">4. เธเธงเธฒเธกเธเธฅเธญเธ”เธ เธฑเธขเธเนเธญเธกเธนเธฅเนเธฅเธฐเธเธฒเธฃเธเธนเนเธเธทเธ (Security)</h4>
+                  <h4 className="form-section-title">4. ความปลอดภัยข้อมูลและการกู้คืน (Security)</h4>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>เธเธฒเธฃเธชเธณเธฃเธญเธเธเนเธญเธกเธนเธฅ (Backup) เธชเธณเน€เธฃเนเธ (%)</label>
+                      <label>การสำรองข้อมูล (Backup) สำเร็จ (%)</label>
                       <input 
                         type="number" 
                         step="0.1" 
@@ -5802,7 +5802,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธ เธฑเธขเธเธธเธเธเธฒเธก Security Incident (เธเธฃเธฑเนเธ)</label>
+                      <label>ภัยคุกคาม Security Incident (ครั้ง)</label>
                       <input 
                         type="number" 
                         value={formInputs.securityIncidents ?? ''} 
@@ -5811,7 +5811,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธเธงเธฒเธกเธเธธเนเธกเธเธฃเธญเธเธฃเธฐเธเธ Antivirus (%)</label>
+                      <label>ความคุ้มครองระบบ Antivirus (%)</label>
                       <input 
                         type="number" 
                         step="0.1" 
@@ -5822,7 +5822,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธเธฒเธฃเน€เธเธดเธ”เนเธเนเธเธฒเธ MFA เนเธเธฃเธฐเธเธเธซเธฅเธฑเธ (%)</label>
+                      <label>การเปิดใช้งาน MFA ในระบบหลัก (%)</label>
                       <input 
                         type="number" 
                         step="0.1" 
@@ -5837,10 +5837,10 @@ function Dashboard() {
 
                 {/* Repair inputs */}
                 <div className="form-section">
-                  <h4 className="form-section-title">5. เธเธฒเธฃเนเธเนเธเธชเนเธเธเนเธญเธกเนเธฅเธฐเธเนเธฒเธเธณเธฃเธธเธเธฃเธฑเธเธฉเธฒ (Repair)</h4>
+                  <h4 className="form-section-title">5. การแจ้งส่งซ่อมและค่าบำรุงรักษา (Repair)</h4>
                   <div className="form-grid">
                     <div className="form-group">
-                      <label>เธเธณเธเธงเธเธเธฃเธฑเนเธเธเธฒเธฃเธชเนเธเธเนเธญเธก</label>
+                      <label>จำนวนครั้งการส่งซ่อม</label>
                       <input 
                         type="number" 
                         value={formInputs.repairCount ?? ''} 
@@ -5849,7 +5849,7 @@ function Dashboard() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>เธเนเธฒเธเนเธญเธกเนเธเธกเนเธฅเธฐเธเธณเธฃเธธเธเธฃเธฑเธเธฉเธฒเธญเธธเธเธเธฃเธ“เนเธฃเธงเธก (เธเธฒเธ—)</label>
+                      <label>ค่าซ่อมแซมและบำรุงรักษาอุปกรณ์รวม (บาท)</label>
                       <input 
                         type="number" 
                         value={formInputs.repairCost ?? ''} 
@@ -5862,14 +5862,14 @@ function Dashboard() {
 
                 {/* Recommendation inputs */}
                 <div className="form-section">
-                  <h4 className="form-section-title">6. เธเนเธญเน€เธชเธเธญเนเธเธฐเนเธฅเธฐเธชเธฃเธธเธเน€เธเธดเธเธเธนเนเธเธฃเธดเธซเธฒเธฃ (Recommendations)</h4>
+                  <h4 className="form-section-title">6. ข้อเสนอแนะและสรุปเชิงผู้บริหาร (Recommendations)</h4>
                   <div className="form-group full-width">
-                    <label>เธเนเธญเน€เธชเธเธญเนเธเธฐ (เนเธชเนเธซเธเธถเนเธเธเนเธญเน€เธชเธเธญเนเธเธฐเธ•เนเธญ 1 เธเธฃเธฃเธ—เธฑเธ”)</label>
+                    <label>ข้อเสนอแนะ (ใส่หนึ่งข้อเสนอแนะต่อ 1 บรรทัด)</label>
                     <textarea 
                       rows="4" 
                       value={formInputs.recommendations || ''} 
                       onChange={(e) => setFormInputs(p => ({ ...p, recommendations: e.target.value }))}
-                      placeholder="เนเธเธฐเธเธณเนเธซเนเธเธฃเธฑเธเธเธฃเธธเธเธเธฒเธฃ..."
+                      placeholder="แนะนำให้ปรับปรุงการ..."
                     ></textarea>
                   </div>
                 </div>
@@ -5881,14 +5881,14 @@ function Dashboard() {
                     className="sidebar-btn secondary" 
                     style={{ width: 'auto', padding: '10px 20px' }}
                   >
-                    เธขเธเน€เธฅเธดเธ
+                    ยกเลิก
                   </button>
                   <button 
                     type="submit" 
                     className="sidebar-btn" 
                     style={{ width: 'auto', padding: '10px 24px' }}
                   >
-                    เธเธฑเธเธ—เธถเธเธเธฒเธฃเนเธเนเนเธ
+                    บันทึกการแก้ไข
                   </button>
                 </footer>
               </form>
@@ -5902,7 +5902,7 @@ function Dashboard() {
         <div className="modal-overlay active">
           <div className="modal large dashboard-fullscreen-modal">
             <header className="modal-header">
-              <h3>เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธญเธธเธเธเธฃเธ“เนเนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ ({activeData.monthName})</h3>
+              <h3>รายละเอียดอุปกรณ์ใกล้หมดอายุ ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
@@ -5910,11 +5910,11 @@ function Dashboard() {
                 <table className="details-table">
                   <thead>
                     <tr>
-                      <th>เธฃเธซเธฑเธชเธ—เธฃเธฑเธเธขเนเธชเธดเธ</th>
-                      <th>เธเธฃเธฐเน€เธ เธ—</th>
-                      <th>เธฃเธธเนเธ</th>
-                      <th>เนเธเธเธ</th>
-                      <th>เธงเธฑเธเธ—เธตเนเธซเธกเธ”เธญเธฒเธขเธธ</th>
+                      <th>รหัสทรัพย์สิน</th>
+                      <th>ประเภท</th>
+                      <th>รุ่น</th>
+                      <th>แผนก</th>
+                      <th>วันที่หมดอายุ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -5930,7 +5930,7 @@ function Dashboard() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5" style={{ textAlign: 'center' }}>เนเธกเนเธกเธตเธเนเธญเธกเธนเธฅเธเธฒเธฃเน€เธ•เธทเธญเธเธซเธกเธ”เธญเธฒเธขเธธเธเธญเธเธฎเธฒเธฃเนเธ”เนเธงเธฃเน</td>
+                        <td colSpan="5" style={{ textAlign: 'center' }}>ไม่มีข้อมูลการเตือนหมดอายุของฮาร์ดแวร์</td>
                       </tr>
                     )}
                   </tbody>
@@ -5946,74 +5946,74 @@ function Dashboard() {
         <div className="modal-overlay active">
           <div className="modal large software-license-modal dashboard-fullscreen-modal">
             <header className="modal-header">
-              <h3>เธ—เธฐเน€เธเธตเธขเธเนเธเธฃเนเธเธฃเธกเนเธฅเธฐ License ({activeData.monthName})</h3>
+              <h3>ทะเบียนโปรแกรมและ License ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
               <form onSubmit={saveSoftwareLicense} className="software-license-form">
                 <div className="form-grid">
                   <div className="form-group">
-                    <label>เธเธทเนเธญเธเธญเธเธ•เนเนเธงเธฃเน/เนเธเธฃเนเธเธฃเธก</label>
+                    <label>ชื่อซอฟต์แวร์/โปรแกรม</label>
                     <input value={softwareName} onChange={(event) => setSoftwareName(event.target.value)} required />
                   </div>
                   <div className="form-group">
-                    <label>เธงเธฑเธเธซเธกเธ”เธญเธฒเธขเธธ</label>
+                    <label>วันหมดอายุ</label>
                     <input type="date" value={softwareExpiryDate} onChange={(event) => setSoftwareExpiryDate(event.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>Owner / เนเธเธเธ</label>
+                    <label>Owner / แผนก</label>
                     <input value={softwareOwner} onChange={(event) => setSoftwareOwner(event.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>เธเนเธญเธเธ—เธฒเธเธเธณเธฃเธฐเน€เธเธดเธ</label>
+                    <label>ช่องทางชำระเงิน</label>
                     <input value={softwarePaymentChannel} onChange={(event) => setSoftwarePaymentChannel(event.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>เธงเธฑเธเธ—เธตเน/เธฃเธญเธเธเธณเธฃเธฐเน€เธเธดเธ</label>
+                    <label>วันที่/รอบชำระเงิน</label>
                     <input value={softwarePaymentDate} onChange={(event) => setSoftwarePaymentDate(event.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>เธญเธตเน€เธกเธฅเธ—เธตเนเธชเธกเธฑเธเธฃ</label>
+                    <label>อีเมลที่สมัคร</label>
                     <input type="email" value={softwareRegisteredEmail} onChange={(event) => setSoftwareRegisteredEmail(event.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>License เนเธเนเธเธฒเธ</label>
+                    <label>License ใช้งาน</label>
                     <input type="number" min="0" value={softwareUsed} onChange={(event) => setSoftwareUsed(event.target.value)} required />
                   </div>
                   <div className="form-group">
-                    <label>License เธงเนเธฒเธ</label>
+                    <label>License ว่าง</label>
                     <input type="number" min="0" value={softwareVacant} onChange={(event) => setSoftwareVacant(event.target.value)} required />
                   </div>
                   <div className="form-group">
-                    <label>เธเนเธฒเนเธเนเธเนเธฒเธขเธ•เนเธญเน€เธ”เธทเธญเธ (เธเธฒเธ—)</label>
+                    <label>ค่าใช้จ่ายต่อเดือน (บาท)</label>
                     <input type="number" min="0" value={softwareMonthlyCost} onChange={(event) => setSoftwareMonthlyCost(event.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>เธเธนเนเนเธเนเธเธฒเธเธเธฑเธเธเธธเธเธฑเธ (เธเธฑเนเธเธ”เนเธงเธขเธเธธเธฅเธ เธฒเธ)</label>
+                    <label>ผู้ใช้งานปัจจุบัน (คั่นด้วยจุลภาค)</label>
                     <textarea value={softwareCurrentUsers} onChange={(event) => setSoftwareCurrentUsers(event.target.value)} />
                   </div>
                 </div>
                 <div className="software-license-actions">
-                  {editingSoftwareIndex !== null && <button type="button" className="btn-details" onClick={resetSoftwareForm}>เธขเธเน€เธฅเธดเธ</button>}
-                  <button type="submit" className="btn-save">{editingSoftwareIndex === null ? 'เน€เธเธดเนเธก License' : 'เธเธฑเธเธ—เธถเธเธเธฒเธฃเนเธเนเนเธ'}</button>
+                  {editingSoftwareIndex !== null && <button type="button" className="btn-details" onClick={resetSoftwareForm}>ยกเลิก</button>}
+                  <button type="submit" className="btn-save">{editingSoftwareIndex === null ? 'เพิ่ม License' : 'บันทึกการแก้ไข'}</button>
                 </div>
               </form>
               <div style={{ overflowX: 'auto' }}>
                 <table className="details-table">
                   <thead>
                     <tr>
-                      <th>เธเธทเนเธญเธเธญเธเธ•เนเนเธงเธฃเน/เนเธเธฃเนเธเธฃเธก</th>
+                      <th>ชื่อซอฟต์แวร์/โปรแกรม</th>
                       <th>Owner</th>
-                      <th>เนเธเนเธเธฒเธ</th>
-                      <th>เธงเนเธฒเธ</th>
-                      <th>เธฃเธงเธก</th>
-                      <th>เธฃเธฒเธเธฒ</th>
-                      <th>เธเนเธญเธเธ—เธฒเธเธเธณเธฃเธฐ</th>
-                      <th>เธงเธฑเธเธ—เธตเนเธเธณเธฃเธฐ</th>
-                      <th>เธงเธฑเธเธซเธกเธ”เธชเธฑเธเธเธฒ</th>
-                      <th>เธญเธตเน€เธกเธฅเธชเธกเธฑเธเธฃ</th>
-                      <th>เธเธนเนเนเธเนเธเธฒเธเธเธฑเธเธเธธเธเธฑเธ</th>
-                      <th>เธเธฑเธ”เธเธฒเธฃ</th>
+                      <th>ใช้งาน</th>
+                      <th>ว่าง</th>
+                      <th>รวม</th>
+                      <th>ราคา</th>
+                      <th>ช่องทางชำระ</th>
+                      <th>วันที่ชำระ</th>
+                      <th>วันหมดสัญญา</th>
+                      <th>อีเมลสมัคร</th>
+                      <th>ผู้ใช้งานปัจจุบัน</th>
+                      <th>จัดการ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -6033,15 +6033,15 @@ function Dashboard() {
                           <td style={{ minWidth: '220px' }}>{soft.currentUsers || '-'}</td>
                           <td>
                             <div className="software-row-actions">
-                              <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, idx)}>เนเธเนเนเธ</button>
-                              <button type="button" className="console-delete-btn" onClick={() => deleteSoftwareLicense(idx)}>เธฅเธ</button>
+                              <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, idx)}>แก้ไข</button>
+                              <button type="button" className="console-delete-btn" onClick={() => deleteSoftwareLicense(idx)}>ลบ</button>
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="12" style={{ textAlign: 'center' }}>เธขเธฑเธเนเธกเนเธกเธตเธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ” License</td>
+                        <td colSpan="12" style={{ textAlign: 'center' }}>ยังไม่มีรายละเอียด License</td>
                       </tr>
                     )}
                   </tbody>
@@ -6057,7 +6057,7 @@ function Dashboard() {
         <div className="modal-overlay active">
           <div className="modal large">
             <header className="modal-header">
-              <h3>เธ—เธณเน€เธเธตเธขเธเธญเธธเธเธเธฃเธ“เนเธเธณเธฃเธธเธ” (Top 10 เธญเธธเธเธเธฃเธ“เนเน€เธชเธตเธขเธเนเธญเธข)</h3>
+              <h3>ทำเนียบอุปกรณ์ชำรุด (Top 10 อุปกรณ์เสียบ่อย)</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
@@ -6065,10 +6065,10 @@ function Dashboard() {
                 <table className="details-table">
                   <thead>
                     <tr>
-                      <th>เธญเธฑเธเธ”เธฑเธ</th>
-                      <th>เธญเธธเธเธเธฃเธ“เน/เธฃเธธเนเธ</th>
-                      <th>เธเธณเธเธงเธเธเธฃเธฑเนเธเธ—เธตเนเน€เธชเธตเธข</th>
-                      <th>เธเนเธฒเนเธเนเธเนเธฒเธขเนเธเธเธฒเธฃเธเนเธญเธกเธฃเธงเธก (เนเธ”เธขเธเธฃเธฐเธกเธฒเธ“)</th>
+                      <th>อันดับ</th>
+                      <th>อุปกรณ์/รุ่น</th>
+                      <th>จำนวนครั้งที่เสีย</th>
+                      <th>ค่าใช้จ่ายในการซ่อมรวม (โดยประมาณ)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -6076,8 +6076,8 @@ function Dashboard() {
                       <tr key={idx}>
                         <td><strong>{idx + 1}</strong></td>
                         <td>{device.name}</td>
-                        <td><span className="repair-item-count">{device.count} เธเธฃเธฑเนเธ</span></td>
-                        <td>{device.cost > 0 ? formatThaiBaht(device.cost) : '0 เธเธฒเธ—'}</td>
+                        <td><span className="repair-item-count">{device.count} ครั้ง</span></td>
+                        <td>{device.cost > 0 ? formatThaiBaht(device.cost) : '0 บาท'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -6093,7 +6093,7 @@ function Dashboard() {
         <div className="modal-overlay active">
           <div className="modal large dashboard-fullscreen-modal">
             <header className="modal-header">
-              <h3>เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธเธเนเธญเธกเนเธฅเธฐเธเธฃเธดเธเธฒเธฃ Support ({activeData.monthName})</h3>
+              <h3>รายละเอียดประวัติงานซ่อมและบริการ Support ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
@@ -6101,16 +6101,16 @@ function Dashboard() {
                 <table className="details-table">
                   <thead>
                     <tr>
-                      <th>SN / เธฃเธซเธฑเธช</th>
-                      <th>เธงเธฑเธ-เน€เธงเธฅเธฒ</th>
-                      <th>เธเธนเนเนเธเนเธ / เธ•เธดเธ”เธ•เนเธญ</th>
-                      <th>เธเธฑเธเธซเธฒ / เธญเธฒเธเธฒเธฃเน€เธชเธตเธข / เธฃเธฒเธขเธเธฒเธฃ</th>
-                      <th>เธชเธฒเน€เธซเธ•เธธเธเธฒเธฃเน€เธชเธตเธข</th>
-                      <th>เธเธนเนเธฃเธฑเธเธเธดเธ”เธเธญเธ (IT)</th>
-                      <th>เน€เธงเธฅเธฒเธ—เธณเธเธฒเธ</th>
-                      <th>เธชเธ–เธฒเธเธฐ</th>
-                      <th>เธเนเธฒเนเธเนเธเนเธฒเธข (เธเธฒเธ—)</th>
-                      <th>เธฃเธนเธเนเธเธ</th>
+                      <th>SN / รหัส</th>
+                      <th>วัน-เวลา</th>
+                      <th>ผู้แจ้ง / ติดต่อ</th>
+                      <th>ปัญหา / อาการเสีย / รายการ</th>
+                      <th>สาเหตุการเสีย</th>
+                      <th>ผู้รับผิดชอบ (IT)</th>
+                      <th>เวลาทำงาน</th>
+                      <th>สถานะ</th>
+                      <th>ค่าใช้จ่าย (บาท)</th>
+                      <th>รูปแนบ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -6131,7 +6131,7 @@ function Dashboard() {
                           <td>
                             <span 
                               style={{ 
-                                color: ticket.status === 'เน€เธชเธฃเนเธเธชเธดเนเธ' || ticket.status === 'เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง' ? 'var(--success)' : 'var(--warning)', 
+                                color: ticket.status === 'เสร็จสิ้น' || ticket.status === 'จ่ายเงินแล้ว' ? 'var(--success)' : 'var(--warning)', 
                                 fontWeight: '600' 
                               }}
                             >
@@ -6146,13 +6146,13 @@ function Dashboard() {
                                 href={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                title={ticket.attachmentName || 'เน€เธเธดเธ”เธฃเธนเธเนเธเธ'}
+                                title={ticket.attachmentName || 'เปิดรูปแนบ'}
                               >
                                 <img
                                   src={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2`}
-                                  alt={ticket.attachmentName || `เธฃเธนเธเนเธเธ Ticket ${ticket.sn}`}
+                                  alt={ticket.attachmentName || `รูปแนบ Ticket ${ticket.sn}`}
                                 />
-                                <span>เธ”เธนเธฃเธนเธ</span>
+                                <span>ดูรูป</span>
                               </a>
                             ) : '-'}
                           </td>
@@ -6160,7 +6160,7 @@ function Dashboard() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="10" style={{ textAlign: 'center' }}>เนเธกเนเธกเธตเธเนเธญเธกเธนเธฅเธเธฃเธฐเธงเธฑเธ•เธดเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธเธเนเธญเธกเธชเธณเธซเธฃเธฑเธเน€เธ”เธทเธญเธเธเธตเน</td>
+                        <td colSpan="10" style={{ textAlign: 'center' }}>ไม่มีข้อมูลประวัติประวัติงานซ่อมสำหรับเดือนนี้</td>
                       </tr>
                     )}
                   </tbody>
@@ -6199,7 +6199,7 @@ function Dashboard() {
           <div className="modal-overlay active">
             <div className="modal large dashboard-fullscreen-modal asset-list-modal">
               <header className="modal-header">
-                <h3>เธ—เธฐเน€เธเธตเธขเธเธเธฅเธฑเธเธ—เธฃเธฑเธเธขเนเธชเธดเธเนเธฅเธฐเธญเธธเธเธเธฃเธ“เน IT (Asset Registry)</h3>
+                <h3>ทะเบียนคลังทรัพย์สินและอุปกรณ์ IT (Asset Registry)</h3>
                 <button onClick={() => {
                   setActiveModal(null);
                   setAssetSearch('');
@@ -6221,12 +6221,12 @@ function Dashboard() {
                   border: '1px solid rgba(255, 255, 255, 0.08)'
                 }}>
                   <div style={{ flex: '1', minWidth: '200px' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>เธเนเธเธซเธฒเธญเธธเธเธเธฃเธ“เน / เธเธทเนเธญเธเธนเนเน€เธเธดเธ / เธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธ</label>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>ค้นหาอุปกรณ์ / ชื่อผู้เบิก / หมายเลขเครื่อง</label>
                     <input 
                       type="text"
                       value={assetSearch}
                       onChange={(e) => setAssetSearch(e.target.value)}
-                      placeholder="เน€เธเนเธ Lenovo, เธเธทเนเธญเธเธเธฑเธเธเธฒเธ, LENOVO-010..."
+                      placeholder="เช่น Lenovo, ชื่อพนักงาน, LENOVO-010..."
                       style={{
                         width: '100%',
                         padding: '8px 12px',
@@ -6238,7 +6238,7 @@ function Dashboard() {
                     />
                   </div>
                   <div style={{ width: '200px' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>เธเธฃเธญเธเธ•เธฒเธกเธเธฃเธฐเน€เธ เธ—</label>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามประเภท</label>
                     <select
                       value={assetTypeFilter}
                       onChange={(e) => setAssetTypeFilter(e.target.value)}
@@ -6251,14 +6251,14 @@ function Dashboard() {
                         color: 'white'
                       }}
                     >
-                      <option value="">เธ—เธฑเนเธเธซเธกเธ”เธเธฃเธฐเน€เธ เธ—</option>
+                      <option value="">ทั้งหมดประเภท</option>
                       {uniqueTypes.map((type, idx) => (
                         <option key={idx} value={type}>{type}</option>
                       ))}
                     </select>
                   </div>
                   <div style={{ width: '200px' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>เธเธฃเธญเธเธ•เธฒเธกเนเธเธเธ/เธ•เธณเนเธซเธเนเธ</label>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามแผนก/ตำแหน่ง</label>
                     <select
                       value={assetDeptFilter}
                       onChange={(e) => setAssetDeptFilter(e.target.value)}
@@ -6271,14 +6271,14 @@ function Dashboard() {
                         color: 'white'
                       }}
                     >
-                      <option value="">เธ—เธฑเนเธเธซเธกเธ”เนเธเธเธ</option>
+                      <option value="">ทั้งหมดแผนก</option>
                       {uniquePositions.map((pos, idx) => (
                         <option key={idx} value={pos}>{pos}</option>
                       ))}
                     </select>
                   </div>
                   <div style={{ width: '150px' }}>
-                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>เธเธฃเธญเธเธ•เธฒเธกเธชเธ–เธฒเธเธฐ</label>
+                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามสถานะ</label>
                     <select
                       value={assetStatusFilter}
                       onChange={(e) => setAssetStatusFilter(e.target.value)}
@@ -6291,7 +6291,7 @@ function Dashboard() {
                         color: 'white'
                       }}
                     >
-                      <option value="">เธ—เธฑเนเธเธซเธกเธ”เธชเธ–เธฒเธเธฐ</option>
+                      <option value="">ทั้งหมดสถานะ</option>
                       {uniqueStatuses.map((stat, idx) => (
                         <option key={idx} value={stat}>{stat}</option>
                       ))}
@@ -6303,23 +6303,23 @@ function Dashboard() {
                   <table className="details-table">
                     <thead>
                       <tr>
-                        <th>เธฅเธณเธ”เธฑเธเธ—เธตเน</th>
-                        <th>เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ</th>
-                        <th>เธเธนเนเน€เธเธดเธเนเธเนเธเธฒเธ</th>
-                        <th>เธ•เธณเนเธซเธเนเธ/เนเธเธเธ</th>
-                        <th>เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ</th>
-                        <th>เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เน (Serial)</th>
-                        <th>เธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก</th>
-                        <th>เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก</th>
-                        <th>เธเธญเธเธ•เนเนเธงเธฃเน / App</th>
-                        <th>เธญเธตเน€เธกเธฅเธ—เธตเนเธฅเธเธ—เธฐเน€เธเธตเธขเธ</th>
-                        <th>เธเธณเธซเธเธ”เธเธทเธ</th>
-                        <th>เธชเธ–เธฒเธเธฐ</th>
-                        <th>เธซเธกเธฒเธขเน€เธซเธ•เธธ</th>
-                        <th>เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ</th>
-                        <th>เธงเธฑเธเธ—เธตเนเธเธทเนเธญ</th>
-                        <th>เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ</th>
-                        <th>เธเนเธฒเนเธเนเธเนเธฒเธข</th>
+                        <th>ลำดับที่</th>
+                        <th>วันที่เบิกใช้งาน</th>
+                        <th>ผู้เบิกใช้งาน</th>
+                        <th>ตำแหน่ง/แผนก</th>
+                        <th>รายการอุปกรณ์หลัก</th>
+                        <th>หมายเลขอุปกรณ์ (Serial)</th>
+                        <th>อุปกรณ์เพิ่มเติม</th>
+                        <th>หมายเลขอุปกรณ์เพิ่มเติม</th>
+                        <th>ซอฟต์แวร์ / App</th>
+                        <th>อีเมลที่ลงทะเบียน</th>
+                        <th>กำหนดคืน</th>
+                        <th>สถานะ</th>
+                        <th>หมายเหตุ</th>
+                        <th>วันที่ตรวจสอบ</th>
+                        <th>วันที่ซื้อ</th>
+                        <th>วันหมดประกัน</th>
+                        <th>ค่าใช้จ่าย</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -6340,11 +6340,11 @@ function Dashboard() {
                             <td>
                               <span 
                                 style={{ 
-                                  color: asset.status === 'เนเธเนเธเธฒเธ' ? 'var(--success)' : asset.status === 'เธฃเธญเธเนเธญเธก' ? 'var(--danger)' : 'var(--warning)', 
+                                  color: asset.status === 'ใช้งาน' ? 'var(--success)' : asset.status === 'รอซ่อม' ? 'var(--danger)' : 'var(--warning)', 
                                   fontWeight: '600',
                                   padding: '2px 8px',
                                   borderRadius: '4px',
-                                  backgroundColor: asset.status === 'เนเธเนเธเธฒเธ' ? 'rgba(16, 185, 129, 0.1)' : asset.status === 'เธฃเธญเธเนเธญเธก' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)'
+                                  backgroundColor: asset.status === 'ใช้งาน' ? 'rgba(16, 185, 129, 0.1)' : asset.status === 'รอซ่อม' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)'
                                 }}
                               >
                                 {asset.status}
@@ -6354,19 +6354,19 @@ function Dashboard() {
                             <td>{asset.inspectionDate || '-'}</td>
                             <td>{asset.purchaseDate || '-'}</td>
                             <td>{asset.warrantyEndDate || '-'}</td>
-                            <td>{Number(asset.expense || 0).toLocaleString('th-TH')} เธเธฒเธ—</td>
+                            <td>{Number(asset.expense || 0).toLocaleString('th-TH')} บาท</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="18" style={{ textAlign: 'center' }}>เนเธกเนเธเธเธเธฅเธฑเธเธญเธธเธเธเธฃเธ“เนเธ—เธตเนเธ•เธฃเธเธ•เธฒเธกเน€เธเธทเนเธญเธเนเธ</td>
+                          <td colSpan="18" style={{ textAlign: 'center' }}>ไม่พบคลังอุปกรณ์ที่ตรงตามเงื่อนไข</td>
                       </tr>
                     )}
                   </tbody>
                 </table>
               </div>
               <div className="asset-list-table-summary">
-                เนเธชเธ”เธ {filteredAssetsList.length} เธเธฒเธเธ—เธฑเนเธเธซเธกเธ” {assetsList.length} เธญเธธเธเธเธฃเธ“เน
+                แสดง {filteredAssetsList.length} จากทั้งหมด {assetsList.length} อุปกรณ์
               </div>
             </div>
           </div>
@@ -6398,20 +6398,20 @@ function Dashboard() {
                 <Database size={22} style={{ color: 'var(--primary)' }} />
                 <h3>
                   {consoleTab === 'assets'
-                    ? <>เธ—เธฐเน€เธเธตเธขเธเธเธฅเธฑเธเธ—เธฃเธฑเธเธขเนเธชเธดเธเธซเธฅเธฑเธ (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>เนเธซเธกเธ”เนเธเนเนเธเธฃเธซเธฑเธช #{editingAssetSn}</span> : <span>เนเธซเธกเธ”เน€เธเธดเนเธกเธเนเธญเธกเธนเธฅ</span>}</>
-                    : 'เธฃเธฐเธเธเธเธฑเธ”เธเธฒเธฃเนเธฅเธฐเธเธฃเธฑเธเน€เธเธฅเธตเนเธขเธเธเนเธญเธกเธนเธฅเนเธ”เธเธเธญเธฃเนเธ”เธ—เธฑเนเธเธซเธกเธ”'}
+                    ? <>ทะเบียนคลังทรัพย์สินหลัก (IT Asset Registry Editor) - {editingAssetSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingAssetSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</>
+                    : 'ระบบจัดการและปรับเปลี่ยนข้อมูลแดชบอร์ดทั้งหมด'}
                 </h3>
               </div>
-              <nav className="console-topbar-nav" aria-label="เน€เธกเธเธนเธเธฑเธ”เธเธฒเธฃเธเนเธญเธกเธนเธฅเนเธ”เธเธเธญเธฃเนเธ”">
-                <button onClick={() => setConsoleTab('months')} className={`console-tab-btn ${consoleTab === 'months' ? 'active' : ''}`}>๐“… เธเธฑเธ”เธเธฒเธฃเน€เธ”เธทเธญเธ</button>
-                <button onClick={() => setConsoleTab('kpis')} className={`console-tab-btn ${consoleTab === 'kpis' ? 'active' : ''}`}>๐“ เธ•เธฑเธงเธเธตเนเธงเธฑเธ” KPIs</button>
-                <button onClick={() => setConsoleTab('projects')} className={`console-tab-btn ${consoleTab === 'projects' ? 'active' : ''}`}>๐—’๏ธ เนเธเธฃเธเธเธฒเธฃ & เธเนเธญเนเธเธฐเธเธณ</button>
-                <button onClick={() => setConsoleTab('assets')} className={`console-tab-btn ${consoleTab === 'assets' ? 'active' : ''}`}>๐’ป เธเธฅเธฑเธเธ—เธฃเธฑเธเธขเนเธชเธดเธ IT</button>
-                <button onClick={() => setConsoleTab('tickets')} className={`console-tab-btn ${consoleTab === 'tickets' ? 'active' : ''}`}>๐จ เธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธ Support</button>
-                <button onClick={() => setConsoleTab('backup')} className={`console-tab-btn ${consoleTab === 'backup' ? 'active' : ''}`}>๐’พ เธชเธณเธฃเธญเธ & เธฃเธตเน€เธเนเธ•เธฃเธฐเธเธ</button>
+              <nav className="console-topbar-nav" aria-label="เมนูจัดการข้อมูลแดชบอร์ด">
+                <button onClick={() => setConsoleTab('months')} className={`console-tab-btn ${consoleTab === 'months' ? 'active' : ''}`}>📅 จัดการเดือน</button>
+                <button onClick={() => setConsoleTab('kpis')} className={`console-tab-btn ${consoleTab === 'kpis' ? 'active' : ''}`}>📈 ตัวชี้วัด KPIs</button>
+                <button onClick={() => setConsoleTab('projects')} className={`console-tab-btn ${consoleTab === 'projects' ? 'active' : ''}`}>🗒️ โครงการ & ข้อแนะนำ</button>
+                <button onClick={() => setConsoleTab('assets')} className={`console-tab-btn ${consoleTab === 'assets' ? 'active' : ''}`}>💻 คลังทรัพย์สิน IT</button>
+                <button onClick={() => setConsoleTab('tickets')} className={`console-tab-btn ${consoleTab === 'tickets' ? 'active' : ''}`}>🚨 ประวัติงาน Support</button>
+                <button onClick={() => setConsoleTab('backup')} className={`console-tab-btn ${consoleTab === 'backup' ? 'active' : ''}`}>💾 สำรอง & รีเซ็ตระบบ</button>
               </nav>
               {consoleTab === 'assets' && editingAssetSn === null && (
-                <button type="button" onClick={handleAddAsset} className="btn-save asset-add-topbar-btn">เน€เธเธดเนเธกเธ—เธฃเธฑเธเธขเนเธชเธดเธเน€เธเนเธฒเธเธฅเธฑเธ</button>
+                <button type="button" onClick={handleAddAsset} className="btn-save asset-add-topbar-btn">เพิ่มทรัพย์สินเข้าคลัง</button>
               )}
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
@@ -6423,28 +6423,28 @@ function Dashboard() {
                 {/* TAB 1: MONTHS MANAGER */}
                 {consoleTab === 'months' && (
                   <div>
-                    <h4 className="console-title">๐“… เธเธฑเธ”เธเธฒเธฃเน€เธ”เธทเธญเธเนเธฅเธฐเธฃเธฒเธขเธเธฒเธเนเธเธฃเธฐเธเธ</h4>
+                    <h4 className="console-title">📅 จัดการเดือนและรายงานในระบบ</h4>
                     <form onSubmit={handleAddMonth} className="console-form" style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
                       <div className="console-field" style={{ flex: '1' }}>
-                        <span className="console-label">เธฃเธซเธฑเธชเธเธตเธขเนเน€เธ”เธทเธญเธ (เน€เธเนเธ 2026-08)</span>
+                        <span className="console-label">รหัสคีย์เดือน (เช่น 2026-08)</span>
                         <input type="text" placeholder="YYYY-MM" value={newMonthKey} onChange={e => setNewMonthKey(e.target.value)} className="console-input" />
                       </div>
                       <div className="console-field" style={{ flex: '1' }}>
-                        <span className="console-label">เธเธทเนเธญเนเธชเธ”เธเนเธเธฃเธฒเธขเธเธฒเธ (เน€เธเนเธ เธชเธดเธเธซเธฒเธเธก 2569)</span>
-                        <input type="text" placeholder="เธเธทเนเธญเน€เธ”เธทเธญเธ เธ.เธจ." value={newMonthName} onChange={e => setNewMonthName(e.target.value)} className="console-input" />
+                        <span className="console-label">ชื่อแสดงในรายงาน (เช่น สิงหาคม 2569)</span>
+                        <input type="text" placeholder="ชื่อเดือน พ.ศ." value={newMonthName} onChange={e => setNewMonthName(e.target.value)} className="console-input" />
                       </div>
-                      <button type="submit" className="btn-save" style={{ width: 'auto', padding: '8px 20px', height: '38px' }}>เน€เธเธดเนเธกเน€เธ”เธทเธญเธเนเธซเธกเน</button>
+                      <button type="submit" className="btn-save" style={{ width: 'auto', padding: '8px 20px', height: '38px' }}>เพิ่มเดือนใหม่</button>
                     </form>
 
                     <div className="console-table-scroll">
                       <table className="details-table">
                         <thead>
                           <tr>
-                            <th>เธเธตเธขเนเน€เธ”เธทเธญเธ</th>
-                            <th>เธเธทเนเธญเน€เธ”เธทเธญเธ</th>
-                            <th>เธชเธ–เธฒเธเธฐเธญเธธเธเธเธฃเธ“เนเธฃเธงเธก</th>
-                            <th>เธเธฒเธ Support</th>
-                            <th>เธเธฒเธฃเธเธฑเธ”เธเธฒเธฃ</th>
+                            <th>คีย์เดือน</th>
+                            <th>ชื่อเดือน</th>
+                            <th>สถานะอุปกรณ์รวม</th>
+                            <th>งาน Support</th>
+                            <th>การจัดการ</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -6452,10 +6452,10 @@ function Dashboard() {
                             <tr key={key}>
                               <td><strong>{key}</strong></td>
                               <td>{data[key].monthName}</td>
-                              <td>{data[key].totalAssets} เน€เธเธฃเธทเนเธญเธ</td>
-                              <td>{data[key].ticketsCount} เน€เธเธช</td>
+                              <td>{data[key].totalAssets} เครื่อง</td>
+                              <td>{data[key].ticketsCount} เคส</td>
                               <td>
-                                <button onClick={() => handleDeleteMonth(key)} className="console-delete-btn">เธฅเธ</button>
+                                <button onClick={() => handleDeleteMonth(key)} className="console-delete-btn">ลบ</button>
                               </td>
                             </tr>
                           ))}
@@ -6469,9 +6469,9 @@ function Dashboard() {
                 {consoleTab === 'kpis' && (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
-                      <h4 style={{ margin: 0, fontSize: '1.15rem' }}>๐“ เธเธฃเธฑเธเน€เธเธฅเธตเนเธขเธเธเนเธฒเธ•เธฑเธงเธเธตเนเธงเธฑเธ” KPIs เธเธฃเธฐเธเธณเน€เธ”เธทเธญเธ</h4>
+                      <h4 style={{ margin: 0, fontSize: '1.15rem' }}>📈 ปรับเปลี่ยนค่าตัวชี้วัด KPIs ประจำเดือน</h4>
                       <div>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เน€เธฅเธทเธญเธเน€เธ”เธทเธญเธเธ—เธตเนเธเธฐเนเธเนเนเธ:</span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะแก้ไข:</span>
                         <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                           {Object.keys(data).map(key => (
                             <option key={key} value={key}>{data[key].monthName}</option>
@@ -6482,100 +6482,100 @@ function Dashboard() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
                       <div className="console-card">
-                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--primary)' }}>๐’ป เธ—เธฃเธฑเธเธขเนเธชเธดเธ IT</h5>
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--primary)' }}>💻 ทรัพย์สิน IT</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <div className="console-field">
-                            <span className="console-label">เธเธณเธเธงเธเธญเธธเธเธเธฃเธ“เนเธ—เธฑเนเธเธซเธกเธ” (เน€เธเธฃเธทเนเธญเธ)</span>
+                            <span className="console-label">จำนวนอุปกรณ์ทั้งหมด (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.totalAssets || 0} onChange={e => handleKpiChange('totalAssets', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธกเธนเธฅเธเนเธฒเธเธฅเธฑเธเธฃเธงเธก (เธเธฒเธ—)</span>
+                            <span className="console-label">มูลค่าคลังรวม (บาท)</span>
                             <input type="number" value={consoleMonthData.assetValue || 0} onChange={e => handleKpiChange('assetValue', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เนเธเธฅเนเธซเธกเธ”เธญเธฒเธขเธธ (เน€เธเธฃเธทเนเธญเธ)</span>
+                            <span className="console-label">ใกล้หมดอายุ (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.assetsExpiring || 0} onChange={e => handleKpiChange('assetsExpiring', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธเธณเธฃเธธเธ” (เน€เธเธฃเธทเนเธญเธ)</span>
+                            <span className="console-label">ชำรุด (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.assetsBroken || 0} onChange={e => handleKpiChange('assetsBroken', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธชเธนเธเธซเธฒเธข (เน€เธเธฃเธทเนเธญเธ)</span>
+                            <span className="console-label">สูญหาย (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.assetsLost || 0} onChange={e => handleKpiChange('assetsLost', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เน€เธเธฃเธทเนเธญเธเธงเนเธฒเธ (เน€เธเธฃเธทเนเธญเธ)</span>
+                            <span className="console-label">เครื่องว่าง (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.assetsVacant || 0} onChange={e => handleKpiChange('assetsVacant', Number(e.target.value))} className="console-input" />
                           </div>
                         </div>
                       </div>
 
                       <div className="console-card">
-                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--violet)' }}>๐จ เธเธฃเธดเธเธฒเธฃ Support & SLA</h5>
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--violet)' }}>🚨 บริการ Support & SLA</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <div className="console-field">
-                            <span className="console-label">เน€เธเธชเนเธเนเธเน€เธชเธตเธขเธ—เธฑเนเธเธซเธกเธ” (เน€เธเธช)</span>
+                            <span className="console-label">เคสแจ้งเสียทั้งหมด (เคส)</span>
                             <input type="number" value={consoleMonthData.ticketsCount || 0} onChange={e => handleKpiChange('ticketsCount', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธญเธฑเธ•เธฃเธฒเธ—เธณเนเธ”เนเธ•เธฒเธก SLA (%)</span>
+                            <span className="console-label">อัตราทำได้ตาม SLA (%)</span>
                             <input type="number" step="0.1" value={consoleMonthData.slaPercent || 0} onChange={e => handleKpiChange('slaPercent', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เน€เธเธฅเธตเนเธขเน€เธงเธฅเธฒเธฃเธฑเธเน€เธฃเธทเนเธญเธ (เธเธฒเธ—เธต)</span>
+                            <span className="console-label">เฉลี่ยเวลารับเรื่อง (นาที)</span>
                             <input type="number" value={consoleMonthData.responseTime || 0} onChange={e => handleKpiChange('responseTime', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เน€เธเธฅเธตเนเธขเน€เธงเธฅเธฒเนเธเนเนเธเธเธฑเธเธซเธฒ (เธเธฒเธ—เธต)</span>
+                            <span className="console-label">เฉลี่ยเวลาแก้ไขปัญหา (นาที)</span>
                             <input type="number" value={consoleMonthData.resolutionTime || 0} onChange={e => handleKpiChange('resolutionTime', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธเธงเธฒเธกเธเธถเธเธเธญเนเธเธฅเธนเธเธเนเธฒ CSAT (เน€เธ•เนเธก 5)</span>
+                            <span className="console-label">ความพึงพอใจลูกค้า CSAT (เต็ม 5)</span>
                             <input type="number" step="0.01" value={consoleMonthData.csat || 0} onChange={e => handleKpiChange('csat', Number(e.target.value))} className="console-input" />
                           </div>
                         </div>
                       </div>
 
                       <div className="console-card">
-                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--secondary)' }}>๐’ฟ เธฅเธดเธเธชเธดเธ—เธเธดเนเธเธญเธเธ•เนเนเธงเธฃเน</h5>
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--secondary)' }}>💿 ลิขสิทธิ์ซอฟต์แวร์</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <div className="console-field">
-                            <span className="console-label">เธเธฃเธฐเน€เธ เธ—เธเธญเธเธ•เนเนเธงเธฃเนเธฅเธดเธเธชเธดเธ—เธเธดเน</span>
+                            <span className="console-label">ประเภทซอฟต์แวร์ลิขสิทธิ์</span>
                             <input type="number" value={consoleMonthData.totalSoftware || 0} onChange={e => handleKpiChange('totalSoftware', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เน€เธเธดเธ”เนเธเนเธเธฒเธเธญเธขเธนเน (เธชเธดเธ—เธเธดเน)</span>
+                            <span className="console-label">เปิดใช้งานอยู่ (สิทธิ์)</span>
                             <input type="number" value={consoleMonthData.licensesInUse || 0} onChange={e => handleKpiChange('licensesInUse', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธชเธดเธ—เธเธดเนเธงเนเธฒเธเธเธเน€เธซเธฅเธทเธญ (เธชเธดเธ—เธเธดเน)</span>
+                            <span className="console-label">สิทธิ์ว่างคงเหลือ (สิทธิ์)</span>
                             <input type="number" value={consoleMonthData.licensesVacant || 0} onChange={e => handleKpiChange('licensesVacant', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธเนเธฒเธเธญเธเธ•เนเนเธงเธฃเนเธฃเธฒเธขเน€เธ”เธทเธญเธ (เธเธฒเธ—)</span>
+                            <span className="console-label">ค่าซอฟต์แวร์รายเดือน (บาท)</span>
                             <input type="number" value={consoleMonthData.softwareCost || 0} onChange={e => handleKpiChange('softwareCost', Number(e.target.value))} className="console-input" />
                           </div>
                         </div>
                       </div>
 
                       <div className="console-card">
-                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--success)' }}>๐ก๏ธ เธเธงเธฒเธกเธเธฅเธญเธ”เธ เธฑเธข IT & Repairs</h5>
+                        <h5 style={{ margin: '0 0 12px 0', color: 'var(--success)' }}>🛡️ ความปลอดภัย IT & Repairs</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <div className="console-field">
-                            <span className="console-label">เธชเธณเธฃเธญเธเธเนเธญเธกเธนเธฅเธชเธณเน€เธฃเนเธ (%)</span>
+                            <span className="console-label">สำรองข้อมูลสำเร็จ (%)</span>
                             <input type="number" value={consoleMonthData.backupSuccess || 0} onChange={e => handleKpiChange('backupSuccess', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เน€เธซเธ•เธธเธเธงเธฒเธกเธเธฅเธญเธ”เธ เธฑเธข (เธเธฃเธฑเนเธ)</span>
+                            <span className="console-label">เหตุความปลอดภัย (ครั้ง)</span>
                             <input type="number" value={consoleMonthData.securityIncidents || 0} onChange={e => handleKpiChange('securityIncidents', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธเธเธเธฃเธฐเธกเธฒเธ“เธชเนเธเธเนเธญเธก (เธเธฒเธ—)</span>
+                            <span className="console-label">งบประมาณส่งซ่อม (บาท)</span>
                             <input type="number" value={consoleMonthData.repairCost || 0} onChange={e => handleKpiChange('repairCost', Number(e.target.value))} className="console-input" />
                           </div>
                           <div className="console-field">
-                            <span className="console-label">เธเธณเธเธงเธเธเธดเนเธเธ—เธตเนเธชเนเธเธเนเธญเธก (เน€เธเธฃเธทเนเธญเธ)</span>
+                            <span className="console-label">จำนวนชิ้นที่ส่งซ่อม (เครื่อง)</span>
                             <input type="number" value={consoleMonthData.repairCount || 0} onChange={e => handleKpiChange('repairCount', Number(e.target.value))} className="console-input" />
                           </div>
                         </div>
@@ -6588,9 +6588,9 @@ function Dashboard() {
                 {consoleTab === 'projects' && (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
-                      <h4 style={{ margin: 0, fontSize: '1.15rem' }}>๐—’๏ธ เธเธฑเธ”เธเธฒเธฃเนเธเธฃเธเธเธฒเธฃ & เธเนเธญเน€เธชเธเธญเนเธเธฐเธชเธณเธซเธฃเธฑเธเธเธฑเธ’เธเธฒ</h4>
+                      <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🗒️ จัดการโครงการ & ข้อเสนอแนะสำหรับพัฒนา</h4>
                       <div>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เน€เธฅเธทเธญเธเน€เธ”เธทเธญเธ:</span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือน:</span>
                         <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                           {Object.keys(data).map(key => (
                             <option key={key} value={key}>{data[key].monthName}</option>
@@ -6601,7 +6601,7 @@ function Dashboard() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                       <div>
-                        <h5 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>เนเธเธฃเธเธเธฒเธฃเธ—เธตเนเธ”เธณเน€เธเธดเธเธเธฒเธฃเธญเธขเธนเน (Ongoing Projects)</h5>
+                        <h5 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>โครงการที่ดำเนินการอยู่ (Ongoing Projects)</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                           {(consoleMonthData.ongoingProjects || []).length > 0 ? (
                             (consoleMonthData.ongoingProjects || []).map((proj, idx) => (
@@ -6610,37 +6610,37 @@ function Dashboard() {
                                   <div style={{ fontWeight: '600', fontSize: '0.85rem' }}>{proj.title}</div>
                                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{proj.desc}</div>
                                 </div>
-                                <button onClick={() => handleDeleteProject(idx)} style={{ border: 'none', background: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>ร—</button>
+                                <button onClick={() => handleDeleteProject(idx)} style={{ border: 'none', background: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
                               </div>
                             ))
                           ) : (
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>เนเธกเนเธกเธตเธฃเธฒเธขเธเธฒเธฃเนเธเธฃเธเธเธฒเธฃเน€เธ”เธทเธญเธเธเธตเน</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>ไม่มีรายการโครงการเดือนนี้</div>
                           )}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-                          <input type="text" placeholder="เธเธทเนเธญเนเธเธฃเธเธเธฒเธฃ" value={newProjTitle} onChange={e => setNewProjTitle(e.target.value)} className="console-input" />
-                          <input type="text" placeholder="เธเธงเธฒเธกเธเธทเธเธซเธเนเธฒ" value={newProjDesc} onChange={e => setNewProjDesc(e.target.value)} className="console-input" />
-                          <button type="button" onClick={handleAddProject} className="btn-save" style={{ width: '100%', padding: '6px' }}>เน€เธเธดเนเธกเนเธเธฃเธเธเธฒเธฃ</button>
+                          <input type="text" placeholder="ชื่อโครงการ" value={newProjTitle} onChange={e => setNewProjTitle(e.target.value)} className="console-input" />
+                          <input type="text" placeholder="ความคืบหน้า" value={newProjDesc} onChange={e => setNewProjDesc(e.target.value)} className="console-input" />
+                          <button type="button" onClick={handleAddProject} className="btn-save" style={{ width: '100%', padding: '6px' }}>เพิ่มโครงการ</button>
                         </div>
                       </div>
 
                       <div>
-                        <h5 style={{ margin: '0 0 10px 0', color: 'var(--warning)' }}>เธเนเธญเน€เธชเธเธญเนเธเธฐเน€เธเธดเธเธงเธดเน€เธเธฃเธฒเธฐเธซเน (Recommendations)</h5>
+                        <h5 style={{ margin: '0 0 10px 0', color: 'var(--warning)' }}>ข้อเสนอแนะเชิงวิเคราะห์ (Recommendations)</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                           {(consoleMonthData.recommendations || []).length > 0 ? (
                             (consoleMonthData.recommendations || []).map((rec, idx) => (
                               <div key={idx} style={{ padding: '10px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ fontSize: '0.85rem' }}>{rec}</div>
-                                <button onClick={() => handleDeleteRecommendation(idx)} style={{ border: 'none', background: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>ร—</button>
+                                <button onClick={() => handleDeleteRecommendation(idx)} style={{ border: 'none', background: 'none', color: 'red', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
                               </div>
                             ))
                           ) : (
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>เนเธกเนเธกเธตเธเนเธญเน€เธชเธเธญเนเธเธฐเธชเธณเธซเธฃเธฑเธเน€เธ”เธทเธญเธเธเธตเน</div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>ไม่มีข้อเสนอแนะสำหรับเดือนนี้</div>
                           )}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-                          <textarea rows="2" placeholder="เธเธฃเธญเธเธเนเธญเน€เธชเธเธญเนเธเธฐ..." value={newRecText} onChange={e => setNewRecText(e.target.value)} className="console-input" style={{ resize: 'vertical' }} />
-                          <button type="button" onClick={handleAddRecommendation} className="btn-save" style={{ width: '100%', padding: '6px' }}>เน€เธเธดเนเธกเธเนเธญเน€เธชเธเธญเนเธเธฐ</button>
+                          <textarea rows="2" placeholder="กรอกข้อเสนอแนะ..." value={newRecText} onChange={e => setNewRecText(e.target.value)} className="console-input" style={{ resize: 'vertical' }} />
+                          <button type="button" onClick={handleAddRecommendation} className="btn-save" style={{ width: '100%', padding: '6px' }}>เพิ่มข้อเสนอแนะ</button>
                         </div>
                       </div>
                     </div>
@@ -6652,81 +6652,81 @@ function Dashboard() {
                   <div className="lark-registry">
                     <div className="console-form asset-registry-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' }}>
                       <div className="console-field">
-                        <span className="console-label">เธเธนเนเน€เธเธดเธเนเธเนเธเธฒเธ</span>
-                        <input type="text" value={newAssetUser} onChange={e => setNewAssetUser(e.target.value)} placeholder="เน€เธเนเธ เธญเธกเธฃ เนเธเนเธงเธชเธ”" className="console-input" />
+                        <span className="console-label">ผู้เบิกใช้งาน</span>
+                        <input type="text" value={newAssetUser} onChange={e => setNewAssetUser(e.target.value)} placeholder="เช่น อมร แก้วสด" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธ•เธณเนเธซเธเนเธ/เนเธเธเธ</span>
-                        <input type="text" value={newAssetPosition} onChange={e => setNewAssetPosition(e.target.value)} placeholder="เน€เธเนเธ Marketing" className="console-input" />
+                        <span className="console-label">ตำแหน่ง/แผนก</span>
+                        <input type="text" value={newAssetPosition} onChange={e => setNewAssetPosition(e.target.value)} placeholder="เช่น Marketing" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ (Tag)*</span>
-                        <AssetTagEditor value={newAssetItemType} onChange={setNewAssetItemType} single placeholder="เน€เธเนเธ Notebook Lenovo" />
+                        <span className="console-label">รายการอุปกรณ์หลัก (Tag)*</span>
+                        <AssetTagEditor value={newAssetItemType} onChange={setNewAssetItemType} single placeholder="เช่น Notebook Lenovo" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก (Tags)</span>
-                        <AssetTagEditor value={newAssetAdditionalEquipment} onChange={setNewAssetAdditionalEquipment} placeholder="เน€เธเนเธ เธชเธฒเธข HDMI" />
+                        <span className="console-label">อุปกรณ์เพิ่มเติม (Tags)</span>
+                        <AssetTagEditor value={newAssetAdditionalEquipment} onChange={setNewAssetAdditionalEquipment} placeholder="เช่น สาย HDMI" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธซเธกเธฒเธขเน€เธฅเธเธเธตเน€เธฃเธตเธขเธฅ</span>
-                        <input type="text" value={newAssetSerial} onChange={e => setNewAssetSerial(e.target.value)} placeholder="เน€เธเนเธ MC-010" className="console-input" />
+                        <span className="console-label">หมายเลขซีเรียล</span>
+                        <input type="text" value={newAssetSerial} onChange={e => setNewAssetSerial(e.target.value)} placeholder="เช่น MC-010" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธชเธ–เธฒเธเธฐ</span>
+                        <span className="console-label">สถานะ</span>
                         <select value={newAssetStatus} onChange={e => setNewAssetStatus(e.target.value)} className="console-input">
-                          <option value="เนเธเนเธเธฒเธ">เนเธเนเธเธฒเธ</option>
-                          <option value="เธงเนเธฒเธ">เธงเนเธฒเธ</option>
-                          <option value="เธฃเธญเธเนเธญเธก">เธฃเธญเธเนเธญเธก</option>
-                          <option value="เธชเธนเธเธซเธฒเธข">เธชเธนเธเธซเธฒเธข</option>
+                          <option value="ใช้งาน">ใช้งาน</option>
+                          <option value="ว่าง">ว่าง</option>
+                          <option value="รอซ่อม">รอซ่อม</option>
+                          <option value="สูญหาย">สูญหาย</option>
                         </select>
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธซเธกเธฒเธขเน€เธซเธ•เธธ</span>
-                        <input type="text" value={newAssetNotes} onChange={e => setNewAssetNotes(e.target.value)} placeholder="เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”" className="console-input" />
+                        <span className="console-label">หมายเหตุ</span>
+                        <input type="text" value={newAssetNotes} onChange={e => setNewAssetNotes(e.target.value)} placeholder="รายละเอียด" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธงเธฑเธเธ—เธตเน Submit</span>
+                        <span className="console-label">วันที่ Submit</span>
                         <input type="text" value={newAssetSubmittedOn} onChange={e => setNewAssetSubmittedOn(e.target.value)} placeholder="YYYY-MM-DD" className="console-input" />
                       </div>
                       <div className="console-field">
                         <span className="console-label">Respondents</span>
-                        <input type="text" value={newAssetRespondent} onChange={e => setNewAssetRespondent(e.target.value)} placeholder="เธเธนเนเธ•เธญเธเธเธฅเธฑเธ" className="console-input" />
+                        <input type="text" value={newAssetRespondent} onChange={e => setNewAssetRespondent(e.target.value)} placeholder="ผู้ตอบกลับ" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ</span>
-                        <input type="text" value={newAssetDate} onChange={e => setNewAssetDate(e.target.value)} placeholder="เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ" className="console-input" />
+                        <span className="console-label">วันที่เบิกใช้งาน</span>
+                        <input type="text" value={newAssetDate} onChange={e => setNewAssetDate(e.target.value)} placeholder="วันที่เบิกใช้งาน" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธเธญเธเธ•เนเนเธงเธฃเน / App</span>
-                        <AssetTagEditor value={newAssetSoftwareApp} onChange={setNewAssetSoftwareApp} placeholder="เนเธเธฃเนเธเธฃเธก" />
+                        <span className="console-label">ซอฟต์แวร์ / App</span>
+                        <AssetTagEditor value={newAssetSoftwareApp} onChange={setNewAssetSoftwareApp} placeholder="โปรแกรม" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เน€เธกเธฅเธ—เธตเนเธฅเธเธ—เธฐเน€เธเธตเธขเธ</span>
-                        <input type="text" value={newAssetRegisteredEmail} onChange={e => setNewAssetRegisteredEmail(e.target.value)} placeholder="เธญเธตเน€เธกเธฅ" className="console-input" />
+                        <span className="console-label">เมลที่ลงทะเบียน</span>
+                        <input type="text" value={newAssetRegisteredEmail} onChange={e => setNewAssetRegisteredEmail(e.target.value)} placeholder="อีเมล" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก</span>
-                        <input type="text" value={newAssetAdditionalSerial} onChange={e => setNewAssetAdditionalSerial(e.target.value)} placeholder="เน€เธเนเธ Pencil-001, Cable-018" className="console-input" />
+                        <span className="console-label">หมายเลขอุปกรณ์เพิ่มเติม</span>
+                        <input type="text" value={newAssetAdditionalSerial} onChange={e => setNewAssetAdditionalSerial(e.target.value)} placeholder="เช่น Pencil-001, Cable-018" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธเธณเธซเธเธ”เธเธทเธ</span>
-                        <input type="text" value={newAssetReturnDueDate} onChange={e => setNewAssetReturnDueDate(e.target.value)} placeholder="เธงเธฑเธเธ—เธตเนเธเธณเธซเธเธ”เธเธทเธ" className="console-input" />
+                        <span className="console-label">กำหนดคืน</span>
+                        <input type="text" value={newAssetReturnDueDate} onChange={e => setNewAssetReturnDueDate(e.target.value)} placeholder="วันที่กำหนดคืน" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ</span>
-                        <input type="text" value={newAssetAuditDate} onChange={e => setNewAssetAuditDate(e.target.value)} placeholder="เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ" className="console-input" />
+                        <span className="console-label">วันที่ตรวจสอบ</span>
+                        <input type="text" value={newAssetAuditDate} onChange={e => setNewAssetAuditDate(e.target.value)} placeholder="วันที่ตรวจสอบ" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธงเธฑเธเธ—เธตเนเธเธทเนเธญ</span>
-                        <input type="text" value={newAssetPurchaseDate} onChange={e => setNewAssetPurchaseDate(e.target.value)} placeholder="เธงเธฑเธเธ—เธตเนเธเธทเนเธญ" className="console-input" />
+                        <span className="console-label">วันที่ซื้อ</span>
+                        <input type="text" value={newAssetPurchaseDate} onChange={e => setNewAssetPurchaseDate(e.target.value)} placeholder="วันที่ซื้อ" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ</span>
-                        <input type="text" value={newAssetWarrantyExpiry} onChange={e => setNewAssetWarrantyExpiry(e.target.value)} placeholder="เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ" className="console-input" />
+                        <span className="console-label">วันหมดประกัน</span>
+                        <input type="text" value={newAssetWarrantyExpiry} onChange={e => setNewAssetWarrantyExpiry(e.target.value)} placeholder="วันหมดประกัน" className="console-input" />
                       </div>
                       <div className="console-field">
-                        <span className="console-label">เธเนเธฒเนเธเนเธเนเธฒเธข</span>
-                        <input type="text" value={newAssetCost} onChange={e => setNewAssetCost(e.target.value)} placeholder="เธเนเธฒเนเธเนเธเนเธฒเธข" className="console-input" />
+                        <span className="console-label">ค่าใช้จ่าย</span>
+                        <input type="text" value={newAssetCost} onChange={e => setNewAssetCost(e.target.value)} placeholder="ค่าใช้จ่าย" className="console-input" />
                       </div>
                       
                       {/* Export Actions */}
@@ -6738,16 +6738,16 @@ function Dashboard() {
                           <Printer size={16} style={{ marginRight: '6px' }} /> PDF
                         </button>
                       </div>
-                      <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('เธเธฑเธเธ—เธถเธเธชเธณเน€เธฃเนเธ') ? 'success' : 'error') : ''}`} style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
-                        {consoleSaveMessage || `เธเธฃเนเธญเธกเธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅ ${data[consoleMonth]?.monthName || consoleMonth} เธเธถเนเธเนเธ”เธเธเธญเธฃเนเธ”`}
+                      <div className={`asset-inline-save-status ${consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}`} style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
+                        {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
                       </div>
                       <button type="button" className="console-save-dashboard-btn asset-inline-save-btn" onClick={saveConsoleChanges} disabled={consoleSaving} style={{ gridColumn: '1 / -1' }}>
-                        {consoleSaving ? 'เธเธณเธฅเธฑเธเธเธฑเธเธ—เธถเธเนเธฅเธฐเธเธดเธเธเน...' : '๐’พ เธเธฑเธเธ—เธถเธเนเธฅเธฐเธญเธฑเธเน€เธ”เธ•เนเธ”เธเธเธญเธฃเนเธ”'}
+                        {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
                       </button>
                       {editingAssetSn !== null ? (
                         <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
-                          <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>เธเธฑเธเธ—เธถเธเธเธฒเธฃเนเธเนเนเธ</button>
-                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>เธขเธเน€เธฅเธดเธ</button>
+                          <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
+                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                         </div>
                       ) : null}
                     </div>
@@ -6757,10 +6757,10 @@ function Dashboard() {
                         type="search"
                         value={consoleAssetSearch}
                         onChange={(event) => setConsoleAssetSearch(event.target.value)}
-                        placeholder="เธเนเธเธซเธฒเน€เธฅเธเธฃเธฒเธขเธเธฒเธฃ เธเธทเนเธญ เนเธเธเธ เธญเธธเธเธเธฃเธ“เน เธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธ เธซเธฃเธทเธญเธชเธ–เธฒเธเธฐ..."
-                        aria-label="เธเนเธเธซเธฒเธ—เธฐเน€เธเธตเธขเธเธ—เธฃเธฑเธเธขเนเธชเธดเธ"
+                        placeholder="ค้นหาเลขรายการ ชื่อ แผนก อุปกรณ์ หมายเลขเครื่อง หรือสถานะ..."
+                        aria-label="ค้นหาทะเบียนทรัพย์สิน"
                       />
-                      <span>เนเธชเธ”เธ {consoleAssets.length} เธเธฒเธ {assetsList.length} เธฃเธฒเธขเธเธฒเธฃ ยท เธเธฑเธ”เธเธฅเธธเนเธกเธ•เธฒเธกเนเธเธเธ</span>
+                      <span>แสดง {consoleAssets.length} จาก {assetsList.length} รายการ · จัดกลุ่มตามแผนก</span>
                     </div>
 
                     <div className="console-table-scroll lark-registry-scroll">
@@ -6770,23 +6770,23 @@ function Dashboard() {
                             <th>Number</th>
                             <th>Submitted on</th>
                             <th>Respondents</th>
-                            <th>เธงเธฑเธเธ—เธตเนเน€เธเธดเธเนเธเนเธเธฒเธ</th>
-                            <th>เธเธธเธเธเธฅเน€เธเธดเธเนเธเนเธญเธธเธเธเธฃเธ“เน</th>
-                            <th>เธ•เธณเนเธซเธเนเธ</th>
-                            <th>เธฃเธฒเธขเธเธฒเธฃเธญเธธเธเธเธฃเธ“เนเธซเธฅเธฑเธ</th>
-                            <th>เธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธกเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเน€เธเธดเธ</th>
-                            <th>เธเธญเธเธ•เนเนเธงเธฃเน / App</th>
-                            <th>เน€เธกเธฅเธ—เธตเนเธฅเธเธ—เธฐเน€เธเธตเธขเธ</th>
-                            <th>เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เน</th>
-                            <th>เธซเธกเธฒเธขเน€เธฅเธเธญเธธเธเธเธฃเธ“เนเน€เธเธดเนเธกเน€เธ•เธดเธก</th>
-                            <th>เธเธณเธซเธเธ”เธเธทเธเธญเธธเธเธเธฃเธ“เน</th>
-                            <th>เธชเธ–เธฒเธเธฐ</th>
-                            <th>เธซเธกเธฒเธขเน€เธซเธ•เธธ</th>
-                            <th>เธงเธฑเธเธ—เธตเนเธ•เธฃเธงเธเธชเธญเธ</th>
-                            <th>เธงเธฑเธเธ—เธตเนเธเธทเนเธญ</th>
-                            <th>เธงเธฑเธเธซเธกเธ”เธเธฃเธฐเธเธฑเธ</th>
-                            <th>เธเนเธฒเนเธเนเธเนเธฒเธข</th>
-                            <th>เธเธฑเธ”เธเธฒเธฃ</th>
+                            <th>วันที่เบิกใช้งาน</th>
+                            <th>บุคคลเบิกใช้อุปกรณ์</th>
+                            <th>ตำแหน่ง</th>
+                            <th>รายการอุปกรณ์หลัก</th>
+                            <th>อุปกรณ์เพิ่มเติมที่ต้องการเบิก</th>
+                            <th>ซอฟต์แวร์ / App</th>
+                            <th>เมลที่ลงทะเบียน</th>
+                            <th>หมายเลขอุปกรณ์</th>
+                            <th>หมายเลขอุปกรณ์เพิ่มเติม</th>
+                            <th>กำหนดคืนอุปกรณ์</th>
+                            <th>สถานะ</th>
+                            <th>หมายเหตุ</th>
+                            <th>วันที่ตรวจสอบ</th>
+                            <th>วันที่ซื้อ</th>
+                            <th>วันหมดประกัน</th>
+                            <th>ค่าใช้จ่าย</th>
+                            <th>จัดการ</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -6798,8 +6798,8 @@ function Dashboard() {
                               {showGroup && (
                                 <tr className="lark-group-row">
                                   <td colSpan="20">
-                                    <span>{asset.position || 'เนเธกเนเธฃเธฐเธเธธเนเธเธเธ'}</span>
-                                    <small>{consoleAssets.filter((row) => String(row.position || '-') === String(asset.position || '-')).length} เธฃเธฒเธขเธเธฒเธฃ</small>
+                                    <span>{asset.position || 'ไม่ระบุแผนก'}</span>
+                                    <small>{consoleAssets.filter((row) => String(row.position || '-') === String(asset.position || '-')).length} รายการ</small>
                                   </td>
                                 </tr>
                               )}
@@ -6816,7 +6816,7 @@ function Dashboard() {
                                   <button type="button" onClick={() => {
                                     handleLoadEditAsset(asset);
                                     setEditingAssetTagField({ sn: asset.sn, field: 'itemType' });
-                                  }}>เนเธเนเนเธ Tag</button>
+                                  }}>แก้ไข Tag</button>
                                   {editingAssetTagField?.sn === asset.sn && editingAssetTagField?.field === 'itemType' && (
                                     <AssetTagPicker
                                       value={newAssetItemType}
@@ -6834,7 +6834,7 @@ function Dashboard() {
                                   <button type="button" onClick={() => {
                                     handleLoadEditAsset(asset);
                                     setEditingAssetTagField({ sn: asset.sn, field: 'additionalEquipment' });
-                                  }}>เนเธเนเนเธ Tag</button>
+                                  }}>แก้ไข Tag</button>
                                   {editingAssetTagField?.sn === asset.sn && editingAssetTagField?.field === 'additionalEquipment' && (
                                     <AssetTagPicker
                                       value={newAssetAdditionalEquipment}
@@ -6864,8 +6864,8 @@ function Dashboard() {
                                       else { badgeColor = 'var(--warning)'; statusText = 'Expiring Soon'; }
                                     }
                                     return (
-                                      <span style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: badgeColor, color: '#fff', alignSelf: 'flex-start' }} title={`เธ•เธฃเธงเธเธชเธญเธเธฅเนเธฒเธชเธธเธ”: ${match.lastVerifiedAt ? new Date(match.lastVerifiedAt).toLocaleString('th-TH') : '-'}`}>
-                                        {statusText} ({match.daysRemaining} เธงเธฑเธ)
+                                      <span style={{ fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: badgeColor, color: '#fff', alignSelf: 'flex-start' }} title={`ตรวจสอบล่าสุด: ${match.lastVerifiedAt ? new Date(match.lastVerifiedAt).toLocaleString('th-TH') : '-'}`}>
+                                        {statusText} ({match.daysRemaining} วัน)
                                       </span>
                                     );
                                   })()}
@@ -6874,7 +6874,7 @@ function Dashboard() {
                               <td>{asset.additionalSerial || '-'}</td>
                               <td>{asset.returnDueDate || '-'}</td>
                               <td>
-                                <span className={`lark-status lark-status-${asset.status === 'เนเธเนเธเธฒเธ' ? 'active' : asset.status === 'เธฃเธญเธเนเธญเธก' ? 'repair' : asset.status === 'เธงเนเธฒเธ' ? 'vacant' : 'other'}`}>
+                                <span className={`lark-status lark-status-${asset.status === 'ใช้งาน' ? 'active' : asset.status === 'รอซ่อม' ? 'repair' : asset.status === 'ว่าง' ? 'vacant' : 'other'}`}>
                                   {asset.status || '-'}
                                 </span>
                               </td>
@@ -6885,8 +6885,8 @@ function Dashboard() {
                               <td className="lark-number">{Number(asset.expense || 0).toLocaleString('th-TH')}</td>
                               <td>
                                 <div style={{ display: 'flex', gap: '6px' }}>
-                                  <button onClick={() => handleLoadEditAsset(asset)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>เนเธเนเนเธ</button>
-                                  <button onClick={() => handleDeleteAsset(asset.sn)} className="console-delete-btn">เธฅเธ</button>
+                                  <button onClick={() => handleLoadEditAsset(asset)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>แก้ไข</button>
+                                  <button onClick={() => handleDeleteAsset(asset.sn)} className="console-delete-btn">ลบ</button>
                                 </div>
                               </td>
                             </tr>
@@ -6904,9 +6904,9 @@ function Dashboard() {
                   return (
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
-                        <h4 style={{ margin: 0, fontSize: '1.15rem' }}>๐จ เธเธฃเธฐเธงเธฑเธ•เธดเธฃเธฑเธเน€เธเธชเนเธเนเธเธเนเธญเธก Support - {editingTicketSn !== null ? <span style={{ color: 'var(--warning)' }}>เนเธซเธกเธ”เนเธเนเนเธเธฃเธซเธฑเธช #{editingTicketSn}</span> : <span>เนเธซเธกเธ”เน€เธเธดเนเธกเธเนเธญเธกเธนเธฅ</span>}</h4>
+                        <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🚨 ประวัติรับเคสแจ้งซ่อม Support - {editingTicketSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingTicketSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
                         <div>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เน€เธฅเธทเธญเธเน€เธ”เธทเธญเธเธ—เธตเนเธเธฐเธเธฑเธ”เธเธฒเธฃ:</span>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะจัดการ:</span>
                           <select value={consoleMonth} onChange={e => setConsoleMonth(e.target.value)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.15)', backgroundColor: '#1f2937', color: 'white' }}>
                             {Object.keys(data).map(key => (
                               <option key={key} value={key}>{data[key].monthName}</option>
@@ -6917,52 +6917,52 @@ function Dashboard() {
 
                       <div className="console-form" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
                         <div className="console-field">
-                          <span className="console-label">เธเธทเนเธญเธเธนเนเนเธเนเธ</span>
-                          <input type="text" value={newTicketComplainant} onChange={e => setNewTicketComplainant(e.target.value)} placeholder="เธญเธกเธฃ เนเธเนเธงเธชเธ”" className="console-input" />
+                          <span className="console-label">ชื่อผู้แจ้ง</span>
+                          <input type="text" value={newTicketComplainant} onChange={e => setNewTicketComplainant(e.target.value)} placeholder="อมร แก้วสด" className="console-input" />
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เธญเธตเน€เธกเธฅ</span>
+                          <span className="console-label">อีเมล</span>
                           <input type="text" value={newTicketEmail} onChange={e => setNewTicketEmail(e.target.value)} placeholder="user@domain.com" className="console-input" />
                         </div>
                         <div className="console-field">
                           <span className="console-label">AnyDesk ID</span>
-                          <input type="text" value={newTicketAnydesk} onChange={e => setNewTicketAnydesk(e.target.value)} placeholder="เน€เธเนเธ 1 234 567" className="console-input" />
+                          <input type="text" value={newTicketAnydesk} onChange={e => setNewTicketAnydesk(e.target.value)} placeholder="เช่น 1 234 567" className="console-input" />
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เธญเธฒเธเธฒเธฃเธ—เธตเนเนเธเนเธ*</span>
-                          <input type="text" value={newTicketIssue} onChange={e => setNewTicketIssue(e.target.value)} placeholder="เธเธญเธ”เธฑเธ, เธเธดเธกเธเนเนเธกเนเนเธ”เน" className="console-input" />
+                          <span className="console-label">อาการที่แจ้ง*</span>
+                          <input type="text" value={newTicketIssue} onChange={e => setNewTicketIssue(e.target.value)} placeholder="จอดับ, พิมพ์ไม่ได้" className="console-input" />
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เธชเธฒเน€เธซเธ•เธธเธเธฒเธฃเน€เธชเธตเธข</span>
-                          <input type="text" value={newTicketCause} onChange={e => setNewTicketCause(e.target.value)} placeholder="เน€เธชเธทเนเธญเธกเธ•เธฒเธกเธชเธ เธฒเธ" className="console-input" />
+                          <span className="console-label">สาเหตุการเสีย</span>
+                          <input type="text" value={newTicketCause} onChange={e => setNewTicketCause(e.target.value)} placeholder="เสื่อมตามสภาพ" className="console-input" />
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เธเธนเนเธ”เธณเน€เธเธดเธเธเธฒเธ (IT)</span>
-                          <input type="text" value={newTicketResponder} onChange={e => setNewTicketResponder(e.target.value)} placeholder="เธเธทเนเธญเน€เธเนเธฒเธซเธเนเธฒเธ—เธตเน" className="console-input" />
+                          <span className="console-label">ผู้ดำเนินงาน (IT)</span>
+                          <input type="text" value={newTicketResponder} onChange={e => setNewTicketResponder(e.target.value)} placeholder="ชื่อเจ้าหน้าที่" className="console-input" />
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เน€เธงเธฅเธฒเนเธเน (HH:MM)</span>
+                          <span className="console-label">เวลาแก้ (HH:MM)</span>
                           <input type="text" value={newTicketDuration} onChange={e => setNewTicketDuration(e.target.value)} className="console-input" />
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เธชเธ–เธฒเธเธฐ</span>
+                          <span className="console-label">สถานะ</span>
                           <select value={newTicketStatus} onChange={e => setNewTicketStatus(e.target.value)} className="console-input">
-                            <option value="เน€เธชเธฃเนเธเธชเธดเนเธ">เน€เธชเธฃเนเธเธชเธดเนเธ</option>
-                            <option value="เธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ">เธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ</option>
-                            <option value="เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง">เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง (เธเธทเนเธญเธญเธธเธเธเธฃเธ“เน)</option>
+                            <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                            <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                            <option value="จ่ายเงินแล้ว">จ่ายเงินแล้ว (ซื้ออุปกรณ์)</option>
                           </select>
                         </div>
                         <div className="console-field">
-                          <span className="console-label">เธเนเธฒเนเธเนเธเนเธฒเธข (เธเธฒเธ—)</span>
+                          <span className="console-label">ค่าใช้จ่าย (บาท)</span>
                           <input type="number" value={newTicketCost} onChange={e => setNewTicketCost(e.target.value)} className="console-input" />
                         </div>
                         {editingTicketSn !== null ? (
                           <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
-                            <button type="button" onClick={handleAddTicket} className="btn-save" style={{ flex: '1', height: '36px' }}>เธเธฑเธเธ—เธถเธเธเธฒเธฃเนเธเนเนเธ</button>
-                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>เธขเธเน€เธฅเธดเธ</button>
+                            <button type="button" onClick={handleAddTicket} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
+                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                           </div>
                         ) : (
-                          <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>เธเธฑเธเธ—เธถเธเน€เธเธชเนเธเนเธเธเนเธญเธก</button>
+                          <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>บันทึกเคสแจ้งซ่อม</button>
                         )}
                       </div>
 
@@ -6971,13 +6971,13 @@ function Dashboard() {
                           <thead>
                             <tr>
                               <th>SN</th>
-                              <th>เธเธนเนเนเธเนเธ</th>
-                              <th>เน€เธเธช/เธเธฑเธเธซเธฒ</th>
-                              <th>เธชเธฒเน€เธซเธ•เธธ</th>
-                              <th>เน€เธงเธฅเธฒ</th>
-                              <th>เธเนเธฒเนเธเนเธเนเธฒเธข</th>
-                              <th>เธชเธ–เธฒเธเธฐ</th>
-                              <th>เธเธฑเธ”เธเธฒเธฃ</th>
+                              <th>ผู้แจ้ง</th>
+                              <th>เคส/ปัญหา</th>
+                              <th>สาเหตุ</th>
+                              <th>เวลา</th>
+                              <th>ค่าใช้จ่าย</th>
+                              <th>สถานะ</th>
+                              <th>จัดการ</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -6993,14 +6993,14 @@ function Dashboard() {
                                 <td>{t.duration}</td>
                                 <td>{t.cost > 0 ? formatThaiBaht(t.cost) : '-'}</td>
                                 <td>
-                                  <span style={{ color: t.status === 'เน€เธชเธฃเนเธเธชเธดเนเธ' || t.status === 'เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง' ? 'var(--success)' : 'var(--warning)', fontWeight: 'bold' }}>
+                                  <span style={{ color: t.status === 'เสร็จสิ้น' || t.status === 'จ่ายเงินแล้ว' ? 'var(--success)' : 'var(--warning)', fontWeight: 'bold' }}>
                                     {t.status}
                                   </span>
                                 </td>
                                 <td>
                                   <div style={{ display: 'flex', gap: '6px' }}>
-                                    <button onClick={() => handleLoadEditTicket(t)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>เนเธเนเนเธ</button>
-                                    <button onClick={() => handleDeleteTicket(t.sn)} className="console-delete-btn">เธฅเธ</button>
+                                    <button onClick={() => handleLoadEditTicket(t)} className="btn-details" style={{ padding: '2px 8px', fontSize: '0.75rem', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', border: 'none' }}>แก้ไข</button>
+                                    <button onClick={() => handleDeleteTicket(t.sn)} className="console-delete-btn">ลบ</button>
                                   </div>
                                 </td>
                               </tr>
@@ -7015,33 +7015,33 @@ function Dashboard() {
                 {/* TAB 6: BACKUP & SYSTEM RESET */}
                 {consoleTab === 'backup' && (
                   <div>
-                    <h4 className="console-title">๐’พ เธชเธณเธฃเธญเธเธเนเธญเธกเธนเธฅเนเธฅเธฐเธฃเธตเน€เธเนเธ•เธเธฒเธฃเธ•เธฑเนเธเธเนเธฒเธฃเธฐเธเธ</h4>
+                    <h4 className="console-title">💾 สำรองข้อมูลและรีเซ็ตการตั้งค่าระบบ</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div className="console-card">
-                        <h5 style={{ margin: '0 0 8px 0', color: 'var(--success)' }}>๐“ฅ เธชเนเธเธญเธญเธเนเธเธฅเนเธเนเธญเธกเธนเธฅเธชเธณเธฃเธญเธ (Backup to JSON)</h5>
+                        <h5 style={{ margin: '0 0 8px 0', color: 'var(--success)' }}>📥 ส่งออกไฟล์ข้อมูลสำรอง (Backup to JSON)</h5>
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
-                          เธ”เธฒเธงเธเนเนเธซเธฅเธ”เธเนเธญเธกเธนเธฅเนเธ”เธเธเธญเธฃเนเธ” เธ—เธฐเน€เธเธตเธขเธเธญเธธเธเธเธฃเธ“เน IT เนเธฅเธฐเธเธฃเธฐเธงเธฑเธ•เธดเนเธเนเธเธเนเธญเธกเธ—เธฑเนเธเธซเธกเธ”เน€เธเนเธเนเธงเนเนเธเธฃเธนเธเนเธเธเนเธเธฅเน .json
+                          ดาวน์โหลดข้อมูลแดชบอร์ด ทะเบียนอุปกรณ์ IT และประวัติแจ้งซ่อมทั้งหมดเก็บไว้ในรูปแบบไฟล์ .json
                         </p>
                         <button type="button" onClick={handleExportJson} className="btn-save" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'var(--success)', borderColor: 'var(--success)' }}>
-                          เธ”เธฒเธงเธเนเนเธซเธฅเธ”เนเธเธฅเนเธชเธณเธฃเธญเธเธเนเธญเธกเธนเธฅ (.json)
+                          ดาวน์โหลดไฟล์สำรองข้อมูล (.json)
                         </button>
                       </div>
 
                       <div className="console-card">
-                        <h5 style={{ margin: '0 0 8px 0', color: 'var(--primary)' }}>๐“ค เธเธณเน€เธเนเธฒเนเธเธฅเนเธเนเธญเธกเธนเธฅเธชเธณเธฃเธญเธ (Import JSON Backup)</h5>
+                        <h5 style={{ margin: '0 0 8px 0', color: 'var(--primary)' }}>📤 นำเข้าไฟล์ข้อมูลสำรอง (Import JSON Backup)</h5>
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
-                          เน€เธฅเธทเธญเธเนเธเธฅเนเธชเธณเธฃเธญเธเธเนเธญเธกเธนเธฅเธเธฒเธกเธชเธเธธเธฅ .json เน€เธเธทเนเธญเธเธนเนเธเธทเธเธชเธ–เธฒเธเธฐเธเนเธญเธกเธนเธฅเน€เธ”เธดเธกเธ—เธฑเนเธเธซเธกเธ”
+                          เลือกไฟล์สำรองข้อมูลนามสกุล .json เพื่อกู้คืนสถานะข้อมูลเดิมทั้งหมด
                         </p>
                         <input type="file" accept=".json" onChange={handleImportJson} style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)' }} />
                       </div>
 
                       <div className="console-card" style={{ border: '1px solid rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.03)' }}>
-                        <h5 style={{ margin: '0 0 8px 0', color: 'rgb(239, 68, 68)' }}>โ ๏ธ เธฃเธตเน€เธเนเธ•เธฃเธฐเธเธเนเธซเธกเนเธ—เธฑเนเธเธซเธกเธ” (Wipe Database)</h5>
+                        <h5 style={{ margin: '0 0 8px 0', color: 'rgb(239, 68, 68)' }}>⚠️ รีเซ็ตระบบใหม่ทั้งหมด (Wipe Database)</h5>
                         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
-                          เธฅเธเธเนเธญเธกเธนเธฅเธ—เธฑเนเธเธซเธกเธ”เนเธเธเธฒเธเธเนเธญเธกเธนเธฅ เธฃเธฐเธเธเธเธฐเธ–เธนเธเธฅเนเธฒเธเธเนเธฒเนเธซเนเธงเนเธฒเธเน€เธเธฅเนเธฒเน€เธซเธกเธทเธญเธเน€เธฃเธดเนเธกเธ•เนเธเนเธซเธกเน (เธเธณเน€เธ•เธทเธญเธ: เธเนเธญเธกเธนเธฅเธ—เธตเนเธ–เธนเธเธฅเธเธเธฐเนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธเธนเนเธเธทเธเนเธ”เน)
+                          ลบข้อมูลทั้งหมดในฐานข้อมูล ระบบจะถูกล้างค่าให้ว่างเปล่าเหมือนเริ่มต้นใหม่ (คำเตือน: ข้อมูลที่ถูกลบจะไม่สามารถกู้คืนได้)
                         </p>
                         <button type="button" onClick={handleResetToDefault} className="sidebar-btn" style={{ width: 'auto', padding: '10px 20px', backgroundColor: 'rgb(239, 68, 68)', border: 'none', color: 'white' }}>
-                          เธฅเธเธเนเธญเธกเธนเธฅเธ—เธฑเนเธเธซเธกเธ” (Wipe Database)
+                          ลบข้อมูลทั้งหมด (Wipe Database)
                         </button>
                       </div>
                     </div>
@@ -7052,11 +7052,11 @@ function Dashboard() {
             </div>
             {consoleTab !== 'assets' && (
               <div className="console-save-bar">
-                <span className={consoleSaveMessage ? (consoleSaveMessage.startsWith('เธเธฑเธเธ—เธถเธเธชเธณเน€เธฃเนเธ') ? 'success' : 'error') : ''}>
-                  {consoleSaveMessage || `เธเธฃเนเธญเธกเธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅ ${data[consoleMonth]?.monthName || consoleMonth} เธเธถเนเธเนเธ”เธเธเธญเธฃเนเธ”`}
+                <span className={consoleSaveMessage ? (consoleSaveMessage.startsWith('บันทึกสำเร็จ') ? 'success' : 'error') : ''}>
+                  {consoleSaveMessage || `พร้อมบันทึกข้อมูล ${data[consoleMonth]?.monthName || consoleMonth} ขึ้นแดชบอร์ด`}
                 </span>
                 <button type="button" className="console-save-dashboard-btn" onClick={saveConsoleChanges} disabled={consoleSaving}>
-                  {consoleSaving ? 'เธเธณเธฅเธฑเธเธเธฑเธเธ—เธถเธเนเธฅเธฐเธเธดเธเธเน...' : '๐’พ เธเธฑเธเธ—เธถเธเนเธฅเธฐเธญเธฑเธเน€เธ”เธ•เนเธ”เธเธเธญเธฃเนเธ”'}
+                  {consoleSaving ? 'กำลังบันทึกและซิงค์...' : '💾 บันทึกและอัปเดตแดชบอร์ด'}
                 </button>
               </div>
             )}
@@ -7075,18 +7075,18 @@ function Dashboard() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 {larkTicketRole === 'it' ? (
                   <div>
-                    <h3>๐”ง เน€เธกเธเธนเธเธดเธ”เธเธฒเธเธชเธณเธซเธฃเธฑเธเธเนเธฒเธเนเธญเธ—เธต (IT Close Work)</h3>
-                    <p>เน€เธฅเธทเธญเธเนเธเธเธฒเธเธ—เธตเนเธเนเธฒเธเธเธฒเน€เธเธทเนเธญเธญเธฑเธเน€เธ”เธ•เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธเธฒเธฃเนเธเนเนเธเนเธฅเธฐเธเธดเธ”เธเธฒเธ เธเธฃเธฐเธเธณเน€เธ”เธทเธญเธ {data[currentMonth]?.monthName}</p>
+                    <h3>🔧 เมนูปิดงานสำหรับช่างไอที (IT Close Work)</h3>
+                    <p>เลือกใบงานที่ค้างคาเพื่ออัปเดตรายละเอียดการแก้ไขและปิดงาน ประจำเดือน {data[currentMonth]?.monthName}</p>
                   </div>
                 ) : larkFormType === 'asset' ? (
                   <div>
-                    <h3>๐’ป เธฅเธเธ—เธฐเน€เธเธตเธขเธเน€เธเธฃเธทเนเธญเธเน€เธเนเธฒเธเธฅเธฑเธ (IT Asset Registration)</h3>
-                    <p>เธเธฑเธเธ—เธถเธเธเธฃเธฐเธงเธฑเธ•เธดเธเธฒเธฃเน€เธเธดเธเนเธเนเธญเธธเธเธเธฃเธ“เนเนเธญเธ—เธตเน€เธเธฃเธทเนเธญเธเนเธซเธกเนเน€เธเนเธฒเธชเธนเนเธเธฅเธฑเธเธ—เธฐเน€เธเธตเธขเธเธเธฅเธฒเธ</p>
+                    <h3>💻 ลงทะเบียนเครื่องเข้าคลัง (IT Asset Registration)</h3>
+                    <p>บันทึกประวัติการเบิกใช้อุปกรณ์ไอทีเครื่องใหม่เข้าสู่คลังทะเบียนกลาง</p>
                   </div>
                 ) : (
                   <div>
-                    <h3>๐จ เนเธเนเธเธเนเธญเธกเธเธณเธฃเธธเธ / เธเธฑเธเธซเธฒเนเธญเธ—เธต (Report Repair / IT Issue)</h3>
-                    <p>เนเธเนเธเธเธฑเธเธซเธฒเธเธฑเธ”เธเนเธญเธเธเธญเธเธญเธธเธเธเธฃเธ“เนเธซเธฃเธทเธญเธฃเธฐเธเธเนเธญเธ—เธตเน€เธเธทเนเธญเธเธฃเธฐเธชเธฒเธเธเนเธฒเธเน€เธเนเธฒเนเธเนเนเธ เธเธฃเธฐเธเธณเน€เธ”เธทเธญเธ {data[currentMonth]?.monthName}</p>
+                    <h3>🚨 แจ้งซ่อมบำรุง / ปัญหาไอที (Report Repair / IT Issue)</h3>
+                    <p>แจ้งปัญหาขัดข้องของอุปกรณ์หรือระบบไอทีเพื่อประสานช่างเข้าแก้ไข ประจำเดือน {data[currentMonth]?.monthName}</p>
                   </div>
                 )}
                 <button onClick={() => setActiveModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.8)', cursor: 'pointer', padding: 0 }}><X size={24} /></button>
@@ -7098,13 +7098,13 @@ function Dashboard() {
                 <div className="lark-success-icon">
                   <CheckCircle size={36} />
                 </div>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#065f46', fontWeight: '700' }}>เธชเนเธเธเนเธญเธกเธนเธฅเธชเธณเน€เธฃเนเธเน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง!</h4>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: '#065f46', fontWeight: '700' }}>ส่งข้อมูลสำเร็จเรียบร้อยแล้ว!</h4>
                 <p style={{ margin: '0 0 24px 0', fontSize: '0.875rem', color: '#4b5563' }}>
-                  เธเนเธญเธกเธนเธฅเธเธญเธเธเธธเธ“เนเธ”เนเธฃเธฑเธเธเธฒเธฃเธเธฑเธเธ—เธถเธเนเธฅเธฐเธฃเธฐเธเธเนเธ”เนเธญเธฑเธเน€เธ”เธ•เธ•เธฑเธงเน€เธฅเธเธงเธดเน€เธเธฃเธฒเธฐเธซเนเนเธ”เธเธเธญเธฃเนเธ”เนเธซเนเนเธ”เธขเธญเธฑเธ•เนเธเธกเธฑเธ•เธดเนเธฅเนเธง
+                  ข้อมูลของคุณได้รับการบันทึกและระบบได้อัปเดตตัวเลขวิเคราะห์แดชบอร์ดให้โดยอัตโนมัติแล้ว
                 </p>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                  <button onClick={() => setLarkSubmitted(false)} className="lark-submit-btn" style={{ width: 'auto', padding: '10px 24px' }}>เธเธฃเธญเธเธเธญเธฃเนเธกเนเธซเธกเน</button>
-                  <button onClick={() => setActiveModal(null)} className="sidebar-btn" style={{ width: 'auto', padding: '10px 24px', margin: 0, backgroundColor: '#e5e7eb', color: '#374151', border: 'none' }}>เธเธดเธ”เธซเธเนเธฒเธ•เนเธฒเธ</button>
+                  <button onClick={() => setLarkSubmitted(false)} className="lark-submit-btn" style={{ width: 'auto', padding: '10px 24px' }}>กรอกฟอร์มใหม่</button>
+                  <button onClick={() => setActiveModal(null)} className="sidebar-btn" style={{ width: 'auto', padding: '10px 24px', margin: 0, backgroundColor: '#e5e7eb', color: '#374151', border: 'none' }}>ปิดหน้าต่าง</button>
                 </div>
               </div>
             ) : (
@@ -7116,55 +7116,55 @@ function Dashboard() {
                     {larkTicketRole === 'user' ? (
                       <div>
                         <div style={{ paddingBottom: '12px', marginBottom: '16px' }}>
-                          <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>เธชเนเธเนเธเนเธเน€เธฃเธทเนเธญเธเธเนเธญเธกเนเธเธก / เธเธฑเธเธซเธฒเธ—เธตเนเธเธเธเธเนเธ”เธเธเธญเธฃเนเธ” ({data[currentMonth]?.monthName})</h4>
+                          <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>ส่งแจ้งเรื่องซ่อมแซม / ปัญหาที่พบบนแดชบอร์ด ({data[currentMonth]?.monthName})</h4>
                         </div>
                         
                         <div className="lark-field-group">
-                          <label>เธเธทเนเธญเธเธนเนเนเธเนเธ / เธเธนเนเธเธเธเธฑเธเธซเธฒ <span>*</span></label>
-                          <input type="text" className="lark-input" placeholder="เธ•เธฑเธงเธญเธขเนเธฒเธ: เธชเธกเน€เธเธตเธขเธฃเธ•เธด เธขเธดเนเธเธ”เธต" value={larkTicketComplainant} onChange={e => setLarkTicketComplainant(e.target.value)} required={larkTicketRole === 'user'} />
+                          <label>ชื่อผู้แจ้ง / ผู้พบปัญหา <span>*</span></label>
+                          <input type="text" className="lark-input" placeholder="ตัวอย่าง: สมเกียรติ ยิ่งดี" value={larkTicketComplainant} onChange={e => setLarkTicketComplainant(e.target.value)} required={larkTicketRole === 'user'} />
                         </div>
 
                         <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                           <div>
-                            <label>เธญเธตเน€เธกเธฅเธเธนเนเนเธเนเธ</label>
+                            <label>อีเมลผู้แจ้ง</label>
                             <input type="email" className="lark-input" placeholder="user@domain.com" value={larkTicketEmail} onChange={e => setLarkTicketEmail(e.target.value)} />
                           </div>
                           <div>
                             <label>AnyDesk ID</label>
-                            <input type="text" className="lark-input" placeholder="เน€เธเนเธ 1 234 567" value={larkTicketAnydesk} onChange={e => setLarkTicketAnydesk(e.target.value)} />
+                            <input type="text" className="lark-input" placeholder="เช่น 1 234 567" value={larkTicketAnydesk} onChange={e => setLarkTicketAnydesk(e.target.value)} />
                           </div>
                         </div>
 
                         <div className="lark-field-group">
-                          <label>เธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธเธเธฒเธเธ—เธฐเน€เธเธตเธขเธ (เธ–เนเธฒเธกเธต)</label>
+                          <label>หมายเลขเครื่องจากทะเบียน (ถ้ามี)</label>
                           <input
                             type="text"
                             className="lark-input"
-                            placeholder="เน€เธเนเธ ASUS-019, MC-002"
+                            placeholder="เช่น ASUS-019, MC-002"
                             value={larkTicketAssetSerial}
                             onChange={e => setLarkTicketAssetSerial(e.target.value)}
                           />
-                          <small style={{ color: '#64748b' }}>เน€เธกเธทเนเธญเธฃเธฐเธเธธเธซเธกเธฒเธขเน€เธฅเธเน€เธเธฃเธทเนเธญเธ เธฃเธฐเธเธเธเธฐเน€เธเธฅเธตเนเธขเธเธชเธ–เธฒเธเธฐเน€เธเนเธ โ€เธฃเธญเธเนเธญเธกโ€ เนเธฅเธฐเธเธดเธ”เธฃเธฒเธขเธเธฒเธฃเน€เธเธดเธเธเธญเธเน€เธเธฃเธทเนเธญเธเธเธฑเนเธเธญเธฑเธ•เนเธเธกเธฑเธ•เธด</small>
+                          <small style={{ color: '#64748b' }}>เมื่อระบุหมายเลขเครื่อง ระบบจะเปลี่ยนสถานะเป็น “รอซ่อม” และปิดรายการเบิกของเครื่องนั้นอัตโนมัติ</small>
                         </div>
 
                         <div className="lark-field-group">
-                          <label>เธญเธฒเธเธฒเธฃเธ—เธตเนเนเธเนเธเธเนเธญเธก / เธเธฑเธเธซเธฒเธ—เธตเนเธเธ <span>*</span></label>
-                          <input type="text" className="lark-input" placeholder="เธ•เธฑเธงเธญเธขเนเธฒเธ: เธซเธเนเธฒเธเธญเนเธกเนเธ•เธดเธ”, เธเธฃเธดเนเธเธ—เนเธเธฒเธเนเธกเนเธญเธญเธ" value={larkTicketIssue} onChange={e => setLarkTicketIssue(e.target.value)} required={larkTicketRole === 'user'} />
+                          <label>อาการที่แจ้งซ่อม / ปัญหาที่พบ <span>*</span></label>
+                          <input type="text" className="lark-input" placeholder="ตัวอย่าง: หน้าจอไม่ติด, ปริ้นท์งานไม่ออก" value={larkTicketIssue} onChange={e => setLarkTicketIssue(e.target.value)} required={larkTicketRole === 'user'} />
                         </div>
                       </div>
                     ) : (() => {
-                      const pendingTickets = tickets.filter(t => t.status === 'เธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ');
+                      const pendingTickets = tickets.filter(t => t.status === 'กำลังดำเนินการ');
                       const selectedTicket = pendingTickets.find(t => Number(t.sn) === Number(selectedPendingTicketSn));
 
                       return (
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: '12px', marginBottom: '16px' }}>
                             <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.95rem', fontWeight: '700' }}>
-                              {selectedTicket ? `๐”ง เธเธดเธ”เนเธเธเธฒเธเธเนเธญเธกเนเธเธก [SN: ${selectedTicket.sn}]` : '๐“ เธฃเธฒเธขเธเธฒเธฃเธเธฒเธเธเนเธญเธกเธ—เธตเนเธขเธฑเธเนเธกเนเนเธ”เนเธเธดเธ” (เธเธณเธฅเธฑเธเธ”เธณเน€เธเธดเธเธเธฒเธฃ)'}
+                              {selectedTicket ? `🔧 ปิดใบงานซ่อมแซม [SN: ${selectedTicket.sn}]` : '📋 รายการงานซ่อมที่ยังไม่ได้ปิด (กำลังดำเนินการ)'}
                             </h4>
                             {selectedTicket && (
                               <button type="button" onClick={() => setSelectedPendingTicketSn('')} style={{ padding: '4px 10px', fontSize: '0.75rem', backgroundColor: '#e5e7eb', color: '#475569', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                                เธขเนเธญเธเธเธฅเธฑเธเนเธเธฃเธฒเธขเธเธฒเธฃเธเธฒเธ
+                                ย้อนกลับไปรายการงาน
                               </button>
                             )}
                           </div>
@@ -7177,12 +7177,12 @@ function Dashboard() {
                                   <div key={t.sn} style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div style={{ flex: '1', paddingRight: '12px' }}>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                        <span style={{ backgroundColor: '#fee2e2', color: '#ef4444', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold' }}>เธฃเธซเธฑเธช #{t.sn}</span>
+                                        <span style={{ backgroundColor: '#fee2e2', color: '#ef4444', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 'bold' }}>รหัส #{t.sn}</span>
                                         <strong style={{ fontSize: '0.85rem', color: '#1f2937' }}>{t.complainant}</strong>
                                         <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>({t.date})</span>
                                       </div>
                                       <div style={{ fontSize: '0.8rem', color: '#4b5563' }}>
-                                        <strong>เธญเธฒเธเธฒเธฃเน€เธชเธตเธข:</strong> {t.issue}
+                                        <strong>อาการเสีย:</strong> {t.issue}
                                       </div>
                                     </div>
                                     <button type="button" onClick={() => {
@@ -7191,53 +7191,53 @@ function Dashboard() {
                                       setLarkTicketDuration('00:30');
                                       setLarkTicketCause('');
                                       setLarkTicketCost('0');
-                                      setLarkTicketStatus('เน€เธชเธฃเนเธเธชเธดเนเธ');
+                                      setLarkTicketStatus('เสร็จสิ้น');
                                     }} style={{ padding: '6px 12px', fontSize: '0.75rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                                      เน€เธฅเธทเธญเธเนเธฅเธฐเธเธดเธ”เธเธฒเธ
+                                      เลือกและปิดงาน
                                     </button>
                                   </div>
                                 ))}
                               </div>
                             ) : (
                               <div style={{ padding: '24px 12px', backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold', textAlign: 'center' }}>
-                                ๐ เนเธกเนเธกเธตเธเธฒเธเธเนเธญเธกเธ—เธตเนเธเนเธฒเธเธเธฒเธญเธขเธนเนเนเธเธเธ“เธฐเธเธตเน เธ—เธธเธเนเธเธเธฒเธเนเธ”เนเธฃเธฑเธเธเธฒเธฃเนเธเนเนเธเน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง
+                                🎉 ไม่มีงานซ่อมที่ค้างคาอยู่ในขณะนี้ ทุกใบงานได้รับการแก้ไขเรียบร้อยแล้ว
                               </div>
                             )
                           ) : (
                             /* View 2: Form to close the selected ticket */
                             <div>
                               <div style={{ padding: '12px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', marginBottom: '16px', fontSize: '0.8rem' }}>
-                                <div style={{ fontWeight: 'bold', color: '#1e40af', marginBottom: '4px' }}>เธเนเธญเธกเธนเธฅเธเธนเนเนเธเนเธ:</div>
-                                <div>๐‘ค <strong>เธเธนเนเนเธเนเธ:</strong> {selectedTicket.complainant} (เน€เธกเธฅ: {selectedTicket.email} / AnyDesk: {selectedTicket.anydesk})</div>
-                                <div>โ ๏ธ <strong>เธเธฑเธเธซเธฒเธ—เธตเนเธเธ:</strong> {selectedTicket.issue}</div>
+                                <div style={{ fontWeight: 'bold', color: '#1e40af', marginBottom: '4px' }}>ข้อมูลผู้แจ้ง:</div>
+                                <div>👤 <strong>ผู้แจ้ง:</strong> {selectedTicket.complainant} (เมล: {selectedTicket.email} / AnyDesk: {selectedTicket.anydesk})</div>
+                                <div>⚠️ <strong>ปัญหาที่พบ:</strong> {selectedTicket.issue}</div>
                               </div>
 
                               <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                  <label>เธเธนเนเธ”เธณเน€เธเธดเธเธเธฒเธ (เธเนเธฒเธ IT) <span>*</span></label>
-                                  <input type="text" className="lark-input" placeholder="เน€เธเนเธ เธเนเธฒเธเธเนเธญเธเธ เธ (IT)" value={larkTicketResponder} onChange={e => setLarkTicketResponder(e.target.value)} required={larkTicketRole === 'it'} />
+                                  <label>ผู้ดำเนินงาน (ช่าง IT) <span>*</span></label>
+                                  <input type="text" className="lark-input" placeholder="เช่น ช่างก้องภพ (IT)" value={larkTicketResponder} onChange={e => setLarkTicketResponder(e.target.value)} required={larkTicketRole === 'it'} />
                                 </div>
                                 <div>
-                                  <label>เน€เธงเธฅเธฒเนเธเนเน€เธชเธฃเนเธ (เธเธฑเนเธงเนเธกเธ:เธเธฒเธ—เธต)</label>
-                                  <input type="text" className="lark-input" placeholder="เน€เธเนเธ 00:45" value={larkTicketDuration} onChange={e => setLarkTicketDuration(e.target.value)} />
+                                  <label>เวลาแก้เสร็จ (ชั่วโมง:นาที)</label>
+                                  <input type="text" className="lark-input" placeholder="เช่น 00:45" value={larkTicketDuration} onChange={e => setLarkTicketDuration(e.target.value)} />
                                 </div>
                               </div>
 
                               <div className="lark-field-group">
-                                <label>เธชเธฒเน€เธซเธ•เธธเธเธฒเธฃเน€เธชเธตเธข / เธงเธดเธเธตเนเธเนเนเธ</label>
-                                <input type="text" className="lark-input" placeholder="เธ•เธฑเธงเธญเธขเนเธฒเธ: เน€เธเธฅเธตเนเธขเธเธชเธฒเธข LAN เนเธซเธกเน, เธฃเธตเธชเธ•เธฒเธฃเนเธ—เธเธฒเธฃเธ•เธฑเนเธเธเนเธฒเน€เธเธฃเธทเธญเธเนเธฒเธข" value={larkTicketCause} onChange={e => setLarkTicketCause(e.target.value)} />
+                                <label>สาเหตุการเสีย / วิธีแก้ไข</label>
+                                <input type="text" className="lark-input" placeholder="ตัวอย่าง: เปลี่ยนสาย LAN ใหม่, รีสตาร์ทการตั้งค่าเครือข่าย" value={larkTicketCause} onChange={e => setLarkTicketCause(e.target.value)} />
                               </div>
 
                               <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                                 <div>
-                                  <label>เธญเธฑเธเน€เธ”เธ•เธชเธ–เธฒเธเธฐเนเธเธเธฒเธ</label>
+                                  <label>อัพเดตสถานะใบงาน</label>
                                   <select className="lark-input" value={larkTicketStatus} onChange={e => setLarkTicketStatus(e.target.value)}>
-                                    <option value="เน€เธชเธฃเนเธเธชเธดเนเธ">เน€เธชเธฃเนเธเธชเธดเนเธ (Resolved)</option>
-                                    <option value="เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง">เธเนเธฒเธขเน€เธเธดเธเนเธฅเนเธง (เธเธทเนเธญเธญเธฐเนเธซเธฅเนเน€เธชเธฃเธดเธก)</option>
+                                    <option value="เสร็จสิ้น">เสร็จสิ้น (Resolved)</option>
+                                    <option value="จ่ายเงินแล้ว">จ่ายเงินแล้ว (ซื้ออะไหล่เสริม)</option>
                                   </select>
                                 </div>
                                 <div>
-                                  <label>เธเนเธฒเนเธเนเธเนเธฒเธขเธเนเธญเธกเนเธเธก (เธเธฒเธ—)</label>
+                                  <label>ค่าใช้จ่ายซ่อมแซม (บาท)</label>
                                   <input type="number" className="lark-input" value={larkTicketCost} onChange={e => setLarkTicketCost(e.target.value)} />
                                 </div>
                               </div>
@@ -7250,48 +7250,48 @@ function Dashboard() {
                 ) : (
                   <div className="lark-card">
                     <div style={{ borderBottom: '1px solid #f3f4f6', paddingBottom: '12px', marginBottom: '16px' }}>
-                      <h4 style={{ margin: 0, color: '#1e40af', fontSize: '1rem', fontWeight: '700' }}>เธฅเธเธ—เธฐเน€เธเธตเธขเธเธญเธธเธเธเธฃเธ“เนเน€เธเธฃเธทเนเธญเธเนเธซเธกเนเน€เธเนเธฒเธ—เธฐเน€เธเธตเธขเธเธเธฅเธฒเธ</h4>
+                      <h4 style={{ margin: 0, color: '#1e40af', fontSize: '1rem', fontWeight: '700' }}>ลงทะเบียนอุปกรณ์เครื่องใหม่เข้าทะเบียนกลาง</h4>
                     </div>
 
                     <div className="lark-field-group">
-                      <label>เธเธทเนเธญเธเธนเนเธเธฃเธญเธเธเธฃเธญเธเนเธเนเธเธฒเธ</label>
-                      <input type="text" className="lark-input" placeholder="เน€เธเนเธ เธญเธกเธฃ เนเธเนเธงเธชเธ” (เธซเธฃเธทเธญเนเธชเน เธชเนเธงเธเธเธฅเธฒเธ)" value={larkAssetUser} onChange={e => setLarkAssetUser(e.target.value)} />
+                      <label>ชื่อผู้ครอบครองใช้งาน</label>
+                      <input type="text" className="lark-input" placeholder="เช่น อมร แก้วสด (หรือใส่ ส่วนกลาง)" value={larkAssetUser} onChange={e => setLarkAssetUser(e.target.value)} />
                     </div>
 
                     <div className="lark-field-group">
-                      <label>เธ•เธณเนเธซเธเนเธ / เนเธเธเธ</label>
-                      <input type="text" className="lark-input" placeholder="เน€เธเนเธ Accounting, Marketing, HR" value={larkAssetPosition} onChange={e => setLarkAssetPosition(e.target.value)} />
+                      <label>ตำแหน่ง / แผนก</label>
+                      <input type="text" className="lark-input" placeholder="เช่น Accounting, Marketing, HR" value={larkAssetPosition} onChange={e => setLarkAssetPosition(e.target.value)} />
                     </div>
 
                     <div className="lark-field-group">
-                      <label>เธเธฃเธฐเน€เธ เธ—เธญเธธเธเธเธฃเธ“เนเนเธญเธ—เธต / เธฃเธธเนเธเธซเธฅเธฑเธ <span>*</span></label>
-                      <input type="text" className="lark-input" placeholder="เธ•เธฑเธงเธญเธขเนเธฒเธ: Notebook Lenovo, Computer (Pc)" value={larkAssetItemType} onChange={e => setLarkAssetItemType(e.target.value)} required={larkFormType === 'asset'} />
+                      <label>ประเภทอุปกรณ์ไอที / รุ่นหลัก <span>*</span></label>
+                      <input type="text" className="lark-input" placeholder="ตัวอย่าง: Notebook Lenovo, Computer (Pc)" value={larkAssetItemType} onChange={e => setLarkAssetItemType(e.target.value)} required={larkFormType === 'asset'} />
                     </div>
 
                     <div className="lark-field-group">
-                      <label>เธเธตเน€เธฃเธตเธขเธฅเธเธฑเธกเน€เธเธญเธฃเน / เธฃเธซเธฑเธชเน€เธเธฃเธทเนเธญเธ (Serial Number)</label>
-                      <input type="text" className="lark-input" placeholder="เน€เธเนเธ MC-054, LNV-987" value={larkAssetSerial} onChange={e => setLarkAssetSerial(e.target.value)} />
+                      <label>ซีเรียลนัมเบอร์ / รหัสเครื่อง (Serial Number)</label>
+                      <input type="text" className="lark-input" placeholder="เช่น MC-054, LNV-987" value={larkAssetSerial} onChange={e => setLarkAssetSerial(e.target.value)} />
                     </div>
 
                     <div className="lark-field-group">
-                      <label>เธชเธ–เธฒเธเธฐเธเธฅเธฑเธเน€เธฃเธดเนเธกเธ•เนเธ</label>
+                      <label>สถานะคลังเริ่มต้น</label>
                       <select className="lark-input" value={larkAssetStatus} onChange={e => setLarkAssetStatus(e.target.value)}>
-                        <option value="เนเธเนเธเธฒเธ">เนเธเนเธเธฒเธ (Active)</option>
-                        <option value="เธงเนเธฒเธ">เธงเนเธฒเธ (Vacant)</option>
-                        <option value="เธฃเธญเธเนเธญเธก">เธฃเธญเธเนเธญเธก (Repairing)</option>
-                        <option value="เธชเธนเธเธซเธฒเธข">เธชเธนเธเธซเธฒเธข (Lost)</option>
+                        <option value="ใช้งาน">ใช้งาน (Active)</option>
+                        <option value="ว่าง">ว่าง (Vacant)</option>
+                        <option value="รอซ่อม">รอซ่อม (Repairing)</option>
+                        <option value="สูญหาย">สูญหาย (Lost)</option>
                       </select>
                     </div>
 
                     <div className="lark-field-group">
-                      <label>เธซเธกเธฒเธขเน€เธซเธ•เธธ / เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เน€เธเธดเนเธกเน€เธ•เธดเธก</label>
-                      <input type="text" className="lark-input" placeholder="เธ•เธฑเธงเธญเธขเนเธฒเธ: เธฃเธฑเธเน€เธเนเธฒเธเธฒเธเนเธเธฃเธเธเธฒเธฃเน€เธเธฅเธตเนเธขเธเน€เธเธฃเธทเนเธญเธเธเธต 2026" value={larkAssetNotes} onChange={e => setLarkAssetNotes(e.target.value)} />
+                      <label>หมายเหตุ / รายละเอียดเพิ่มเติม</label>
+                      <input type="text" className="lark-input" placeholder="ตัวอย่าง: รับเข้าจากโครงการเปลี่ยนเครื่องปี 2026" value={larkAssetNotes} onChange={e => setLarkAssetNotes(e.target.value)} />
                     </div>
                   </div>
                 )}
 
                 {(!larkSubmitted && (larkFormType !== 'ticket' || larkTicketRole !== 'it' || selectedPendingTicketSn !== '')) && (
-                  <button type="submit" className="lark-submit-btn">เธชเนเธเธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅ (Submit Record)</button>
+                  <button type="submit" className="lark-submit-btn">ส่งบันทึกข้อมูล (Submit Record)</button>
                 )}
               </form>
             )}
