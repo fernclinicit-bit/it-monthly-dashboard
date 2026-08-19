@@ -709,7 +709,12 @@ app.patch('/api/tickets/:sn/close', async (req, res) => {
 
 app.patch('/api/assets/:sn', async (req, res) => {
   const sn = Number(req.params.sn);
-  const { user, position, itemType, additionalEquipment, deviceSerial, status, notes } = req.body || {};
+  const {
+    user, position, itemType, additionalEquipment, deviceSerial, status, notes,
+    submittedOn, respondent, date, softwareApp, registeredEmail,
+    additionalSerial, returnDueDate, auditDate, purchaseDate,
+    warrantyExpiry, cost
+  } = req.body || {};
   if (!Number.isInteger(sn) || sn <= 0 || !itemType || !status) {
     return res.status(400).json({ error: 'ข้อมูลทรัพย์สินไม่ถูกต้อง' });
   }
@@ -722,6 +727,19 @@ app.patch('/api/assets/:sn', async (req, res) => {
     const assetResult = await client.query('SELECT * FROM assets WHERE sn = $1 FOR UPDATE', [sn]);
     if (assetResult.rowCount === 0) throw new Error('ไม่พบทรัพย์สินที่ต้องการแก้ไข');
 
+    const optionalDetails = Object.fromEntries(Object.entries({
+      submittedOn,
+      respondent,
+      date,
+      softwareApp,
+      registeredEmail,
+      additionalSerial,
+      returnDueDate,
+      auditDate,
+      purchaseDate,
+      warrantyExpiry,
+      cost
+    }).filter(([, value]) => value !== undefined));
     const details = {
       ...(assetResult.rows[0].details || {}),
       user: user || 'ส่วนกลาง',
@@ -730,14 +748,16 @@ app.patch('/api/assets/:sn', async (req, res) => {
       additionalEquipment: additionalEquipment || '',
       deviceSerial: deviceSerial || '-',
       status,
-      notes: notes || ''
+      notes: notes || '',
+      ...optionalDetails
     };
     await client.query(`
       UPDATE assets
-      SET user_name = $1, position = $2, item_type = $3, device_serial = $4,
-          status = $5, notes = $6, details = $7
-      WHERE sn = $8
+      SET date = $1, user_name = $2, position = $3, item_type = $4, device_serial = $5,
+          status = $6, notes = $7, details = $8
+      WHERE sn = $9
     `, [
+      date === undefined ? (assetResult.rows[0].date || '') : date,
       user || 'ส่วนกลาง',
       position || '-',
       itemType,

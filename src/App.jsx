@@ -2773,41 +2773,63 @@ function Dashboard() {
   };
 
   // Assets Inventory Editor (Dual-Mode: Create / Update)
-  const handleAddAsset = () => {
+  const handleAddAsset = async () => {
     if (!newAssetItemType) {
       alert('กรุณากรอกประเภทอุปกรณ์หลัก');
       return;
     }
 
     if (editingAssetSn !== null) {
-      // Edit mode
-      setAssetsList(prev => {
-        const updated = prev.map(a => a.sn === editingAssetSn ? {
-          ...a,
-          user: newAssetUser || 'ส่วนกลาง',
-          position: newAssetPosition || '-',
-          itemType: newAssetItemType,
-          additionalEquipment: newAssetAdditionalEquipment,
-          deviceSerial: newAssetSerial || '-',
-          status: newAssetStatus,
-          notes: newAssetNotes,
-          submittedOn: newAssetSubmittedOn,
-          respondent: newAssetRespondent,
-          date: newAssetDate,
-          softwareApp: newAssetSoftwareApp,
-          registeredEmail: newAssetRegisteredEmail,
-          additionalSerial: newAssetAdditionalSerial,
-          returnDueDate: newAssetReturnDueDate,
-          auditDate: newAssetAuditDate,
-          purchaseDate: newAssetPurchaseDate,
-          warrantyExpiry: newAssetWarrantyExpiry,
-          cost: newAssetCost
-        } : a);
-        runRecalculation(consoleMonth, data[consoleMonth]?.ticketsList || [], updated);
-        return updated;
-      });
-      setEditingAssetSn(null);
-      alert('แก้ไขข้อมูลทรัพย์สินสำเร็จ!');
+      const assetPatch = {
+        user: newAssetUser || 'ส่วนกลาง',
+        position: newAssetPosition || '-',
+        itemType: newAssetItemType,
+        additionalEquipment: newAssetAdditionalEquipment,
+        deviceSerial: newAssetSerial || '-',
+        status: newAssetStatus,
+        notes: newAssetNotes,
+        submittedOn: newAssetSubmittedOn,
+        respondent: newAssetRespondent,
+        date: newAssetDate,
+        softwareApp: newAssetSoftwareApp,
+        registeredEmail: newAssetRegisteredEmail,
+        additionalSerial: newAssetAdditionalSerial,
+        returnDueDate: newAssetReturnDueDate,
+        auditDate: newAssetAuditDate,
+        purchaseDate: newAssetPurchaseDate,
+        warrantyExpiry: newAssetWarrantyExpiry,
+        cost: newAssetCost
+      };
+
+      setConsoleSaving(true);
+      setConsoleSaveMessage('');
+      isPendingSyncRef.current = true;
+      try {
+        const response = await fetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(assetPatch)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'แก้ไขทรัพย์สินไม่สำเร็จ');
+
+        const stateResponse = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
+        if (!stateResponse.ok) throw new Error(`API server returned ${stateResponse.status}`);
+        const synchronized = await stateResponse.json();
+        if (synchronized.data) setData(repairThaiTextDeep(synchronized.data));
+        if (synchronized.assetsList) setAssetsList(repairThaiTextDeep(synchronized.assetsList));
+        setEditingAssetSn(null);
+        setConsoleSaveMessage('บันทึกสำเร็จและอัปเดตสถานะในฐานข้อมูลแล้ว');
+        alert('แก้ไขข้อมูลทรัพย์สินสำเร็จ!');
+      } catch (error) {
+        console.error('Failed to update asset:', error);
+        setConsoleSaveMessage(`บันทึกไม่สำเร็จ: ${error?.message || 'กรุณาลองใหม่'}`);
+        alert(`บันทึกไม่สำเร็จ: ${error?.message || 'กรุณาลองใหม่'}`);
+        return;
+      } finally {
+        isPendingSyncRef.current = false;
+        setConsoleSaving(false);
+      }
     } else {
       // Create mode
       const newAsset = {
@@ -3238,13 +3260,24 @@ function Dashboard() {
       // before sending the complete dashboard snapshot.
       if (editingAssetSn !== null && newAssetItemType) {
         pendingAssetPatch = {
-          user: newAssetUser,
-          position: newAssetPosition,
+          user: newAssetUser || 'ส่วนกลาง',
+          position: newAssetPosition || '-',
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
-          deviceSerial: newAssetSerial,
+          deviceSerial: newAssetSerial || '-',
           status: newAssetStatus,
-          notes: newAssetNotes
+          notes: newAssetNotes,
+          submittedOn: newAssetSubmittedOn,
+          respondent: newAssetRespondent,
+          date: newAssetDate,
+          softwareApp: newAssetSoftwareApp,
+          registeredEmail: newAssetRegisteredEmail,
+          additionalSerial: newAssetAdditionalSerial,
+          returnDueDate: newAssetReturnDueDate,
+          auditDate: newAssetAuditDate,
+          purchaseDate: newAssetPurchaseDate,
+          warrantyExpiry: newAssetWarrantyExpiry,
+          cost: newAssetCost
         };
         assetsToSave = assetsList.map(asset => asset.sn === editingAssetSn ? {
           ...asset,
@@ -3280,24 +3313,18 @@ function Dashboard() {
         };
       }
 
-      await syncStateToDb(dataToSave, assetsToSave);
-      if (editingAssetSn !== null && newAssetItemType) {
+      // Persist the edited asset first. This also reconciles any active issue/
+      // return workflow before the full dashboard snapshot is synchronized.
+      if (editingAssetSn !== null && newAssetItemType && pendingAssetPatch) {
         const assetResponse = await fetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user: newAssetUser,
-            position: newAssetPosition,
-            itemType: newAssetItemType,
-            additionalEquipment: newAssetAdditionalEquipment,
-            deviceSerial: newAssetSerial,
-            status: newAssetStatus,
-            notes: newAssetNotes
-          })
+          body: JSON.stringify(pendingAssetPatch)
         });
         const assetResult = await assetResponse.json();
         if (!assetResponse.ok) throw new Error(assetResult.error || 'แก้ไขสถานะทรัพย์สินไม่สำเร็จ');
       }
+      await syncStateToDb(dataToSave, assetsToSave);
       const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
       if (!response.ok) throw new Error(`API server returned ${response.status}`);
       const synchronized = await response.json();
