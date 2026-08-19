@@ -3400,7 +3400,10 @@ function Dashboard() {
   }));
 
   const vacantStockAssets = assetsList.filter((asset) => asset.status === 'ว่าง');
+  const warehouseTotalCount = assetsList.length;
   const vacantStockCount = vacantStockAssets.length;
+  const warehouseBrokenCount = assetsList.filter((asset) => asset.status === 'รอซ่อม').length;
+  const warehouseLostCount = assetsList.filter((asset) => asset.status === 'สูญหาย').length;
   const vacantStockBreakdown = Array.from(vacantStockAssets.reduce((groups, asset) => {
     const type = String(asset.itemType || 'ไม่ระบุ').trim() || 'ไม่ระบุ';
     const mainCategory = mainAssetCategories.find((category) => category.match(type));
@@ -3545,14 +3548,17 @@ function Dashboard() {
     if (assetCanvasRef.current) {
       if (assetChartInst.current) assetChartInst.current.destroy();
 
-      const normalAssets = activeData.totalAssets - activeData.assetsBroken - activeData.assetsLost - primaryExpiringAssets;
+      const normalAssets = Math.max(
+        0,
+        warehouseTotalCount - warehouseBrokenCount - warehouseLostCount - primaryExpiringAssets
+      );
       const ctx = assetCanvasRef.current.getContext('2d');
       assetChartInst.current = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: ['ปกติ', 'ใกล้หมดอายุ', 'ชำรุด', 'สูญหาย'],
           datasets: [{
-            data: [normalAssets, primaryExpiringAssets, activeData.assetsBroken, activeData.assetsLost],
+            data: [normalAssets, primaryExpiringAssets, warehouseBrokenCount, warehouseLostCount],
             backgroundColor: [
               'rgba(16, 185, 129, 0.7)',
               'rgba(245, 158, 11, 0.7)',
@@ -3683,7 +3689,15 @@ function Dashboard() {
       if (softwareChartInst.current) softwareChartInst.current.destroy();
       if (repairChartInst.current) repairChartInst.current.destroy();
     };
-  }, [activeData, primaryExpiringAssets, calculatedLicensesInUse, calculatedLicensesVacant]);
+  }, [
+    activeData,
+    primaryExpiringAssets,
+    calculatedLicensesInUse,
+    calculatedLicensesVacant,
+    warehouseTotalCount,
+    warehouseBrokenCount,
+    warehouseLostCount
+  ]);
 
   // ========================================
   // XLSX IMPORT / EXPORT / TEMPLATE FUNCTIONS
@@ -4948,7 +4962,7 @@ function Dashboard() {
                 <div className="asset-total-summary">
                   <div>
                     <div className="metric-label">จำนวนอุปกรณ์ทั้งหมด</div>
-                    <div className="metric-value highlight-primary">{activeData.totalAssets.toLocaleString()} เครื่อง</div>
+                    <div className="metric-value highlight-primary">{warehouseTotalCount.toLocaleString()} เครื่อง</div>
                   </div>
                   <div className="asset-vacant-summary">
                     <div className="metric-label">เครื่องว่าง</div>
@@ -4987,11 +5001,11 @@ function Dashboard() {
               </div>
               <div className="metric-item">
                 <div className="metric-label">ชำรุด</div>
-                <div className="metric-value highlight-danger">{activeData.assetsBroken} เครื่อง</div>
+                <div className="metric-value highlight-danger">{warehouseBrokenCount} เครื่อง</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">สูญหาย</div>
-                <div className="metric-value highlight-danger">{activeData.assetsLost} เครื่อง</div>
+                <div className="metric-value highlight-danger">{warehouseLostCount} เครื่อง</div>
               </div>
             </div>
             <div className="card-chart-container">
