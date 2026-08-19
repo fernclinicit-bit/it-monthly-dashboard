@@ -3389,25 +3389,30 @@ function Dashboard() {
     { label: 'PC', usefulLifeYears: 5, match: (type) => /computer\s*\(pc\)|\bpc\b/i.test(type) },
     { label: 'Notebook', usefulLifeYears: 5, match: (type) => /notebook/i.test(type) },
     { label: 'iMac', usefulLifeYears: 5, match: (type) => /imac/i.test(type) },
-    { label: 'MacBook', usefulLifeYears: 5, match: (type) => /mac\s*book/i.test(type) },
     { label: 'iPhone', usefulLifeYears: 4, match: (type) => /iphone/i.test(type) },
     { label: 'iPad', usefulLifeYears: 4, match: (type) => /ipad/i.test(type) },
   ];
 
+  // One registry row may contain more than one primary-device tag. Expand it
+  // into category entries so the total always equals the five visible counters.
+  const primaryAssetEntries = assetsList.flatMap((asset) => {
+    const type = String(asset.itemType || '');
+    return mainAssetCategories
+      .filter((category) => category.match(type))
+      .map((category) => ({ asset, category }));
+  });
   const mainAssetBreakdown = mainAssetCategories.map((category) => ({
     label: category.label,
-    count: assetsList.filter((asset) => category.match(String(asset.itemType || ''))).length,
+    count: primaryAssetEntries.filter((entry) => entry.category.label === category.label).length,
   }));
 
-  const vacantStockAssets = assetsList.filter((asset) => asset.status === 'ว่าง');
-  const warehouseTotalCount = assetsList.length;
-  const vacantStockCount = vacantStockAssets.length;
-  const warehouseBrokenCount = assetsList.filter((asset) => asset.status === 'รอซ่อม').length;
-  const warehouseLostCount = assetsList.filter((asset) => asset.status === 'สูญหาย').length;
-  const vacantStockBreakdown = Array.from(vacantStockAssets.reduce((groups, asset) => {
-    const type = String(asset.itemType || 'ไม่ระบุ').trim() || 'ไม่ระบุ';
-    const mainCategory = mainAssetCategories.find((category) => category.match(type));
-    const label = mainCategory?.label || type;
+  const warehouseTotalCount = primaryAssetEntries.length;
+  const vacantStockEntries = primaryAssetEntries.filter(({ asset }) => asset.status === 'ว่าง');
+  const vacantStockCount = vacantStockEntries.length;
+  const warehouseBrokenCount = primaryAssetEntries.filter(({ asset }) => asset.status === 'รอซ่อม').length;
+  const warehouseLostCount = primaryAssetEntries.filter(({ asset }) => asset.status === 'สูญหาย').length;
+  const vacantStockBreakdown = Array.from(vacantStockEntries.reduce((groups, entry) => {
+    const label = entry.category.label;
     groups.set(label, (groups.get(label) || 0) + 1);
     return groups;
   }, new Map()), ([label, count]) => ({ label, count }))
@@ -3431,11 +3436,9 @@ function Dashboard() {
   const nearExpiryLimit = new Date(today);
   nearExpiryLimit.setFullYear(nearExpiryLimit.getFullYear() + 1);
 
-  const primaryExpiringAssets = assetsList.filter((asset) => {
-    const type = String(asset.itemType || '');
-    const category = mainAssetCategories.find((item) => item.match(type));
+  const primaryExpiringAssets = primaryAssetEntries.filter(({ asset, category }) => {
     const startDate = parseAssetDate(asset.purchaseDate) || parseAssetDate(asset.date);
-    if (!category || !startDate || asset.status === 'สูญหาย') return false;
+    if (!startDate || asset.status === 'สูญหาย') return false;
 
     const modelExpiryDate = new Date(startDate);
     modelExpiryDate.setFullYear(modelExpiryDate.getFullYear() + category.usefulLifeYears);
