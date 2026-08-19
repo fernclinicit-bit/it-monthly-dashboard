@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
-import lightItLogo from './assets/light_it_logo.jpg';
+import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -2341,7 +2341,7 @@ function Dashboard() {
       if ('Notification' in window && window.Notification.permission === 'granted') {
         new window.Notification(item.title, {
           body: item.message,
-          icon: lightItLogo,
+          icon: fernAesthetiqueLogo,
           tag: item.key
         });
       }
@@ -4603,7 +4603,7 @@ function Dashboard() {
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
       <aside className={`sidebar no-print ${mobileSidebarOpen ? 'mobile-active' : ''}`}>
         <div className="logo-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <img className="fern-brand-logo" src={lightItLogo} alt="Light IT" />
+          <img className="fern-brand-logo" src={fernAesthetiqueLogo} alt="Fern Aesthetique" />
           <button 
             onClick={() => setMobileSidebarOpen(false)} 
             className="mobile-menu-close"
