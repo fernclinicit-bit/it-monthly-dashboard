@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+const IOS_DEVICE_MONITOR_BASE = 'https://ios-device-monitor-46w9.onrender.com';
 const ADMIN_PASSWORD_HASH = '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
 
 // Initial blank data - use Excel import to load real data
@@ -1941,7 +1942,7 @@ function Dashboard() {
       activeController = new AbortController();
       setIsFetchingDevices(true);
       try {
-        const response = await fetch('https://ios-device-monitor-lkxv.onrender.com/api/devices', {
+        const response = await fetch(`${IOS_DEVICE_MONITOR_BASE}/api/devices`, {
           cache: 'no-store',
           signal: activeController.signal
         });
@@ -4887,7 +4888,7 @@ function Dashboard() {
               <div 
                 className="metric-item" 
                 style={{ cursor: 'pointer' }}
-                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+                onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
                 <div className="metric-label">กำลังติดตามรวม</div>
                 <div className="metric-value highlight-primary">{monitoredTotal} เครื่อง</div>
@@ -4895,7 +4896,7 @@ function Dashboard() {
               <div 
                 className="metric-item"
                 style={{ cursor: 'pointer' }}
-                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+                onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
                 <div className="metric-label">ตรวจสอบแล้ว (Active)</div>
                 <div className="metric-value highlight-success">{monitoredActive} เครื่อง</div>
@@ -4903,7 +4904,7 @@ function Dashboard() {
               <div 
                 className="metric-item"
                 style={{ cursor: 'pointer' }}
-                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+                onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
                 <div className="metric-label">ใกล้ครบกำหนด (&le;7 วัน)</div>
                 <div className="metric-value highlight-warning">{monitoredWarning} เครื่อง</div>
@@ -4911,7 +4912,7 @@ function Dashboard() {
               <div 
                 className="metric-item"
                 style={{ cursor: 'pointer' }}
-                onClick={() => window.open('https://ios-device-monitor-46w9.onrender.com/', '_blank')}
+                onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
                 <div className="metric-label">ค้างการตรวจสอบ (Action Required)</div>
                 <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
