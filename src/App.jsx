@@ -2555,7 +2555,7 @@ function Dashboard() {
     const calculatedResponseTime = durationCount > 0 ? Math.max(5, Math.round(resolutionTimeHours * 12)) : 0;
     const calculatedCsat = durationCount > 0 ? Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1)) : 0;
 
-    const brokenAssetsCount = assets.filter(a => a.status === 'รอซ่อม').length;
+    const brokenAssetsCount = assets.filter(a => ['รอซ่อม', 'ชำรุด'].includes(a.status)).length;
     const lostAssetsCount = assets.filter(a => a.status === 'สูญหาย').length;
     const vacantAssetsCount = assets.filter(a => a.status === 'ว่าง').length;
 
@@ -3307,7 +3307,7 @@ function Dashboard() {
           [consoleMonth]: {
             ...data[consoleMonth],
             totalAssets: assetsToSave.length,
-            assetsBroken: assetsToSave.filter(asset => asset.status === 'รอซ่อม').length,
+            assetsBroken: assetsToSave.filter(asset => ['รอซ่อม', 'ชำรุด'].includes(asset.status)).length,
             assetsLost: assetsToSave.filter(asset => asset.status === 'สูญหาย').length,
             assetsVacant: assetsToSave.filter(asset => asset.status === 'ว่าง').length
           }
@@ -3409,7 +3409,7 @@ function Dashboard() {
   const warehouseTotalCount = primaryAssetEntries.length;
   const vacantStockEntries = primaryAssetEntries.filter(({ asset }) => asset.status === 'ว่าง');
   const vacantStockCount = vacantStockEntries.length;
-  const warehouseBrokenCount = primaryAssetEntries.filter(({ asset }) => asset.status === 'รอซ่อม').length;
+  const warehouseBrokenCount = primaryAssetEntries.filter(({ asset }) => ['รอซ่อม', 'ชำรุด'].includes(asset.status)).length;
   const warehouseLostCount = primaryAssetEntries.filter(({ asset }) => asset.status === 'สูญหาย').length;
   const vacantStockBreakdown = Array.from(vacantStockEntries.reduce((groups, entry) => {
     const label = entry.category.label;
@@ -4048,7 +4048,7 @@ function Dashboard() {
             calculatedAssetValue += CATEGORY_VALUES[cat] || 1500;
           });
 
-          const brokenInventory = parsedAssets.filter(a => a.status === 'รอซ่อม').length;
+          const brokenInventory = parsedAssets.filter(a => ['รอซ่อม', 'ชำรุด'].includes(a.status)).length;
           const lostInventory = parsedAssets.filter(a => a.status === 'สูญหาย').length;
 
           // Update data metrics
@@ -6352,11 +6352,11 @@ function Dashboard() {
                             <td>
                               <span 
                                 style={{ 
-                                  color: asset.status === 'ใช้งาน' ? 'var(--success)' : asset.status === 'รอซ่อม' ? 'var(--danger)' : 'var(--warning)', 
+                                  color: asset.status === 'ใช้งาน' ? 'var(--success)' : ['รอซ่อม', 'ชำรุด'].includes(asset.status) ? 'var(--danger)' : 'var(--warning)',
                                   fontWeight: '600',
                                   padding: '2px 8px',
                                   borderRadius: '4px',
-                                  backgroundColor: asset.status === 'ใช้งาน' ? 'rgba(16, 185, 129, 0.1)' : asset.status === 'รอซ่อม' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)'
+                                  backgroundColor: asset.status === 'ใช้งาน' ? 'rgba(16, 185, 129, 0.1)' : ['รอซ่อม', 'ชำรุด'].includes(asset.status) ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)'
                                 }}
                               >
                                 {asset.status}
@@ -6688,6 +6688,7 @@ function Dashboard() {
                         <select value={newAssetStatus} onChange={e => setNewAssetStatus(e.target.value)} className="console-input">
                           <option value="ใช้งาน">ใช้งาน</option>
                           <option value="ว่าง">ว่าง</option>
+                          <option value="ชำรุด">ชำรุด</option>
                           <option value="รอซ่อม">รอซ่อม</option>
                           <option value="สูญหาย">สูญหาย</option>
                         </select>
@@ -6886,7 +6887,7 @@ function Dashboard() {
                               <td>{asset.additionalSerial || '-'}</td>
                               <td>{asset.returnDueDate || '-'}</td>
                               <td>
-                                <span className={`lark-status lark-status-${asset.status === 'ใช้งาน' ? 'active' : asset.status === 'รอซ่อม' ? 'repair' : asset.status === 'ว่าง' ? 'vacant' : 'other'}`}>
+                                <span className={`lark-status lark-status-${asset.status === 'ใช้งาน' ? 'active' : ['รอซ่อม', 'ชำรุด'].includes(asset.status) ? 'repair' : asset.status === 'ว่าง' ? 'vacant' : 'other'}`}>
                                   {asset.status || '-'}
                                 </span>
                               </td>
@@ -7290,6 +7291,7 @@ function Dashboard() {
                       <select className="lark-input" value={larkAssetStatus} onChange={e => setLarkAssetStatus(e.target.value)}>
                         <option value="ใช้งาน">ใช้งาน (Active)</option>
                         <option value="ว่าง">ว่าง (Vacant)</option>
+                        <option value="ชำรุด">ชำรุด (Broken)</option>
                         <option value="รอซ่อม">รอซ่อม (Repairing)</option>
                         <option value="สูญหาย">สูญหาย (Lost)</option>
                       </select>

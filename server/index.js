@@ -203,7 +203,7 @@ async function refreshOperationalCounters(client) {
   await client.query(`
     UPDATE monthly_data m
     SET total_assets = (SELECT COUNT(*) FROM assets),
-        assets_broken = (SELECT COUNT(*) FROM assets WHERE status = 'รอซ่อม'),
+        assets_broken = (SELECT COUNT(*) FROM assets WHERE status IN ('รอซ่อม', 'ชำรุด')),
         assets_lost = (SELECT COUNT(*) FROM assets WHERE status = 'สูญหาย'),
         assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง'),
         tickets_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key),
@@ -768,7 +768,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
       sn
     ]);
 
-    if (['ว่าง', 'รอซ่อม', 'สูญหาย'].includes(status)) {
+    if (['ว่าง', 'รอซ่อม', 'ชำรุด', 'สูญหาย'].includes(status)) {
       const activeRequests = await client.query(`
         SELECT id, history FROM asset_requests
         WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue', 'return_requested')
@@ -790,7 +790,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
               updated_at = NOW()
           WHERE id = $3
         `, [
-          status === 'รอซ่อม' ? 'ชำรุด' : status === 'สูญหาย' ? 'สูญหาย' : 'ปกติ',
+          ['รอซ่อม', 'ชำรุด'].includes(status) ? 'ชำรุด' : status === 'สูญหาย' ? 'สูญหาย' : 'ปกติ',
           JSON.stringify([...(request.history || []), event]),
           request.id
         ]);
@@ -802,7 +802,7 @@ app.patch('/api/assets/:sn', async (req, res) => {
     await client.query(`
       UPDATE monthly_data
       SET total_assets = (SELECT COUNT(*) FROM assets),
-          assets_broken = (SELECT COUNT(*) FROM assets WHERE status = 'รอซ่อม'),
+          assets_broken = (SELECT COUNT(*) FROM assets WHERE status IN ('รอซ่อม', 'ชำรุด')),
           assets_lost = (SELECT COUNT(*) FROM assets WHERE status = 'สูญหาย'),
           assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง')
     `);
