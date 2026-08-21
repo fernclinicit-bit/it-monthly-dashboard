@@ -6862,7 +6862,7 @@ function Dashboard() {
                               <td>{asset.registeredEmail || '-'}</td>
                               <td>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                  <strong>{asset.deviceSerial}</strong>
+                                  <strong>{String(asset.deviceSerial || '-').toLocaleLowerCase('en-US')}</strong>
                                   {(() => {
                                     const match = externalDevices.find(d => 
                                       (d.deviceNumber || '').toLowerCase().replace(/\s/g, '') === (asset.deviceSerial || '').toLowerCase().replace(/\s/g, '')
