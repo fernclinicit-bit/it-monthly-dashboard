@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect, useRef, useCallback, useMemo } fr
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
 import Login from './pages/Login';
+import UserAccessManager from './pages/UserAccessManager';
 import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import { authFetch, clearAuth, getStoredAuth, ROLE_LABELS } from './auth';
 import Chart from 'chart.js/auto';
@@ -4735,6 +4736,10 @@ function Dashboard({ currentUser, onLogout }) {
                 เมนูปิดงาน (IT Close)
                 <span className={`menu-count-badge ${pendingTicketCloseCount > 0 ? 'has-items' : ''}`}>{pendingTicketCloseCount}</span>
               </button>
+              <button onClick={() => requireAdminAccess(() => setActiveModal('userAccess'))} className="sidebar-btn user-access-menu-btn">
+                <ShieldCheck size={16} />
+                จัดการสิทธิ์ผู้ใช้งาน
+              </button>
             </div>
           )}
         </div>}
@@ -5185,6 +5190,10 @@ function Dashboard({ currentUser, onLogout }) {
           </div>
         </section>
       </main>
+
+      {activeModal === 'userAccess' && (
+        <UserAccessManager currentUser={currentUser} onClose={() => setActiveModal(null)} />
+      )}
 
       {activeModal === 'assetWorkflow' && (() => {
         const statusLabels = {
