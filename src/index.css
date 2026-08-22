@@ -2574,3 +2574,10 @@ body.modal-open { overflow: hidden; }
         min-height: 48px;
     }
 }
+.signed-in-user { display: flex; align-items: center; gap: 9px; padding: 5px 7px 5px 12px; border: 1px solid var(--border-color); border-radius: 20px; background: rgba(15,23,42,.75); }
+.signed-in-user span { display: grid; line-height: 1.2; text-align: right; }
+.signed-in-user strong { color: var(--text-primary); font-size: .78rem; }
+.signed-in-user small { color: var(--text-muted); font-size: .64rem; }
+.signed-in-user button { border: 0; border-radius: 14px; padding: 5px 9px; color: #fff; background: #475569; font-size: .68rem; cursor: pointer; }
+@media (max-width: 760px) { .signed-in-user span { display: none; } .signed-in-user { padding: 4px; } .signed-in-user button { padding: 5px 7px; } }
+.auth-loading { min-height: 100vh; display: grid; place-items: center; color: #e2e8f0; background: #070b12; font-weight: 700; }

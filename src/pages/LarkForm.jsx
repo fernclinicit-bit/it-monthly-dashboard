@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authFetch } from '../auth';
 import { 
   ArrowLeft, 
   Send, 
@@ -82,7 +83,7 @@ const LarkForm = () => {
     try {
       const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://it-monthly-dashboard-new.onrender.com');
 
-      const response = await fetch(`${API_BASE}/api/tickets`, {
+      const response = await authFetch(`${API_BASE}/api/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

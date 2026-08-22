@@ -24,6 +24,98 @@ app.get('/health', (_req, res) => {
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH ||
   '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
 
+const AUTH_TOKEN_SECRET = process.env.AUTH_TOKEN_SECRET ||
+  crypto.createHash('sha256').update(`it-dashboard:${ADMIN_PASSWORD_HASH}`).digest('hex');
+const AUTH_TOKEN_TTL_SECONDS = 8 * 60 * 60;
+const ROLE_LEVEL = { viewer: 1, staff: 2, admin: 3 };
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(String(password || '')).digest('hex');
+}
+
+function loadAuthUsers() {
+  if (process.env.AUTH_USERS_JSON) {
+    try {
+      const parsed = JSON.parse(process.env.AUTH_USERS_JSON);
+      if (Array.isArray(parsed) && parsed.length) {
+        return parsed.map((user) => ({
+          username: String(user.username || '').trim().toLocaleLowerCase('en-US'),
+          name: String(user.name || user.username || '').trim(),
+          role: ROLE_LEVEL[user.role] ? user.role : 'viewer',
+          passwordHash: String(user.passwordHash || hashPassword(user.password || ''))
+        })).filter((user) => user.username && /^[a-f0-9]{64}$/i.test(user.passwordHash));
+      }
+    } catch (error) {
+      console.error('AUTH_USERS_JSON is invalid:', error.message);
+    }
+  }
+  return [
+    { username: 'itadmin', name: 'ผู้ดูแล IT', role: 'admin', passwordHash: ADMIN_PASSWORD_HASH },
+    { username: 'staff', name: 'ผู้ใช้งานทั่วไป', role: 'staff', passwordHash: hashPassword(process.env.STAFF_PASSWORD || 'staff2569') },
+    { username: 'viewer', name: 'ผู้ดูรายงาน', role: 'viewer', passwordHash: hashPassword(process.env.VIEWER_PASSWORD || 'viewer2569') }
+  ];
+}
+
+const AUTH_USERS = loadAuthUsers();
+
+function safeEqualHex(left, right) {
+  try {
+    const leftBuffer = Buffer.from(String(left), 'hex');
+    const rightBuffer = Buffer.from(String(right), 'hex');
+    return leftBuffer.length === rightBuffer.length && crypto.timingSafeEqual(leftBuffer, rightBuffer);
+  } catch {
+    return false;
+  }
+}
+
+function toBase64Url(value) {
+  return Buffer.from(value).toString('base64url');
+}
+
+function signAuthToken(user) {
+  const payload = toBase64Url(JSON.stringify({
+    sub: user.username,
+    name: user.name,
+    role: user.role,
+    exp: Math.floor(Date.now() / 1000) + AUTH_TOKEN_TTL_SECONDS
+  }));
+  const signature = crypto.createHmac('sha256', AUTH_TOKEN_SECRET).update(payload).digest('base64url');
+  return `${payload}.${signature}`;
+}
+
+function verifyAuthToken(token) {
+  try {
+    const [payload, signature] = String(token || '').split('.');
+    if (!payload || !signature) return null;
+    const expected = crypto.createHmac('sha256', AUTH_TOKEN_SECRET).update(payload).digest('base64url');
+    const suppliedBuffer = Buffer.from(signature);
+    const expectedBuffer = Buffer.from(expected);
+    if (suppliedBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(suppliedBuffer, expectedBuffer)) return null;
+    const value = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    if (!value.exp || value.exp <= Math.floor(Date.now() / 1000) || !ROLE_LEVEL[value.role]) return null;
+    return { username: value.sub, name: value.name, role: value.role };
+  } catch {
+    return null;
+  }
+}
+
+function requireAuth(req, res, next) {
+  const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '') || String(req.query?.token || '');
+  const user = verifyAuthToken(token);
+  if (!user) return res.status(401).json({ message: 'กรุณาเข้าสู่ระบบ' });
+  req.user = user;
+  next();
+}
+
+function requireRole(minimumRole) {
+  return (req, res, next) => {
+    if (!req.user || ROLE_LEVEL[req.user.role] < ROLE_LEVEL[minimumRole]) {
+      return res.status(403).json({ message: 'บัญชีนี้ไม่มีสิทธิ์ดำเนินการ' });
+    }
+    next();
+  };
+}
+
 function isAdminPassword(password) {
   const suppliedHash = crypto.createHash('sha256').update(String(password || '')).digest('hex');
   const suppliedBuffer = Buffer.from(suppliedHash, 'hex');
@@ -128,7 +220,24 @@ async function ensureStoredThaiTextIsReadable(queryable) {
   }
 }
 
-app.post('/api/admin/verify', (req, res) => {
+app.post('/api/auth/login', (req, res) => {
+  const username = String(req.body?.username || '').trim().toLocaleLowerCase('en-US');
+  const user = AUTH_USERS.find((entry) => entry.username === username);
+  const suppliedHash = hashPassword(req.body?.password);
+  if (!user || !safeEqualHex(suppliedHash, user.passwordHash)) {
+    return res.status(401).json({ message: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
+  }
+  const publicUser = { username: user.username, name: user.name, role: user.role };
+  res.json({ token: signAuthToken(user), user: publicUser, expiresIn: AUTH_TOKEN_TTL_SECONDS });
+});
+
+app.get('/api/auth/me', requireAuth, (req, res) => {
+  res.json({ user: req.user });
+});
+
+app.use('/api', requireAuth);
+
+app.post('/api/admin/verify', requireRole('admin'), (req, res) => {
   const valid = isAdminPassword(req.body?.password);
   res.status(valid ? 200 : 401).json({ valid });
 });
@@ -542,7 +651,7 @@ app.get('/api/tickets/:sn/attachment', async (req, res) => {
   }
 });
 
-app.post('/api/tickets', async (req, res) => {
+app.post('/api/tickets', requireRole('staff'), async (req, res) => {
   const { name, department, date, deviceType, issue, priority, assetSerial, email, anydesk, attachmentData, attachmentName } = req.body || {};
   if (!name || !department || !date || !deviceType || !issue) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลแจ้งปัญหาให้ครบถ้วน' });
@@ -649,7 +758,7 @@ app.post('/api/tickets', async (req, res) => {
   }
 });
 
-app.patch('/api/tickets/:sn/close', async (req, res) => {
+app.patch('/api/tickets/:sn/close', requireRole('admin'), async (req, res) => {
   const sn = Number(req.params.sn);
   const { responder, duration, cause, status, cost } = req.body || {};
   if (!Number.isInteger(sn) || sn <= 0 || !String(responder || '').trim()) {
@@ -707,7 +816,7 @@ app.patch('/api/tickets/:sn/close', async (req, res) => {
   }
 });
 
-app.patch('/api/assets/:sn', async (req, res) => {
+app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
   const sn = Number(req.params.sn);
   const {
     user, position, itemType, additionalEquipment, deviceSerial, status, notes,
@@ -839,7 +948,7 @@ app.get('/api/asset-requests', async (_req, res) => {
   }
 });
 
-app.post('/api/asset-requests', async (req, res) => {
+app.post('/api/asset-requests', requireRole('staff'), async (req, res) => {
   const { requester, department, itemType, purpose, requestedDate, dueDate, notes } = req.body;
   if (!requester || !department || !itemType || !purpose || !requestedDate) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลคำขอให้ครบ' });
@@ -918,7 +1027,7 @@ app.get('/api/data-integrity/months', async (_req, res) => {
   }
 });
 
-app.patch('/api/asset-requests/:id', async (req, res) => {
+app.patch('/api/asset-requests/:id', requireRole('staff'), async (req, res) => {
   const id = Number(req.params.id);
   const { requester, department, itemType, purpose, dueDate, notes } = req.body;
   if (!Number.isInteger(id)) {
@@ -989,12 +1098,15 @@ app.patch('/api/asset-requests/:id', async (req, res) => {
   }
 });
 
-app.patch('/api/asset-requests/:id/action', async (req, res) => {
+app.patch('/api/asset-requests/:id/action', requireRole('staff'), async (req, res) => {
   const id = Number(req.params.id);
-  const { action, reviewer, assetSn, condition, note, requesterIdentity, adminPassword } = req.body;
+  const { action, reviewer, assetSn, condition, note, requesterIdentity } = req.body;
   const allowedActions = ['approve', 'reject', 'issue', 'request_return', 'return'];
   if (!Number.isInteger(id) || !allowedActions.includes(action)) {
     return res.status(400).json({ error: 'คำสั่งไม่ถูกต้อง' });
+  }
+  if (action !== 'request_return' && req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'เฉพาะผู้ดูแล IT เท่านั้นที่ดำเนินการขั้นตอนนี้ได้' });
   }
 
   let client;
@@ -1034,7 +1146,6 @@ app.patch('/api/asset-requests/:id/action', async (req, res) => {
       nextStatus = 'return_requested';
     } else {
       if (request.status !== 'return_requested') throw new Error('ผู้ใช้งานยังไม่ได้แจ้งขอคืนอุปกรณ์');
-      if (!isAdminPassword(adminPassword)) throw new Error('รหัสผ่านเจ้าหน้าที่ IT ไม่ถูกต้อง');
       if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) throw new Error('กรุณาระบุสภาพอุปกรณ์ที่รับคืน');
       nextStatus = 'returned';
       assetStatus = condition === 'ชำรุด' ? 'รอซ่อม' : condition === 'สูญหาย' ? 'สูญหาย' : 'ว่าง';
@@ -1201,7 +1312,7 @@ app.get('/api/inventory-data', (req, res) => {
   }
 });
 
-app.post('/api/sync-all', async (req, res) => {
+app.post('/api/sync-all', requireRole('admin'), async (req, res) => {
   const { data, assetsList } = req.body;
   if (!data || !assetsList) {
     return res.status(400).json({ error: 'Missing data or assetsList' });
@@ -1423,7 +1534,7 @@ app.post('/api/sync-all', async (req, res) => {
     }
   }
 });
-app.post('/api/reset-database', async (req, res) => {
+app.post('/api/reset-database', requireRole('admin'), async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');

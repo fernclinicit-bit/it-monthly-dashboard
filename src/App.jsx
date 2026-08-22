@@ -1,7 +1,9 @@
 import React, { Fragment, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import LarkForm from './pages/LarkForm';
+import Login from './pages/Login';
 import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
+import { authFetch, clearAuth, getStoredAuth, ROLE_LABELS } from './auth';
 import Chart from 'chart.js/auto';
 import * as XLSX from 'xlsx';
 import { 
@@ -28,7 +30,6 @@ import {
 
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 const IOS_DEVICE_MONITOR_BASE = 'https://ios-device-monitor-46w9.onrender.com';
-const ADMIN_PASSWORD_HASH = '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
 
 // Initial blank data - use Excel import to load real data
 const initialAssetsData = [
@@ -1839,8 +1840,10 @@ const repairThaiTextDeep = (value) => {
   return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairThaiTextDeep(item)]));
 };
 
-function Dashboard() {
+function Dashboard({ currentUser, onLogout }) {
   const navigate = useNavigate();
+  const isAdmin = currentUser?.role === 'admin';
+  const canRequestService = currentUser?.role === 'admin' || currentUser?.role === 'staff';
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('it_dashboard_data');
     if (!saved) return initialDashboardData;
@@ -1980,14 +1983,6 @@ function Dashboard() {
       document.removeEventListener('visibilitychange', syncWhenVisible);
     };
   }, [externalDevicesRefreshKey]);
-  const verifyAdminPasswordLocally = async (password) => {
-    const encodedPassword = new TextEncoder().encode(password);
-    const digest = await window.crypto.subtle.digest('SHA-256', encodedPassword);
-    return Array.from(new Uint8Array(digest))
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('') === ADMIN_PASSWORD_HASH;
-  };
-
   useEffect(() => {
     if (!activeModal) return undefined;
     setMobileSidebarOpen(false);
@@ -1995,42 +1990,17 @@ function Dashboard() {
     return () => document.body.classList.remove('modal-open');
   }, [activeModal]);
 
-  const requireAdminAccess = async (openMenu) => {
-    const password = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT');
-    if (password === null) return;
-    if (await verifyAdminPasswordLocally(password)) {
-      openMenu();
+  const requireAdminAccess = (openMenu) => {
+    if (!isAdmin) {
+      alert('บัญชีนี้ไม่มีสิทธิ์ผู้ดูแล IT');
       return;
     }
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 12000);
-    try {
-      const response = await fetch(`${API_BASE}/api/admin/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-        signal: controller.signal
-      });
-      if (!response.ok) {
-        alert('รหัสผ่านไม่ถูกต้อง');
-        return;
-      }
-      openMenu();
-    } catch (error) {
-      console.error('Admin verification failed:', error);
-      if (await verifyAdminPasswordLocally(password)) {
-        openMenu();
-        return;
-      }
-      alert('รหัสผ่านไม่ถูกต้อง');
-    } finally {
-      window.clearTimeout(timeoutId);
-    }
+    openMenu();
   };
 
   const loadAssetRequests = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/api/asset-requests`);
+      const response = await authFetch(`${API_BASE}/api/asset-requests`);
       if (!response.ok) throw new Error(`API ${response.status}`);
       setAssetRequests(repairThaiTextDeep(await response.json()));
     } catch (err) {
@@ -2039,7 +2009,7 @@ function Dashboard() {
   }, []);
 
   const refreshOperationalStateFromDb = async () => {
-    const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
+    const response = await authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`API ${response.status}`);
     const result = await response.json();
     isPollingUpdateRef.current = true;
@@ -2051,7 +2021,7 @@ function Dashboard() {
     event.preventDefault();
     setAssetRequestLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/asset-requests`, {
+      const response = await authFetch(`${API_BASE}/api/asset-requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(assetRequestForm)
@@ -2092,7 +2062,7 @@ function Dashboard() {
 
     setAssetRequestLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/asset-requests/${request.id}`, {
+      const response = await authFetch(`${API_BASE}/api/asset-requests/${request.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requester, department, itemType, purpose, dueDate, notes })
@@ -2134,12 +2104,9 @@ function Dashboard() {
       payload.reviewer = assetReturnIdentity.trim();
       payload.note = 'ผู้ใช้งานแจ้งขอคืนอุปกรณ์ รอเจ้าหน้าที่ IT ตรวจรับ';
     } else if (action === 'return') {
-      const adminPassword = window.prompt('กรุณากรอกรหัสผ่านเจ้าหน้าที่ IT เพื่อยืนยันรับคืน');
-      if (adminPassword === null) return;
       const condition = window.prompt('สภาพตอนคืน: ปกติ, ชำรุด หรือ สูญหาย', 'ปกติ');
       if (condition === null) return;
       if (!['ปกติ', 'ชำรุด', 'สูญหาย'].includes(condition)) return alert('กรุณาระบุ ปกติ, ชำรุด หรือ สูญหาย');
-      payload.adminPassword = adminPassword;
       payload.condition = condition;
       payload.reviewer = window.prompt('ชื่อเจ้าหน้าที่ผู้ตรวจรับ') || 'IT';
       payload.note = window.prompt('หมายเหตุการรับคืน (ถ้ามี)') || '';
@@ -2147,7 +2114,7 @@ function Dashboard() {
 
     setAssetRequestLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/asset-requests/${request.id}/action`, {
+      const response = await authFetch(`${API_BASE}/api/asset-requests/${request.id}/action`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -2190,7 +2157,7 @@ function Dashboard() {
         const controller = new AbortController();
         const timeout = window.setTimeout(() => controller.abort(), 30000);
         try {
-          const response = await fetch(`${API_BASE}/api/sync-all`, {
+          const response = await authFetch(`${API_BASE}/api/sync-all`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: updatedData, assetsList: updatedAssets }),
@@ -2225,7 +2192,7 @@ function Dashboard() {
   useEffect(() => {
     async function loadDbState() {
       try {
-        const res = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
+        const res = await authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!res.ok) throw new Error('API server returned error');
         const result = await res.json();
         
@@ -2239,7 +2206,7 @@ function Dashboard() {
         } else {
           // Database is empty. Seed it with the default initial data!
           console.log('PostgreSQL database is empty. Seeding initial baseline datasets...');
-          await fetch(`${API_BASE}/api/sync-all`, {
+          await authFetch(`${API_BASE}/api/sync-all`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: latestDataRef.current, assetsList: latestAssetsRef.current })
@@ -2271,7 +2238,7 @@ function Dashboard() {
           const pendingSync = JSON.parse(pendingSyncRaw);
           if (pendingSync?.type === 'asset_patch' && pendingSync?.sn && pendingSync?.payload) {
             isPendingSyncRef.current = true;
-            const pendingResponse = await fetch(`${API_BASE}/api/assets/${pendingSync.sn}`, {
+            const pendingResponse = await authFetch(`${API_BASE}/api/assets/${pendingSync.sn}`, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(pendingSync.payload)
@@ -2283,7 +2250,7 @@ function Dashboard() {
           }
         }
 
-        const res = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
+        const res = await authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!res.ok) return;
         const result = await res.json();
 
@@ -2351,8 +2318,8 @@ function Dashboard() {
     const pollNewItems = async () => {
       try {
         const [dashboardResponse, requestsResponse] = await Promise.all([
-          fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' }),
-          fetch(`${API_BASE}/api/asset-requests`, { cache: 'no-store' })
+          authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' }),
+          authFetch(`${API_BASE}/api/asset-requests`, { cache: 'no-store' })
         ]);
         if (!dashboardResponse.ok || !requestsResponse.ok) return;
 
@@ -2806,7 +2773,7 @@ function Dashboard() {
       setConsoleSaveMessage('');
       isPendingSyncRef.current = true;
       try {
-        const response = await fetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
+        const response = await authFetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(assetPatch)
@@ -2814,7 +2781,7 @@ function Dashboard() {
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.error || 'แก้ไขทรัพย์สินไม่สำเร็จ');
 
-        const stateResponse = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
+        const stateResponse = await authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!stateResponse.ok) throw new Error(`API server returned ${stateResponse.status}`);
         const synchronized = await stateResponse.json();
         if (synchronized.data) setData(repairThaiTextDeep(synchronized.data));
@@ -3075,7 +3042,7 @@ function Dashboard() {
   const handleResetToDefault = async () => {
     if (window.confirm('คำเตือน: คุณต้องการลบข้อมูลทั้งหมดในระบบใช่หรือไม่? ข้อมูลทั้งหมดที่บันทึกไว้ในฐานข้อมูลจะถูกล้างและไม่สามารถกู้คืนได้!')) {
       try {
-        const response = await fetch(`${API_BASE}/api/reset-database`, {
+        const response = await authFetch(`${API_BASE}/api/reset-database`, {
           method: 'POST'
         });
         if (!response.ok) {
@@ -3113,7 +3080,7 @@ function Dashboard() {
         
         // IT Close work mode - persist through the API before removing it from the queue.
         try {
-          const response = await fetch(`${API_BASE}/api/tickets/${selectedPendingTicketSn}/close`, {
+          const response = await authFetch(`${API_BASE}/api/tickets/${selectedPendingTicketSn}/close`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -3153,7 +3120,7 @@ function Dashboard() {
           return;
         }
         try {
-          const response = await fetch(`${API_BASE}/api/tickets`, {
+          const response = await authFetch(`${API_BASE}/api/tickets`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -3317,7 +3284,7 @@ function Dashboard() {
       // Persist the edited asset first. This also reconciles any active issue/
       // return workflow before the full dashboard snapshot is synchronized.
       if (editingAssetSn !== null && newAssetItemType && pendingAssetPatch) {
-        const assetResponse = await fetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
+        const assetResponse = await authFetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pendingAssetPatch)
@@ -3326,7 +3293,7 @@ function Dashboard() {
         if (!assetResponse.ok) throw new Error(assetResult.error || 'แก้ไขสถานะทรัพย์สินไม่สำเร็จ');
       }
       await syncStateToDb(dataToSave, assetsToSave);
-      const response = await fetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
+      const response = await authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
       if (!response.ok) throw new Error(`API server returned ${response.status}`);
       const synchronized = await response.json();
       if (synchronized.data) setData(synchronized.data);
@@ -4659,7 +4626,7 @@ function Dashboard() {
         </div>
 
         <div className="sidebar-primary-actions">
-
+          {canRequestService && <>
           <button
             onClick={() => {
               setMobileSidebarOpen(false);
@@ -4700,7 +4667,7 @@ function Dashboard() {
             <RotateCcw size={16} />
             คืนอุปกรณ์
           </button>
-
+          </>}
         </div>
 
         {/* Month Dropdown Selection */}
@@ -4718,7 +4685,7 @@ function Dashboard() {
         </div>
 
         {/* Data Customizer Trigger */}
-        <div className="control-group">
+        {isAdmin && <div className="control-group">
           <div 
             onClick={() => setSidebarExpanded(prev => ({ ...prev, mgmt: !prev.mgmt }))}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
@@ -4770,10 +4737,10 @@ function Dashboard() {
               </button>
             </div>
           )}
-        </div>
+        </div>}
 
         {/* XLSX Database Operations */}
-        <div className="control-group">
+        {isAdmin && <div className="control-group">
           <div 
             onClick={() => setSidebarExpanded(prev => ({ ...prev, excel: !prev.excel }))}
             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
@@ -4819,7 +4786,7 @@ function Dashboard() {
               )}
             </div>
           )}
-        </div>
+        </div>}
 
         {/* PDF Printing Trigger */}
         <div className="control-group" style={{ marginTop: '10px' }}>
@@ -4866,6 +4833,10 @@ function Dashboard() {
             </div>
           </div>
           <div className="header-status status-indicator" style={{ display: 'flex', gap: '15px', alignItems: 'center', background: 'none' }}>
+            <div className="signed-in-user">
+              <span><strong>{currentUser?.name}</strong><small>{ROLE_LABELS[currentUser?.role] || currentUser?.role}</small></span>
+              <button type="button" onClick={onLogout}>ออกจากระบบ</button>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 255, 255, 0.1)', padding: '5px 12px', borderRadius: '20px' }}>
               <span className="status-dot"></span>
               <span>ระบบรายงานพร้อมทำงาน</span>
@@ -6155,13 +6126,13 @@ function Dashboard() {
                             {(ticket.hasAttachment || ticket.attachmentData) ? (
                               <a
                                 className="ticket-attachment-link"
-                                href={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2`}
+                                href={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2&token=${encodeURIComponent(getStoredAuth()?.token || '')}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title={ticket.attachmentName || 'เปิดรูปแนบ'}
                               >
                                 <img
-                                  src={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2`}
+                                  src={ticket.attachmentData || `${API_BASE}/api/tickets/${ticket.sn}/attachment?v=2&token=${encodeURIComponent(getStoredAuth()?.token || '')}`}
                                   alt={ticket.attachmentName || `รูปแนบ Ticket ${ticket.sn}`}
                                 />
                                 <span>ดูรูป</span>
@@ -7318,10 +7289,52 @@ function Dashboard() {
 }
 
 export default function App() {
+  const [auth, setAuth] = useState(() => getStoredAuth());
+  const [checkingAuth, setCheckingAuth] = useState(() => Boolean(getStoredAuth()));
+
+  useEffect(() => {
+    const expired = () => setAuth(null);
+    window.addEventListener('it-auth-expired', expired);
+    return () => window.removeEventListener('it-auth-expired', expired);
+  }, []);
+
+  useEffect(() => {
+    if (!auth?.token) {
+      setCheckingAuth(false);
+      return;
+    }
+    let cancelled = false;
+    authFetch(`${API_BASE}/api/auth/me`, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('session-invalid');
+        const result = await response.json();
+        if (!cancelled) setAuth((current) => ({ ...current, user: result.user }));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          clearAuth();
+          setAuth(null);
+        }
+      })
+      .finally(() => { if (!cancelled) setCheckingAuth(false); });
+    return () => { cancelled = true; };
+  }, [auth?.token]);
+
+  const logout = () => {
+    clearAuth();
+    setAuth(null);
+  };
+
+  if (checkingAuth) return <div className="auth-loading">กำลังตรวจสอบสิทธิ์...</div>;
+  if (!auth?.user) return <Login onLogin={setAuth} />;
+
+  const dashboard = <Dashboard currentUser={auth.user} onLogout={logout} />;
+  const canRequestService = auth.user.role === 'admin' || auth.user.role === 'staff';
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/form" element={<LarkForm />} />
+      <Route path="/" element={dashboard} />
+      <Route path="/form" element={canRequestService ? <LarkForm /> : dashboard} />
+      <Route path="*" element={dashboard} />
     </Routes>
   );
 }
