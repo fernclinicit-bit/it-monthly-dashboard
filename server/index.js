@@ -56,7 +56,36 @@ function loadAuthUsers() {
   ];
 }
 
-const AUTH_USERS = loadAuthUsers();
+const DEFAULT_AUTH_USERS = loadAuthUsers();
+
+function publicAuthUser(user) {
+  return {
+    username: user.username,
+    name: user.name,
+    role: user.role,
+    active: user.active !== false
+  };
+}
+
+function serializeAuthVersion(value) {
+  if (!value) return 'default';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toISOString();
+}
+
+async function findAuthUser(username) {
+  const normalized = String(username || '').trim().toLocaleLowerCase('en-US');
+  try {
+    const result = await pool.query(
+      'SELECT username, display_name AS name, role, password_hash AS "passwordHash", active, updated_at AS "authVersion" FROM auth_users WHERE username = $1',
+      [normalized]
+    );
+    return result.rows[0] || null;
+  } catch {
+    const fallback = DEFAULT_AUTH_USERS.find((entry) => entry.username === normalized);
+    return fallback ? { ...fallback, active: true, authVersion: 'default' } : null;
+  }
+}
 
 function safeEqualHex(left, right) {
   try {
@@ -77,6 +106,7 @@ function signAuthToken(user) {
     sub: user.username,
     name: user.name,
     role: user.role,
+    ver: serializeAuthVersion(user.authVersion),
     exp: Math.floor(Date.now() / 1000) + AUTH_TOKEN_TTL_SECONDS
   }));
   const signature = crypto.createHmac('sha256', AUTH_TOKEN_SECRET).update(payload).digest('base64url');
@@ -93,18 +123,30 @@ function verifyAuthToken(token) {
     if (suppliedBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(suppliedBuffer, expectedBuffer)) return null;
     const value = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
     if (!value.exp || value.exp <= Math.floor(Date.now() / 1000) || !ROLE_LEVEL[value.role]) return null;
-    return { username: value.sub, name: value.name, role: value.role };
+    return { username: value.sub, name: value.name, role: value.role, authVersion: value.ver || '' };
   } catch {
     return null;
   }
 }
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '') || String(req.query?.token || '');
-  const user = verifyAuthToken(token);
-  if (!user) return res.status(401).json({ message: 'กรุณาเข้าสู่ระบบ' });
-  req.user = user;
-  next();
+  const tokenUser = verifyAuthToken(token);
+  if (!tokenUser) return res.status(401).json({ message: 'กรุณาเข้าสู่ระบบ' });
+  try {
+    const currentUser = await findAuthUser(tokenUser.username);
+    if (!currentUser || currentUser.active === false) {
+      return res.status(401).json({ message: 'บัญชีนี้ถูกปิดการใช้งาน' });
+    }
+    const currentVersion = serializeAuthVersion(currentUser.authVersion);
+    if (tokenUser.authVersion !== currentVersion) {
+      return res.status(401).json({ message: 'สิทธิ์หรือรหัสผ่านมีการเปลี่ยนแปลง กรุณาเข้าสู่ระบบใหม่' });
+    }
+    req.user = publicAuthUser(currentUser);
+    next();
+  } catch (error) {
+    next(error);
+  }
 }
 
 function requireRole(minimumRole) {
@@ -114,6 +156,10 @@ function requireRole(minimumRole) {
     }
     next();
   };
+}
+
+function asyncRoute(handler) {
+  return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 }
 
 function isAdminPassword(password) {
@@ -220,14 +266,14 @@ async function ensureStoredThaiTextIsReadable(queryable) {
   }
 }
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const username = String(req.body?.username || '').trim().toLocaleLowerCase('en-US');
-  const user = AUTH_USERS.find((entry) => entry.username === username);
+  const user = await findAuthUser(username);
   const suppliedHash = hashPassword(req.body?.password);
-  if (!user || !safeEqualHex(suppliedHash, user.passwordHash)) {
+  if (!user || user.active === false || !safeEqualHex(suppliedHash, user.passwordHash)) {
     return res.status(401).json({ message: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
   }
-  const publicUser = { username: user.username, name: user.name, role: user.role };
+  const publicUser = publicAuthUser(user);
   res.json({ token: signAuthToken(user), user: publicUser, expiresIn: AUTH_TOKEN_TTL_SECONDS });
 });
 
@@ -236,6 +282,70 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 });
 
 app.use('/api', requireAuth);
+
+app.get('/api/auth/users', requireRole('admin'), asyncRoute(async (_req, res) => {
+  const result = await pool.query(`
+    SELECT username, display_name AS name, role, active, created_at AS "createdAt", updated_at AS "updatedAt"
+    FROM auth_users
+    ORDER BY CASE role WHEN 'admin' THEN 1 WHEN 'staff' THEN 2 ELSE 3 END, username
+  `);
+  res.json({ users: result.rows });
+}));
+
+app.post('/api/auth/users', requireRole('admin'), asyncRoute(async (req, res) => {
+  const username = String(req.body?.username || '').trim().toLocaleLowerCase('en-US');
+  const name = String(req.body?.name || '').trim();
+  const password = String(req.body?.password || '');
+  const role = String(req.body?.role || 'viewer');
+  if (!/^[a-z0-9._-]{3,40}$/.test(username)) {
+    return res.status(400).json({ message: 'User ต้องมี 3-40 ตัว และใช้ a-z, 0-9, จุด ขีดกลาง หรือขีดล่างเท่านั้น' });
+  }
+  if (!name) return res.status(400).json({ message: 'กรุณาระบุชื่อผู้ใช้งาน' });
+  if (password.length < 6) return res.status(400).json({ message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' });
+  if (!ROLE_LEVEL[role]) return res.status(400).json({ message: 'สิทธิ์ไม่ถูกต้อง' });
+  try {
+    const result = await pool.query(`
+      INSERT INTO auth_users (username, display_name, role, password_hash, active)
+      VALUES ($1, $2, $3, $4, TRUE)
+      RETURNING username, display_name AS name, role, active, created_at AS "createdAt", updated_at AS "updatedAt"
+    `, [username, name, role, hashPassword(password)]);
+    res.status(201).json({ user: result.rows[0] });
+  } catch (error) {
+    if (error.code === '23505') return res.status(409).json({ message: 'User นี้มีอยู่แล้ว' });
+    throw error;
+  }
+}));
+
+app.patch('/api/auth/users/:username', requireRole('admin'), asyncRoute(async (req, res) => {
+  const username = String(req.params.username || '').trim().toLocaleLowerCase('en-US');
+  const existing = await findAuthUser(username);
+  if (!existing) return res.status(404).json({ message: 'ไม่พบบัญชีผู้ใช้' });
+  const name = req.body?.name === undefined ? existing.name : String(req.body.name || '').trim();
+  const role = req.body?.role === undefined ? existing.role : String(req.body.role || '');
+  const active = req.body?.active === undefined ? existing.active !== false : Boolean(req.body.active);
+  const password = req.body?.password === undefined ? '' : String(req.body.password || '');
+  if (!name) return res.status(400).json({ message: 'กรุณาระบุชื่อผู้ใช้งาน' });
+  if (!ROLE_LEVEL[role]) return res.status(400).json({ message: 'สิทธิ์ไม่ถูกต้อง' });
+  if (password && password.length < 6) return res.status(400).json({ message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' });
+  if (username === req.user.username && (!active || role !== 'admin')) {
+    return res.status(400).json({ message: 'ไม่สามารถปิดบัญชีหรือลดสิทธิ์บัญชีที่กำลังใช้งานอยู่' });
+  }
+  if (existing.role === 'admin' && existing.active !== false && (!active || role !== 'admin')) {
+    const admins = await pool.query("SELECT COUNT(*)::integer AS count FROM auth_users WHERE role = 'admin' AND active = TRUE");
+    if (admins.rows[0].count <= 1) return res.status(400).json({ message: 'ระบบต้องมี Admin ที่เปิดใช้งานอย่างน้อย 1 บัญชี' });
+  }
+  const result = await pool.query(`
+    UPDATE auth_users
+    SET display_name = $1,
+        role = $2,
+        active = $3,
+        password_hash = CASE WHEN $4 = '' THEN password_hash ELSE $5 END,
+        updated_at = NOW()
+    WHERE username = $6
+    RETURNING username, display_name AS name, role, active, created_at AS "createdAt", updated_at AS "updatedAt"
+  `, [name, role, active, password, password ? hashPassword(password) : existing.passwordHash, username]);
+  res.json({ user: result.rows[0] });
+}));
 
 app.post('/api/admin/verify', requireRole('admin'), (req, res) => {
   const valid = isAdminPassword(req.body?.password);
@@ -418,6 +528,25 @@ async function initDb() {
           snapshot JSONB NOT NULL
         )
       `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS auth_users (
+          username VARCHAR(40) PRIMARY KEY,
+          display_name VARCHAR(255) NOT NULL,
+          role VARCHAR(20) NOT NULL CHECK (role IN ('viewer', 'staff', 'admin')),
+          password_hash CHAR(64) NOT NULL,
+          active BOOLEAN NOT NULL DEFAULT TRUE,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `);
+      for (const user of DEFAULT_AUTH_USERS) {
+        await client.query(`
+          INSERT INTO auth_users (username, display_name, role, password_hash, active)
+          VALUES ($1, $2, $3, $4, TRUE)
+          ON CONFLICT (username) DO NOTHING
+        `, [user.username, user.name, user.role, user.passwordHash]);
+      }
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS assets (
