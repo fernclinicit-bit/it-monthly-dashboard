@@ -6,6 +6,7 @@ import UserAccessManager from './pages/UserAccessManager';
 import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import { authFetch, clearAuth, getStoredAuth, ROLE_LABELS } from './auth';
 import Chart from 'chart.js/auto';
+import gsap from 'gsap';
 import * as XLSX from 'xlsx';
 import { 
   Ticket, 
@@ -1936,6 +1937,59 @@ function Dashboard({ currentUser, onLogout }) {
   const [externalDevicesLastSynced, setExternalDevicesLastSynced] = useState(null);
   const [externalDevicesSyncError, setExternalDevicesSyncError] = useState('');
   const [externalDevicesRefreshKey, setExternalDevicesRefreshKey] = useState(0);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return undefined;
+    const context = gsap.context(() => {
+      gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .fromTo('.sidebar', { opacity: 0, x: -34 }, { opacity: 1, x: 0, duration: 0.72 })
+        .fromTo('.dashboard-header', { opacity: 0, y: -22 }, { opacity: 1, y: 0, duration: 0.58 }, '-=0.4')
+        .fromTo('.dashboard-grid > .card', { opacity: 0, y: 30, scale: 0.975 }, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.62,
+          stagger: 0.07
+        }, '-=0.32')
+        .fromTo('.recommendation-card', { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55 }, '-=0.25');
+    });
+    return () => context.revert();
+  }, []);
+
+  useEffect(() => {
+    if (!activeModal || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      gsap.fromTo('.modal-overlay.active .modal, .modal-overlay.active .lark-form-container', {
+        opacity: 0,
+        y: 24,
+        scale: 0.975
+      }, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.48,
+        ease: 'power3.out',
+        clearProps: 'transform'
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeModal]);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      gsap.fromTo('.sidebar .control-group .sidebar-btn', { opacity: 0, y: -8 }, {
+        opacity: 1,
+        y: 0,
+        duration: 0.32,
+        stagger: 0.035,
+        ease: 'power2.out',
+        clearProps: 'transform'
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [sidebarExpanded]);
 
   useEffect(() => {
     let cancelled = false;

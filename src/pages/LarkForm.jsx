@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
 import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../auth';
 import { 
@@ -15,6 +16,7 @@ import {
 import './LarkForm.css';
 
 const LarkForm = () => {
+  const pageRef = useRef(null);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -31,6 +33,17 @@ const LarkForm = () => {
   
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const context = gsap.context(() => {
+      gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .fromTo('.lark-form-header', { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5 })
+        .fromTo('.form-card', { opacity: 0, y: 28, scale: 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 0.64 }, '-=0.25')
+        .fromTo('.form-group, .radio-card', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.38, stagger: 0.025 }, '-=0.35');
+    }, pageRef);
+    return () => context.revert();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -134,7 +147,7 @@ const LarkForm = () => {
   };
 
   return (
-    <div className="it-request-page">
+    <div className="it-request-page" ref={pageRef}>
       <div className="lark-form-header">
         <button className="back-btn" onClick={() => navigate('/')}>
           <ArrowLeft size={20} />
