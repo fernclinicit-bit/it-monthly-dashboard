@@ -74,7 +74,7 @@ export default function Login({ onLogin }) {
       <div className="login-scene" aria-hidden="true"><span className="login-orb login-orb-one" /><span className="login-orb login-orb-two" /><span className="login-liquid-line" /></div>
       <div className="login-shell">
         <section className="login-visual" aria-label="ระบบ IT Monthly Dashboard">
-          <div className="login-hero-copy"><span className="login-kicker">FERN AESTHETIQUE · IT OPERATIONS</span><h2>Liquid Glass<br /><em>Dashboard</em></h2><p>ศูนย์กลางข้อมูลทรัพย์สิน งานบริการ และการดำเนินงาน IT ที่ปลอดภัยในหน้าจอเดียว</p></div>
+          <div className="login-hero-copy"><h2 className="login-hero-title-brand">FERN AESTHETIQUE<br /><em>· IT OPERATIONS</em></h2><p>ศูนย์กลางข้อมูลทรัพย์สิน งานบริการ และการดำเนินงาน IT ที่ปลอดภัยในหน้าจอเดียว</p></div>
           <div className="login-glass-field" aria-hidden="true">{glassItems.map(({ label, icon: Icon }) => <div className="login-glass-tile" key={label}><span><Icon size={25} strokeWidth={1.7} /></span><small>{label}</small></div>)}</div>
         </section>
         <section className="login-card" aria-labelledby="login-title">
