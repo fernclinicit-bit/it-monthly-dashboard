@@ -616,3 +616,55 @@
     justify-content: center;
   }
 }
+
+/* Liquid Glass treatment for the ticket route — presentation only */
+@media screen {
+  .it-request-page {
+    background:
+      radial-gradient(circle at 8% 4%, rgba(105, 77, 255, .62), transparent 34%),
+      radial-gradient(circle at 92% 24%, rgba(14, 137, 255, .48), transparent 35%),
+      linear-gradient(145deg, #090b32, #0b2660 58%, #04152f);
+    background-attachment: fixed;
+    color: #f8fafc;
+  }
+
+  .it-request-page .lark-form-header {
+    border-bottom: 1px solid rgba(255,255,255,.2);
+    background: linear-gradient(110deg, rgba(255,255,255,.19), rgba(34,82,196,.38));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 16px 45px rgba(0,0,35,.28);
+    backdrop-filter: blur(24px) saturate(145%);
+  }
+
+  .it-request-page .form-card {
+    border: 1px solid rgba(220,232,255,.3);
+    border-top: 1px solid rgba(255,255,255,.48);
+    border-radius: 28px;
+    background: linear-gradient(150deg, rgba(255,255,255,.26), rgba(225,235,255,.86) 22%, rgba(246,249,255,.94));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.72), 0 35px 85px rgba(0,0,34,.36);
+    backdrop-filter: blur(30px) saturate(145%);
+  }
+
+  .it-request-page .radio-card,
+  .it-request-page .attachment-picker {
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(255,255,255,.82), rgba(229,237,252,.62));
+    box-shadow: inset 0 1px 0 #fff, 0 12px 28px rgba(23,52,112,.09);
+  }
+
+  .it-request-page .form-group input[type="text"],
+  .it-request-page .form-group input[type="date"],
+  .it-request-page .form-group select,
+  .it-request-page .form-group textarea {
+    border-radius: 14px;
+    border-color: rgba(87,112,164,.28);
+    background: rgba(247,250,255,.82);
+    box-shadow: inset 0 1px 2px rgba(18,38,80,.05);
+  }
+
+  .it-request-page .submit-btn {
+    border: 1px solid rgba(255,255,255,.42);
+    border-radius: 16px;
+    background: linear-gradient(110deg, #6752e9, #277fdd 58%, #16a6cf);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 16px 35px rgba(31,73,183,.28);
+  }
+}
