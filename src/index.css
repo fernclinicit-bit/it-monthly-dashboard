@@ -849,6 +849,23 @@ body {
     border: 1px solid rgba(255, 255, 255, .06);
 }
 
+/* Asset Registry filters: keep the native dropdown aligned with the dark theme. */
+.asset-list-modal select {
+    color-scheme: dark;
+    background-color: #111a33 !important;
+    color: #ffffff !important;
+}
+
+.asset-list-modal select option {
+    background-color: #111a33;
+    color: #ffffff;
+}
+
+.asset-list-modal select option:checked {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
 .asset-list-table-wrap .details-table th {
     position: sticky;
     top: 0;
