@@ -10,6 +10,7 @@
 .login-hero-copy { max-width: 620px; }
 .login-kicker { display: inline-flex; padding: 7px 12px; border: 1px solid rgba(255,255,255,.26); border-radius: 999px; color: rgba(236,244,255,.82); background: rgba(255,255,255,.09); backdrop-filter: blur(14px); font-size: .74rem; letter-spacing: .13em; }
 .login-hero-copy h2 { margin: 22px 0 14px; font-size: clamp(3rem,6vw,6.1rem); line-height: .88; letter-spacing: -.06em; text-shadow: 0 12px 42px rgba(0,0,0,.25); }
+.login-hero-copy h2.login-hero-title-brand { font-size: clamp(2.5rem,4.5vw,4.8rem); line-height: 1; letter-spacing: -.035em; }
 .login-hero-copy h2 em { color: rgba(255,255,255,.58); font-style: normal; font-weight: 300; }
 .login-hero-copy p { max-width: 560px; color: rgba(226,232,255,.78); font-size: clamp(.98rem,1.5vw,1.12rem); line-height: 1.75; }
 .login-glass-field { display: grid; grid-template-columns: repeat(6,minmax(62px,1fr)); gap: clamp(10px,1.4vw,16px); max-width: 660px; margin-top: 42px; perspective: 900px; }
