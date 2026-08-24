@@ -976,11 +976,12 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
       notes: notes || '',
       ...optionalDetails
     };
-    await client.query(`
+    const updatedAssetResult = await client.query(`
       UPDATE assets
       SET date = $1, user_name = $2, position = $3, item_type = $4, device_serial = $5,
           status = $6, notes = $7, details = $8
       WHERE sn = $9
+      RETURNING *
     `, [
       date === undefined ? (assetResult.rows[0].date || '') : date,
       user || 'ส่วนกลาง',
@@ -992,6 +993,26 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
       JSON.stringify(details),
       sn
     ]);
+
+    // The checkout workflow is authoritative for the assignee during full
+    // snapshot synchronization. Keep its identity fields in step with a
+    // direct registry edit so the next sync cannot restore stale values.
+    if (['ใช้งาน', 'จอง'].includes(status)) {
+      await client.query(`
+        UPDATE asset_requests
+        SET requester = $1,
+            department = $2,
+            item_type = $3,
+            updated_at = NOW()
+        WHERE assigned_asset_sn = $4
+          AND status IN ('approved', 'issued', 'overdue', 'return_requested')
+      `, [
+        user || 'ส่วนกลาง',
+        position || '-',
+        itemType,
+        sn
+      ]);
+    }
 
     if (['ว่าง', 'รอซ่อม', 'ชำรุด', 'สูญหาย'].includes(status)) {
       const activeRequests = await client.query(`
@@ -1033,7 +1054,23 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
     `);
 
     await client.query('COMMIT');
-    res.json({ success: true, sn, status });
+    const updatedRow = updatedAssetResult.rows[0];
+    res.json({
+      success: true,
+      sn,
+      status,
+      asset: {
+        ...(updatedRow.details || {}),
+        sn: Number(updatedRow.sn),
+        date: updatedRow.date,
+        user: updatedRow.user_name,
+        position: updatedRow.position,
+        itemType: updatedRow.item_type,
+        deviceSerial: updatedRow.device_serial,
+        status: updatedRow.status,
+        notes: updatedRow.notes || ''
+      }
+    });
   } catch (err) {
     if (client) await client.query('ROLLBACK');
     console.error('Error updating asset directly:', err);

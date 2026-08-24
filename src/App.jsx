@@ -2828,6 +2828,9 @@ function Dashboard({ currentUser, onLogout }) {
       setConsoleSaveMessage('');
       isPendingSyncRef.current = true;
       try {
+        // Finish any older queued snapshot before applying this record edit.
+        // Otherwise a stale snapshot can land after PATCH and restore old data.
+        await syncQueueRef.current.catch(() => undefined);
         const response = await authFetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -2835,6 +2838,12 @@ function Dashboard({ currentUser, onLogout }) {
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.error || 'แก้ไขทรัพย์สินไม่สำเร็จ');
+
+        if (result.asset) {
+          setAssetsList(previous => previous.map(asset => (
+            Number(asset.sn) === Number(result.asset.sn) ? repairThaiTextDeep(result.asset) : asset
+          )));
+        }
 
         const stateResponse = await authFetch(`${API_BASE}/api/db-state`, { cache: 'no-store' });
         if (!stateResponse.ok) throw new Error(`API server returned ${stateResponse.status}`);
@@ -3302,7 +3311,7 @@ function Dashboard({ currentUser, onLogout }) {
           warrantyExpiry: newAssetWarrantyExpiry,
           cost: newAssetCost
         };
-        assetsToSave = assetsList.map(asset => asset.sn === editingAssetSn ? {
+        assetsToSave = assetsList.map(asset => Number(asset.sn) === Number(editingAssetSn) ? {
           ...asset,
           user: newAssetUser || 'ส่วนกลาง',
           position: newAssetPosition || '-',
@@ -3339,6 +3348,7 @@ function Dashboard({ currentUser, onLogout }) {
       // Persist the edited asset first. This also reconciles any active issue/
       // return workflow before the full dashboard snapshot is synchronized.
       if (editingAssetSn !== null && newAssetItemType && pendingAssetPatch) {
+        await syncQueueRef.current.catch(() => undefined);
         const assetResponse = await authFetch(`${API_BASE}/api/assets/${editingAssetSn}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
