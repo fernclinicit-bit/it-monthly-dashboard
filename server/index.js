@@ -162,14 +162,6 @@ function asyncRoute(handler) {
   return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 }
 
-function isAdminPassword(password) {
-  const suppliedHash = crypto.createHash('sha256').update(String(password || '')).digest('hex');
-  const suppliedBuffer = Buffer.from(suppliedHash, 'hex');
-  const expectedBuffer = Buffer.from(ADMIN_PASSWORD_HASH, 'hex');
-  return suppliedBuffer.length === expectedBuffer.length &&
-    crypto.timingSafeEqual(suppliedBuffer, expectedBuffer);
-}
-
 let windows874ByteLookup;
 function getWindows874ByteLookup() {
   if (windows874ByteLookup) return windows874ByteLookup;
@@ -346,11 +338,6 @@ app.patch('/api/auth/users/:username', requireRole('admin'), asyncRoute(async (r
   `, [name, role, active, password, password ? hashPassword(password) : existing.passwordHash, username]);
   res.json({ user: result.rows[0] });
 }));
-
-app.post('/api/admin/verify', requireRole('admin'), (req, res) => {
-  const valid = isAdminPassword(req.body?.password);
-  res.status(valid ? 200 : 401).json({ valid });
-});
 
 const dbUrl = process.env.DATABASE_URL || '';
 const isRenderInternal = dbUrl.includes('@dpg-') && !dbUrl.includes('.com');
