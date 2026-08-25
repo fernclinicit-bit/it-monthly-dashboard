@@ -2344,6 +2344,8 @@ function Dashboard({ currentUser, onLogout }) {
     let cancelled = false;
     const seenTicketKey = 'it_dashboard_seen_ticket_ids';
     const seenRequestKey = 'it_dashboard_seen_asset_request_ids';
+    const seenReturnRequestKey = 'it_dashboard_seen_return_request_ids';
+    const returnNotificationBaselineKey = 'it_dashboard_return_notification_baseline';
 
     const readSeenIds = (key) => {
       try {
@@ -2355,6 +2357,8 @@ function Dashboard({ currentUser, onLogout }) {
 
     const seenTickets = readSeenIds(seenTicketKey);
     const seenRequests = readSeenIds(seenRequestKey);
+    const seenReturnRequests = readSeenIds(seenReturnRequestKey);
+    let returnNotificationBaselineReady = localStorage.getItem(returnNotificationBaselineKey) === 'ready';
 
     const saveSeenIds = (key, values) => {
       localStorage.setItem(key, JSON.stringify(Array.from(values).slice(-1000)));
@@ -2392,10 +2396,25 @@ function Dashboard({ currentUser, onLogout }) {
         if (!notificationInitializedRef.current && seenTickets.size === 0 && seenRequests.size === 0) {
           ticketRows.forEach(ticket => seenTickets.add(String(ticket.sn)));
           requestRows.forEach(request => seenRequests.add(String(request.id)));
+          requestRows
+            .filter(request => request.status === 'return_requested')
+            .forEach(request => seenReturnRequests.add(String(request.id)));
           saveSeenIds(seenTicketKey, seenTickets);
           saveSeenIds(seenRequestKey, seenRequests);
+          saveSeenIds(seenReturnRequestKey, seenReturnRequests);
+          localStorage.setItem(returnNotificationBaselineKey, 'ready');
+          returnNotificationBaselineReady = true;
           notificationInitializedRef.current = true;
           return;
+        }
+
+        if (!returnNotificationBaselineReady) {
+          requestRows
+            .filter(request => request.status === 'return_requested')
+            .forEach(request => seenReturnRequests.add(String(request.id)));
+          saveSeenIds(seenReturnRequestKey, seenReturnRequests);
+          localStorage.setItem(returnNotificationBaselineKey, 'ready');
+          returnNotificationBaselineReady = true;
         }
 
         ticketRows.forEach(ticket => {
@@ -2424,8 +2443,24 @@ function Dashboard({ currentUser, onLogout }) {
           });
         });
 
+        requestRows
+          .filter(request => request.status === 'return_requested')
+          .forEach(request => {
+            const id = String(request.id);
+            if (seenReturnRequests.has(id)) return;
+            seenReturnRequests.add(id);
+            announce({
+              key: `asset-return-${id}`,
+              type: 'asset-return',
+              title: `แจ้งขอคืนอุปกรณ์ #${id}`,
+              message: `${request.requester || 'ผู้คืนไม่ระบุชื่อ'} ขอคืน ${request.device_serial || request.item_type || 'อุปกรณ์ IT'}`,
+              createdAt: new Date().toISOString()
+            });
+          });
+
         saveSeenIds(seenTicketKey, seenTickets);
         saveSeenIds(seenRequestKey, seenRequests);
+        saveSeenIds(seenReturnRequestKey, seenReturnRequests);
         notificationInitializedRef.current = true;
       } catch (error) {
         console.warn('Notification polling failed:', error.message);
@@ -4669,6 +4704,9 @@ function Dashboard({ currentUser, onLogout }) {
   const pendingAssetApprovalCount = assetRequests.filter(request =>
     ['pending', 'need_info', 'approved'].includes(request.status)
   ).length;
+  const pendingAssetReturnCount = assetRequests.filter(request =>
+    request.status === 'return_requested'
+  ).length;
   const pendingTicketCloseCount = (data[currentMonth]?.ticketsList || []).filter(ticket =>
     ticket.status === 'กำลังดำเนินการ'
   ).length;
@@ -4731,6 +4769,12 @@ function Dashboard({ currentUser, onLogout }) {
           }} className="sidebar-btn asset-return-menu-btn">
             <RotateCcw size={16} />
             คืนอุปกรณ์
+            <span
+              className={`menu-count-badge sidebar-notification-count ${pendingAssetReturnCount > 0 ? 'has-items' : ''}`}
+              aria-label={`มีอุปกรณ์รอ IT ตรวจรับ ${pendingAssetReturnCount} รายการ`}
+            >
+              {pendingAssetReturnCount}
+            </span>
           </button>
           </>}
         </div>
@@ -5450,6 +5494,9 @@ function Dashboard({ currentUser, onLogout }) {
                       onClick={() => requireAdminAccess(() => setAssetReturnView('inspection'))}
                     >
                       IT ตรวจรับ
+                      {inspectionRequests.length > 0 && (
+                        <span className="return-tab-count">{inspectionRequests.length}</span>
+                      )}
                     </button>
                   </div>
                   <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>

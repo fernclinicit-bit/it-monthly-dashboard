@@ -2353,8 +2353,9 @@ body {
 .sidebar-form-btn:hover { background: #2563eb; }
 .sidebar-primary-actions { display: flex; flex-direction: column; gap: 8px; }
 .sidebar-primary-actions .sidebar-form-btn { margin: 0; }
-.asset-return-menu-btn { border: 0 !important; background: #059669 !important; color: #fff !important; }
+.asset-return-menu-btn { position: relative; border: 0 !important; background: #059669 !important; color: #fff !important; }
 .asset-return-menu-btn:hover { background: #047857 !important; }
+.return-tab-count { min-width: 20px; height: 20px; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 800; line-height: 1; }
 .workflow-header-actions { display: flex; align-items: center; gap: 12px; }
 .workflow-role-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border-color); border-radius: 9px; background: #0f172a; }
 .workflow-role-switch button { border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; }
