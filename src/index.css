@@ -468,7 +468,6 @@ body {
 .card.security-card::before { background-color: var(--success); }
 .card.repair-card::before { background-color: var(--warning); }
 .card.improvement-card::before { background-color: var(--danger); }
-.card.app-bug-card::before { background-color: #fb7185; }
 
 .card-header {
     display: flex;
@@ -531,8 +530,12 @@ body {
     grid-column: span 2;
 }
 
-.app-bug-card {
-    background: linear-gradient(145deg, rgba(127, 29, 29, .12), var(--bg-card) 45%);
+.support-app-bug-section {
+    margin-top: auto;
+    padding: 16px;
+    border: 1px solid rgba(251, 113, 133, .24);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(127, 29, 29, .13), rgba(30, 41, 59, .18));
 }
 
 .app-bug-dashboard-header {

@@ -5150,6 +5150,52 @@ function Dashboard({ currentUser, onLogout }) {
                 <div className="metric-value highlight-warning">{activeData.csat.toFixed(1)} / 5.0</div>
               </div>
             </div>
+            <section className="support-app-bug-section" aria-label="รายงานบัคระบบ IT Dashboard">
+              <div className="app-bug-dashboard-header">
+                <div>
+                  <h3 className="card-title"><Bug size={18} /> รายงานบัคระบบ IT Dashboard</h3>
+                  <span>เฉพาะปัญหาของ it-monthly-dashboard-new.onrender.com</span>
+                </div>
+                <div className="app-bug-card-actions">
+                  <button
+                    type="button"
+                    className="btn-details app-bug-report-btn"
+                    onClick={() => {
+                      setLarkFormType('ticket');
+                      setLarkTicketRole('user');
+                      setLarkSubmitted(false);
+                      setLarkTicketIssue(previous => previous.startsWith('[Dashboard Bug]') ? previous : '[Dashboard Bug] ');
+                      setActiveModal('larkForm');
+                    }}
+                  >
+                    แจ้งบัค
+                  </button>
+                  <button type="button" className="btn-details" onClick={() => setActiveModal('appBugReports')}>
+                    ดูทั้งหมด
+                  </button>
+                </div>
+              </div>
+              <div className="app-bug-metrics">
+                <div><span>ทั้งหมด</span><strong>{appBugReports.length}</strong></div>
+                <div><span>กำลังดำเนินการ</span><strong className="bug-open">{openAppBugReports.length}</strong></div>
+                <div><span>ปิดแล้ว</span><strong className="bug-closed">{closedAppBugReports}</strong></div>
+                <div><span>ความรุนแรงสูง</span><strong className="bug-high">{highPriorityAppBugReports}</strong></div>
+              </div>
+              <div className="app-bug-latest">
+                <div className="app-bug-latest-title">รายการล่าสุด</div>
+                {latestAppBugReports.length > 0 ? latestAppBugReports.map(ticket => (
+                  <button type="button" key={ticket.sn} onClick={() => setActiveModal('appBugReports')}>
+                    <span className="app-bug-id">#{ticket.sn}</span>
+                    <span className="app-bug-issue">{ticket.issue || 'ไม่ระบุรายละเอียด'}</span>
+                    <span className={`app-bug-status ${closedAppBugStatuses.has(String(ticket.status || '').trim().toLocaleLowerCase('th-TH')) ? 'closed' : 'open'}`}>
+                      {ticket.status || 'รอดำเนินการ'}
+                    </span>
+                  </button>
+                )) : (
+                  <div className="app-bug-empty">ยังไม่มีรายงานบัคของระบบในเดือนนี้</div>
+                )}
+              </div>
+            </section>
           </article>
 
           {/* CARD 3: SOFTWARE */}
@@ -5292,53 +5338,6 @@ function Dashboard({ currentUser, onLogout }) {
             </div>
           </article>
 
-          {/* CARD 7: IT DASHBOARD BUG REPORTS */}
-          <article className="card app-bug-card" aria-label="รายงานบัคระบบ IT Dashboard">
-            <div className="app-bug-dashboard-header">
-              <div>
-                <h3 className="card-title"><Bug size={18} /> รายงานบัคระบบ IT Dashboard</h3>
-                <span>เฉพาะปัญหาของ it-monthly-dashboard-new.onrender.com</span>
-              </div>
-              <div className="app-bug-card-actions">
-                <button
-                  type="button"
-                  className="btn-details app-bug-report-btn"
-                  onClick={() => {
-                    setLarkFormType('ticket');
-                    setLarkTicketRole('user');
-                    setLarkSubmitted(false);
-                    setLarkTicketIssue(previous => previous.startsWith('[Dashboard Bug]') ? previous : '[Dashboard Bug] ');
-                    setActiveModal('larkForm');
-                  }}
-                >
-                  แจ้งบัค
-                </button>
-                <button type="button" className="btn-details" onClick={() => setActiveModal('appBugReports')}>
-                  ดูทั้งหมด
-                </button>
-              </div>
-            </div>
-            <div className="app-bug-metrics">
-              <div><span>ทั้งหมด</span><strong>{appBugReports.length}</strong></div>
-              <div><span>กำลังดำเนินการ</span><strong className="bug-open">{openAppBugReports.length}</strong></div>
-              <div><span>ปิดแล้ว</span><strong className="bug-closed">{closedAppBugReports}</strong></div>
-              <div><span>ความรุนแรงสูง</span><strong className="bug-high">{highPriorityAppBugReports}</strong></div>
-            </div>
-            <div className="app-bug-latest">
-              <div className="app-bug-latest-title">รายการล่าสุด</div>
-              {latestAppBugReports.length > 0 ? latestAppBugReports.map(ticket => (
-                <button type="button" key={ticket.sn} onClick={() => setActiveModal('appBugReports')}>
-                  <span className="app-bug-id">#{ticket.sn}</span>
-                  <span className="app-bug-issue">{ticket.issue || 'ไม่ระบุรายละเอียด'}</span>
-                  <span className={`app-bug-status ${closedAppBugStatuses.has(String(ticket.status || '').trim().toLocaleLowerCase('th-TH')) ? 'closed' : 'open'}`}>
-                    {ticket.status || 'รอดำเนินการ'}
-                  </span>
-                </button>
-              )) : (
-                <div className="app-bug-empty">ยังไม่มีรายงานบัคของระบบในเดือนนี้</div>
-              )}
-            </div>
-          </article>
         </section>
 
         {/* BOTTOM SECTION: RECOMMENDATIONS */}
