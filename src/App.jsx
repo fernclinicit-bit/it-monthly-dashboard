@@ -33,8 +33,6 @@ import {
 
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 const IOS_DEVICE_MONITOR_BASE = 'https://ios-device-monitor-46w9.onrender.com';
-const DASHBOARD_CARD_ORDER_KEY = 'it_dashboard_card_order';
-const DEFAULT_DASHBOARD_CARD_ORDER = ['monitor', 'assets', 'support', 'software', 'security', 'repair', 'improvement'];
 
 // Initial blank data - use Excel import to load real data
 const initialAssetsData = [
@@ -1875,18 +1873,6 @@ function Dashboard({ currentUser, onLogout }) {
   const [assetReturnSearch, setAssetReturnSearch] = useState('');
   const [assetReturnIdentity, setAssetReturnIdentity] = useState('');
   const [assetReturnView, setAssetReturnView] = useState('returns');
-  const [dashboardCardOrder, setDashboardCardOrder] = useState(() => {
-    try {
-      const savedOrder = JSON.parse(localStorage.getItem(DASHBOARD_CARD_ORDER_KEY) || '[]');
-      if (!Array.isArray(savedOrder)) return DEFAULT_DASHBOARD_CARD_ORDER;
-      const validSavedOrder = savedOrder.filter(cardId => DEFAULT_DASHBOARD_CARD_ORDER.includes(cardId));
-      return [...validSavedOrder, ...DEFAULT_DASHBOARD_CARD_ORDER.filter(cardId => !validSavedOrder.includes(cardId))];
-    } catch {
-      return DEFAULT_DASHBOARD_CARD_ORDER;
-    }
-  });
-  const [draggedDashboardCard, setDraggedDashboardCard] = useState(null);
-  const [dashboardDragTarget, setDashboardDragTarget] = useState(null);
   const notificationInitializedRef = useRef(false);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const keys = Object.keys(data || {}).sort((a, b) => b.localeCompare(a));
@@ -1952,10 +1938,6 @@ function Dashboard({ currentUser, onLogout }) {
   const [externalDevicesLastSynced, setExternalDevicesLastSynced] = useState(null);
   const [externalDevicesSyncError, setExternalDevicesSyncError] = useState('');
   const [externalDevicesRefreshKey, setExternalDevicesRefreshKey] = useState(0);
-
-  useEffect(() => {
-    localStorage.setItem(DASHBOARD_CARD_ORDER_KEY, JSON.stringify(dashboardCardOrder));
-  }, [dashboardCardOrder]);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -4744,46 +4726,6 @@ function Dashboard({ currentUser, onLogout }) {
 
   const pendingTicketsCount = pendingTicketCloseCount;
   const pendingAssetRequestsCount = (assetRequests || []).filter(req => req.status === 'pending').length;
-  const getDashboardCardDragProps = (cardId, className, extraStyle = {}) => ({
-    className: `${className}${draggedDashboardCard === cardId ? ' dashboard-card-dragging' : ''}${dashboardDragTarget === cardId ? ' dashboard-card-drag-target' : ''}`,
-    draggable: true,
-    title: 'ลากเพื่อสลับตำแหน่งการ์ด',
-    style: {
-      ...extraStyle,
-      order: dashboardCardOrder.indexOf(cardId)
-    },
-    onDragStart: event => {
-      setDraggedDashboardCard(cardId);
-      event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', cardId);
-    },
-    onDragOver: event => {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = 'move';
-      if (draggedDashboardCard && draggedDashboardCard !== cardId) setDashboardDragTarget(cardId);
-    },
-    onDragLeave: event => {
-      if (!event.currentTarget.contains(event.relatedTarget)) setDashboardDragTarget(null);
-    },
-    onDrop: event => {
-      event.preventDefault();
-      const sourceCardId = draggedDashboardCard || event.dataTransfer.getData('text/plain');
-      if (sourceCardId && sourceCardId !== cardId) {
-        setDashboardCardOrder(currentOrder => {
-          const nextOrder = currentOrder.filter(id => id !== sourceCardId);
-          const targetIndex = nextOrder.indexOf(cardId);
-          nextOrder.splice(targetIndex, 0, sourceCardId);
-          return nextOrder;
-        });
-      }
-      setDashboardDragTarget(null);
-      setDraggedDashboardCard(null);
-    },
-    onDragEnd: () => {
-      setDashboardDragTarget(null);
-      setDraggedDashboardCard(null);
-    }
-  });
   return (
     <>
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
@@ -5030,7 +4972,7 @@ function Dashboard({ currentUser, onLogout }) {
 
         <section className="dashboard-grid">
           {/* CARD 0: DEVICE MONITOR */}
-          <article {...getDashboardCardDragProps('monitor', 'card asset-card', { borderColor: monitoredUnverified > 0 || monitoredWarning > 0 ? 'var(--warning)' : 'var(--border-color)' })}>
+          <article className="card asset-card" style={{ borderColor: monitoredUnverified > 0 || monitoredWarning > 0 ? 'var(--warning)' : 'var(--border-color)' }}>
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--primary)' }} /></span>
@@ -5093,7 +5035,7 @@ function Dashboard({ currentUser, onLogout }) {
           </article>
 
           {/* CARD 1: ASSETS */}
-          <article {...getDashboardCardDragProps('assets', 'card asset-card')}>
+          <article className="card asset-card">
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Laptop size={18} style={{ color: 'var(--primary)' }} /></span>
@@ -5172,7 +5114,7 @@ function Dashboard({ currentUser, onLogout }) {
           </article>
 
           {/* CARD 2: SUPPORT */}
-          <article {...getDashboardCardDragProps('support', 'card support-card')}>
+          <article className="card support-card">
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Ticket size={18} style={{ color: 'var(--violet)' }} /></span>
@@ -5210,7 +5152,7 @@ function Dashboard({ currentUser, onLogout }) {
           </article>
 
           {/* CARD 3: SOFTWARE */}
-          <article {...getDashboardCardDragProps('software', 'card software-card')}>
+          <article className="card software-card">
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><FileCode size={18} style={{ color: 'var(--secondary)' }} /></span>
@@ -5251,7 +5193,7 @@ function Dashboard({ currentUser, onLogout }) {
           </article>
 
           {/* CARD 4: CYBER SECURITY */}
-          <article {...getDashboardCardDragProps('security', 'card security-card')}>
+          <article className="card security-card">
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--success)' }} /></span>
@@ -5274,7 +5216,7 @@ function Dashboard({ currentUser, onLogout }) {
           </article>
 
           {/* CARD 5: REPAIR & COST */}
-          <article {...getDashboardCardDragProps('repair', 'card repair-card')}>
+          <article className="card repair-card">
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Wrench size={18} style={{ color: 'var(--warning)' }} /></span>
@@ -5317,7 +5259,7 @@ function Dashboard({ currentUser, onLogout }) {
           </article>
 
           {/* CARD 6: IMPROVEMENT */}
-          <article {...getDashboardCardDragProps('improvement', 'card improvement-card')}>
+          <article className="card improvement-card">
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Lightbulb size={18} style={{ color: 'var(--danger)' }} /></span>

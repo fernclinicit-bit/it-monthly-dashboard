@@ -431,25 +431,6 @@ body {
     align-items: start;
 }
 
-.dashboard-grid > .card {
-    height: fit-content;
-    cursor: grab;
-}
-
-.dashboard-grid > .card:active {
-    cursor: grabbing;
-}
-
-.dashboard-card-dragging {
-    opacity: .45;
-    transform: scale(.98) !important;
-}
-
-.dashboard-card-drag-target {
-    border-color: rgba(96, 165, 250, .9) !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, .24), var(--shadow-md) !important;
-}
-
 /* Dashboard Card */
 .card {
     background-color: var(--bg-card);
