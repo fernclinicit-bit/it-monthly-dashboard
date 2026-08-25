@@ -531,7 +531,7 @@ body {
 }
 
 .support-app-bug-section {
-    margin-top: auto;
+    margin-top: 4px;
     padding: 16px;
     border: 1px solid rgba(251, 113, 133, .24);
     border-radius: 12px;
