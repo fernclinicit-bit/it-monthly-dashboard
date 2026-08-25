@@ -530,6 +530,96 @@ body {
     grid-column: span 2;
 }
 
+.app-bug-dashboard {
+    margin-top: 6px;
+    padding: 15px;
+    border: 1px solid rgba(248, 113, 113, .24);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(127, 29, 29, .12), rgba(30, 41, 59, .2));
+}
+
+.app-bug-dashboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.app-bug-dashboard-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 3px;
+    color: #fff;
+    font-size: .96rem;
+}
+
+.app-bug-dashboard-header h4 svg { color: #fb7185; }
+.app-bug-dashboard-header span { color: var(--text-muted); font-size: .72rem; }
+.app-bug-dashboard-header .btn-details {
+    padding: 5px 9px;
+    border: 1px solid rgba(251, 113, 133, .28);
+    border-radius: 7px;
+    background: rgba(244, 63, 94, .08);
+    color: #fda4af;
+    font-size: .72rem;
+    cursor: pointer;
+}
+.app-bug-dashboard-header .btn-details:hover { background: rgba(244, 63, 94, .16); color: #fff; }
+
+.app-bug-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.app-bug-metrics > div,
+.app-bug-modal-summary > span {
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, .07);
+    border-radius: 9px;
+    background: rgba(15, 23, 42, .42);
+}
+
+.app-bug-metrics span { display: block; color: var(--text-muted); font-size: .68rem; }
+.app-bug-metrics strong { display: block; margin-top: 3px; color: var(--primary); font-size: 1.25rem; }
+.app-bug-metrics .bug-open, .app-bug-modal-summary .bug-open { color: var(--warning); }
+.app-bug-metrics .bug-closed, .app-bug-modal-summary .bug-closed { color: var(--success); }
+.app-bug-metrics .bug-high, .app-bug-modal-summary .bug-high { color: var(--danger); }
+
+.app-bug-latest { margin-top: 12px; }
+.app-bug-latest-title { margin-bottom: 6px; color: var(--text-muted); font-size: .72rem; font-weight: 700; }
+.app-bug-latest button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, .06);
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+}
+.app-bug-latest button:hover .app-bug-issue { color: #bfdbfe; }
+.app-bug-id { color: #93c5fd; font-size: .72rem; font-weight: 800; }
+.app-bug-issue { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; }
+.app-bug-status { display: inline-flex; padding: 4px 7px; border-radius: 999px; font-size: .68rem; font-weight: 800; white-space: nowrap; }
+.app-bug-status.open { background: rgba(245, 158, 11, .16); color: #fbbf24; }
+.app-bug-status.closed { background: rgba(16, 185, 129, .16); color: #34d399; }
+.app-bug-empty { padding: 18px 8px; color: var(--text-muted); font-size: .76rem; text-align: center; }
+.app-bug-modal-summary { display: grid; grid-template-columns: repeat(4, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.app-bug-modal-summary span { color: var(--text-muted); }
+.app-bug-modal-summary strong { margin-left: 6px; color: var(--primary); font-size: 1.1rem; }
+
+@media (max-width: 700px) {
+    .app-bug-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .app-bug-modal-summary { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
+}
+
 .metric-label {
     font-size: 0.8rem;
     color: var(--text-muted);
