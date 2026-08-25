@@ -4704,7 +4704,7 @@ function Dashboard({ currentUser, onLogout }) {
   const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
   const appBugReports = activeData.ticketsList.filter(ticket => {
     const searchableText = [ticket.issue, ticket.cause].filter(Boolean).join(' ');
-    return /\[software\]|\bsoftware\b|\bapplication\b|\bapp\b|\bbug\b|บัค|แอป|แอพ|ซอฟต์แวร์|ซอฟแวร์|โปรแกรม/i.test(searchableText);
+    return /\[(?:dashboard bug|app bug|it dashboard)\]|it[- ]monthly[- ]dashboard|it-monthly-dashboard-new\.onrender\.com|บัค(?:ของ)?(?:ระบบ|แดชบอร์ด)|ปัญหา(?:ของ|บน)แดชบอร์ด/i.test(searchableText);
   });
   const closedAppBugStatuses = new Set(['เสร็จสิ้น', 'ปิดงาน', 'closed', 'resolved', 'จ่ายเงินแล้ว']);
   const openAppBugReports = appBugReports.filter(ticket =>
@@ -5033,37 +5033,6 @@ function Dashboard({ currentUser, onLogout }) {
                 <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
               </div>
             </div>
-            <section className="app-bug-dashboard" aria-label="รายงานบัคของแอป">
-              <div className="app-bug-dashboard-header">
-                <div>
-                  <h4><Bug size={17} /> รายงานบัคของแอป</h4>
-                  <span>สรุปจาก Ticket ประเภท Software/App ของเดือนนี้</span>
-                </div>
-                <button type="button" className="btn-details" onClick={() => setActiveModal('appBugReports')}>
-                  ดูทั้งหมด
-                </button>
-              </div>
-              <div className="app-bug-metrics">
-                <div><span>ทั้งหมด</span><strong>{appBugReports.length}</strong></div>
-                <div><span>กำลังดำเนินการ</span><strong className="bug-open">{openAppBugReports.length}</strong></div>
-                <div><span>ปิดแล้ว</span><strong className="bug-closed">{closedAppBugReports}</strong></div>
-                <div><span>ความรุนแรงสูง</span><strong className="bug-high">{highPriorityAppBugReports}</strong></div>
-              </div>
-              <div className="app-bug-latest">
-                <div className="app-bug-latest-title">รายการล่าสุด</div>
-                {latestAppBugReports.length > 0 ? latestAppBugReports.map(ticket => (
-                  <button type="button" key={ticket.sn} onClick={() => setActiveModal('appBugReports')}>
-                    <span className="app-bug-id">#{ticket.sn}</span>
-                    <span className="app-bug-issue">{ticket.issue || 'ไม่ระบุรายละเอียด'}</span>
-                    <span className={`app-bug-status ${closedAppBugStatuses.has(String(ticket.status || '').trim().toLocaleLowerCase('th-TH')) ? 'closed' : 'open'}`}>
-                      {ticket.status || 'รอดำเนินการ'}
-                    </span>
-                  </button>
-                )) : (
-                  <div className="app-bug-empty">ไม่พบรายงานบัคของแอปในเดือนนี้</div>
-                )}
-              </div>
-            </section>
           </article>
 
           {/* CARD 1: ASSETS */}
@@ -5320,6 +5289,54 @@ function Dashboard({ currentUser, onLogout }) {
                   <div className="project-item-desc">{proj.desc}</div>
                 </div>
               ))}
+            </div>
+          </article>
+
+          {/* CARD 7: IT DASHBOARD BUG REPORTS */}
+          <article className="card app-bug-card" aria-label="รายงานบัคระบบ IT Dashboard">
+            <div className="app-bug-dashboard-header">
+              <div>
+                <h3 className="card-title"><Bug size={18} /> รายงานบัคระบบ IT Dashboard</h3>
+                <span>เฉพาะปัญหาของ it-monthly-dashboard-new.onrender.com</span>
+              </div>
+              <div className="app-bug-card-actions">
+                <button
+                  type="button"
+                  className="btn-details app-bug-report-btn"
+                  onClick={() => {
+                    setLarkFormType('ticket');
+                    setLarkTicketRole('user');
+                    setLarkSubmitted(false);
+                    setLarkTicketIssue(previous => previous.startsWith('[Dashboard Bug]') ? previous : '[Dashboard Bug] ');
+                    setActiveModal('larkForm');
+                  }}
+                >
+                  แจ้งบัค
+                </button>
+                <button type="button" className="btn-details" onClick={() => setActiveModal('appBugReports')}>
+                  ดูทั้งหมด
+                </button>
+              </div>
+            </div>
+            <div className="app-bug-metrics">
+              <div><span>ทั้งหมด</span><strong>{appBugReports.length}</strong></div>
+              <div><span>กำลังดำเนินการ</span><strong className="bug-open">{openAppBugReports.length}</strong></div>
+              <div><span>ปิดแล้ว</span><strong className="bug-closed">{closedAppBugReports}</strong></div>
+              <div><span>ความรุนแรงสูง</span><strong className="bug-high">{highPriorityAppBugReports}</strong></div>
+            </div>
+            <div className="app-bug-latest">
+              <div className="app-bug-latest-title">รายการล่าสุด</div>
+              {latestAppBugReports.length > 0 ? latestAppBugReports.map(ticket => (
+                <button type="button" key={ticket.sn} onClick={() => setActiveModal('appBugReports')}>
+                  <span className="app-bug-id">#{ticket.sn}</span>
+                  <span className="app-bug-issue">{ticket.issue || 'ไม่ระบุรายละเอียด'}</span>
+                  <span className={`app-bug-status ${closedAppBugStatuses.has(String(ticket.status || '').trim().toLocaleLowerCase('th-TH')) ? 'closed' : 'open'}`}>
+                    {ticket.status || 'รอดำเนินการ'}
+                  </span>
+                </button>
+              )) : (
+                <div className="app-bug-empty">ยังไม่มีรายงานบัคของระบบในเดือนนี้</div>
+              )}
             </div>
           </article>
         </section>
@@ -6241,7 +6258,7 @@ function Dashboard({ currentUser, onLogout }) {
         <div className="modal-overlay active">
           <div className="modal large dashboard-fullscreen-modal">
             <header className="modal-header">
-              <h3><Bug size={20} /> รายงานบัคของแอป ({activeData.monthName})</h3>
+              <h3><Bug size={20} /> รายงานบัคระบบ IT Dashboard ({activeData.monthName})</h3>
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
@@ -6258,7 +6275,7 @@ function Dashboard({ currentUser, onLogout }) {
                       <th>เลขที่</th>
                       <th>วัน-เวลา</th>
                       <th>ผู้แจ้ง</th>
-                      <th>รายละเอียดบัค / แอป</th>
+                      <th>รายละเอียดบัคของ Dashboard</th>
                       <th>สาเหตุ</th>
                       <th>ผู้รับผิดชอบ</th>
                       <th>สถานะ</th>
@@ -6280,7 +6297,7 @@ function Dashboard({ currentUser, onLogout }) {
                         </td>
                       </tr>
                     )) : (
-                      <tr><td colSpan="7" className="workflow-empty">ไม่พบรายงานบัคของแอปในเดือนนี้</td></tr>
+                      <tr><td colSpan="7" className="workflow-empty">ยังไม่มีรายงานบัคของระบบในเดือนนี้</td></tr>
                     )}
                   </tbody>
                 </table>

@@ -468,6 +468,7 @@ body {
 .card.security-card::before { background-color: var(--success); }
 .card.repair-card::before { background-color: var(--warning); }
 .card.improvement-card::before { background-color: var(--danger); }
+.card.app-bug-card::before { background-color: #fb7185; }
 
 .card-header {
     display: flex;
@@ -530,12 +531,8 @@ body {
     grid-column: span 2;
 }
 
-.app-bug-dashboard {
-    margin-top: 6px;
-    padding: 15px;
-    border: 1px solid rgba(248, 113, 113, .24);
-    border-radius: 12px;
-    background: linear-gradient(145deg, rgba(127, 29, 29, .12), rgba(30, 41, 59, .2));
+.app-bug-card {
+    background: linear-gradient(145deg, rgba(127, 29, 29, .12), var(--bg-card) 45%);
 }
 
 .app-bug-dashboard-header {
@@ -546,17 +543,16 @@ body {
     margin-bottom: 12px;
 }
 
-.app-bug-dashboard-header h4 {
+.app-bug-dashboard-header .card-title {
     display: flex;
     align-items: center;
     gap: 7px;
     margin: 0 0 3px;
-    color: #fff;
-    font-size: .96rem;
 }
 
-.app-bug-dashboard-header h4 svg { color: #fb7185; }
+.app-bug-dashboard-header .card-title svg { color: #fb7185; flex-shrink: 0; }
 .app-bug-dashboard-header span { color: var(--text-muted); font-size: .72rem; }
+.app-bug-card-actions { display: flex; gap: 7px; flex-shrink: 0; }
 .app-bug-dashboard-header .btn-details {
     padding: 5px 9px;
     border: 1px solid rgba(251, 113, 133, .28);
@@ -567,6 +563,11 @@ body {
     cursor: pointer;
 }
 .app-bug-dashboard-header .btn-details:hover { background: rgba(244, 63, 94, .16); color: #fff; }
+.app-bug-dashboard-header .app-bug-report-btn {
+    background: rgba(59, 130, 246, .16);
+    border-color: rgba(96, 165, 250, .34);
+    color: #bfdbfe;
+}
 
 .app-bug-metrics {
     display: grid;
@@ -616,6 +617,9 @@ body {
 .app-bug-modal-summary strong { margin-left: 6px; color: var(--primary); font-size: 1.1rem; }
 
 @media (max-width: 700px) {
+    .app-bug-dashboard-header { flex-direction: column; }
+    .app-bug-card-actions { width: 100%; }
+    .app-bug-card-actions .btn-details { flex: 1; }
     .app-bug-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .app-bug-modal-summary { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
 }
