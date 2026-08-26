@@ -3521,6 +3521,9 @@ function Dashboard({ currentUser, onLogout }) {
   const calculatedLicensesVacant = Number(activeData?.licensesVacant || 0);
   const calculatedSoftwareCost = Number(activeData?.softwareCost || 0);
   const calculatedTotalSoftware = Number(activeData?.totalSoftware || 0);
+  const detailedSoftwareLicenses = (activeData?.softwareExpiringDetails || []).filter((item) => item.isLicenseRecord);
+  const detailedLicensesInUse = detailedSoftwareLicenses.reduce((sum, item) => sum + Number(item.used || 0), 0);
+  const detailedLicensesVacant = detailedSoftwareLicenses.reduce((sum, item) => sum + Number(item.vacant || 0), 0);
 
   const resetSoftwareForm = () => {
     setEditingSoftwareIndex(null);
@@ -5236,11 +5239,27 @@ function Dashboard({ currentUser, onLogout }) {
                 <div className="metric-label">โปรแกรมใกล้หมดสัญญา</div>
                 <div className="metric-value highlight-danger">{activeData.softwareExpiring} โปรแกรม</div>
               </div>
-              <div className="metric-item">
+              <div
+                className="metric-item"
+                role="button"
+                tabIndex={0}
+                onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                onKeyDown={(event) => event.key === 'Enter' && requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                style={{ cursor: 'pointer' }}
+                title="คลิกเพื่อดูรายละเอียด License ใช้งาน"
+              >
                 <div className="metric-label">License ใช้งาน</div>
                 <div className="metric-value highlight-primary">{calculatedLicensesInUse.toLocaleString()} Core/User</div>
               </div>
-              <div className="metric-item">
+              <div
+                className="metric-item"
+                role="button"
+                tabIndex={0}
+                onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                onKeyDown={(event) => event.key === 'Enter' && requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                style={{ cursor: 'pointer' }}
+                title="คลิกเพื่อดูรายละเอียด License ว่าง"
+              >
                 <div className="metric-label">License ว่าง</div>
                 <div className="metric-value highlight-secondary">{calculatedLicensesVacant.toLocaleString()} Core/User</div>
               </div>
@@ -6129,6 +6148,24 @@ function Dashboard({ currentUser, onLogout }) {
               <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
             </header>
             <div className="modal-body">
+              <div className="metrics-row" style={{ marginBottom: '16px' }}>
+                <div className="metric-item">
+                  <div className="metric-label">License ใช้งานตาม KPI</div>
+                  <div className="metric-value highlight-primary">{calculatedLicensesInUse.toLocaleString()} Core/User</div>
+                  <small style={{ color: 'var(--text-muted)' }}>แจกแจงในทะเบียน {detailedLicensesInUse.toLocaleString()}</small>
+                </div>
+                <div className="metric-item">
+                  <div className="metric-label">License ว่างตาม KPI</div>
+                  <div className="metric-value highlight-secondary">{calculatedLicensesVacant.toLocaleString()} Core/User</div>
+                  <small style={{ color: 'var(--text-muted)' }}>แจกแจงในทะเบียน {detailedLicensesVacant.toLocaleString()}</small>
+                </div>
+                <div className="metric-item">
+                  <div className="metric-label">ยังไม่ได้ระบุรายละเอียด</div>
+                  <div className="metric-value highlight-danger">
+                    ใช้งาน {Math.max(0, calculatedLicensesInUse - detailedLicensesInUse).toLocaleString()} / ว่าง {Math.max(0, calculatedLicensesVacant - detailedLicensesVacant).toLocaleString()}
+                  </div>
+                </div>
+              </div>
               <form onSubmit={saveSoftwareLicense} className="software-license-form">
                 <div className="form-grid">
                   <div className="form-group">
