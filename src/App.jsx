@@ -3518,11 +3518,20 @@ function Dashboard({ currentUser, onLogout }) {
   const detailedSoftwareLicenses = (activeData?.softwareExpiringDetails || []).filter((item) => item.isLicenseRecord);
   const detailedLicensesInUse = detailedSoftwareLicenses.reduce((sum, item) => sum + Number(item.used || 0), 0);
   const detailedLicensesVacant = detailedSoftwareLicenses.reduce((sum, item) => sum + Number(item.vacant || 0), 0);
+  const isAnnualSoftwareCost = (item) => {
+    const paymentSchedule = String(item.paymentDate || item.billingCycle || '').trim().toLocaleLowerCase('th-TH');
+    if (/รายเดือน|monthly|month/.test(paymentSchedule)) return false;
+    return /รายปี|annual|yearly|year/.test(paymentSchedule) || /\d{1,4}[\/\-.]\d{1,2}[\/\-.]\d{1,4}/.test(paymentSchedule);
+  };
+  const detailedMonthlySoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
+    sum + (isAnnualSoftwareCost(item) ? 0 : Number(item.monthlyCost ?? item.price ?? 0)), 0);
+  const detailedAnnualSoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
+    sum + (isAnnualSoftwareCost(item) ? Number(item.monthlyCost ?? item.price ?? 0) : 0), 0);
   // Usage and vacancy are actual totals from every row in the License registry.
   const calculatedLicensesInUse = detailedLicensesInUse;
   const calculatedLicensesVacant = detailedLicensesVacant;
-  const calculatedSoftwareCost = Number(activeData?.softwareCost || 0);
-  const calculatedSoftwareAnnualCost = Number(activeData?.softwareAnnualCost || 0);
+  const calculatedSoftwareCost = detailedMonthlySoftwareCost;
+  const calculatedSoftwareAnnualCost = detailedAnnualSoftwareCost;
   const calculatedTotalSoftware = Number(activeData?.totalSoftware || 0);
 
   const resetSoftwareForm = () => {
