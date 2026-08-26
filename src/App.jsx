@@ -3608,35 +3608,71 @@ function Dashboard({ currentUser, onLogout }) {
     reader.onload = (loadEvent) => {
       try {
         const workbook = XLSX.read(loadEvent.target.result, { type: 'array' });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        if (!worksheet) throw new Error('ไม่พบแผ่นงานในไฟล์ Excel');
+        const normalizeHeader = (value) => String(value ?? '')
+          .normalize('NFKC')
+          .toLocaleLowerCase('th-TH')
+          .replace(/[^\p{L}\p{N}]+/gu, '');
+        const nameAliases = ['ชื่อซอฟต์แวร์โปรแกรม', 'ชื่อซอฟต์แวร์', 'ชื่อโปรแกรม', 'softwareprogram', 'softwarename', 'software', 'programname'];
+        const matchesAlias = (header, aliases) => aliases.some((alias) => header === alias || header.includes(alias) || alias.includes(header));
+        let tableRows = null;
+        let headerRowIndex = -1;
 
-        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
-        const pick = (row, ...headers) => {
-          for (const header of headers) {
-            if (row[header] !== undefined && row[header] !== '') return row[header];
+        for (const sheetName of workbook.SheetNames) {
+          const candidateRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: '', raw: false });
+          const candidateHeaderIndex = candidateRows.findIndex((row) =>
+            row.some((cell) => {
+              const normalized = normalizeHeader(cell);
+              return normalized.length >= 3 && matchesAlias(normalized, nameAliases);
+            })
+          );
+          if (candidateHeaderIndex !== -1) {
+            tableRows = candidateRows;
+            headerRowIndex = candidateHeaderIndex;
+            break;
           }
-          return '';
+        }
+
+        if (!tableRows || headerRowIndex === -1) {
+          throw new Error('ไม่พบหัวคอลัมน์ชื่อซอฟต์แวร์/โปรแกรม กรุณาตรวจสอบแถวหัวตาราง');
+        }
+
+        const headers = tableRows[headerRowIndex].map(normalizeHeader);
+        const findColumn = (...aliases) => headers.findIndex((header) =>
+          header.length >= 2 && matchesAlias(header, aliases.map(normalizeHeader))
+        );
+        const columns = {
+          name: findColumn(...nameAliases),
+          owner: findColumn('Owner', 'Owner / แผนก', 'เจ้าของ', 'แผนก'),
+          used: findColumn('ใช้งาน', 'License ใช้งาน', 'จำนวนใช้งาน', 'License Used', 'Used'),
+          vacant: findColumn('ว่าง', 'License ว่าง', 'จำนวนว่าง', 'License Vacant', 'Vacant', 'Available'),
+          cost: findColumn('ราคา', 'ค่าใช้จ่ายต่อเดือน (บาท)', 'ค่าบริการรายเดือน', 'Monthly Cost', 'Price'),
+          paymentChannel: findColumn('ช่องทางชำระ', 'ช่องทางชำระเงิน', 'Payment Channel', 'Payment Method'),
+          paymentDate: findColumn('วันที่ชำระ', 'วันที่/รอบชำระเงิน', 'Payment Date', 'Billing Cycle'),
+          expiryDate: findColumn('วันหมดสัญญา', 'วันหมดอายุ', 'Expiry Date', 'Expiration Date'),
+          email: findColumn('อีเมลสมัคร', 'อีเมลที่สมัคร', 'Registered Email', 'Email'),
+          users: findColumn('ผู้ใช้งานปัจจุบัน', 'รายชื่อผู้ใช้งาน', 'Current Users', 'Users'),
         };
+        const valueAt = (row, columnIndex) => columnIndex >= 0 ? row[columnIndex] : '';
         const toNumber = (value) => Number(String(value ?? '').replace(/[^0-9.-]/g, '')) || 0;
 
-        const importedLicenses = rows.map((row) => {
-          const name = String(pick(row, 'ชื่อซอฟต์แวร์/โปรแกรม', 'ชื่อซอฟต์แวร์', 'Software', 'Software Name', 'Name')).trim();
-          const used = toNumber(pick(row, 'ใช้งาน', 'License ใช้งาน', 'License Used', 'Used'));
-          const vacant = toNumber(pick(row, 'ว่าง', 'License ว่าง', 'License Vacant', 'Vacant'));
+        const importedLicenses = tableRows.slice(headerRowIndex + 1).map((row) => {
+          const name = String(valueAt(row, columns.name)).trim();
+          const used = toNumber(valueAt(row, columns.used));
+          const vacant = toNumber(valueAt(row, columns.vacant));
+          const monthlyCost = toNumber(valueAt(row, columns.cost));
           return {
             name,
-            owner: String(pick(row, 'Owner', 'Owner / แผนก', 'แผนก')).trim(),
+            owner: String(valueAt(row, columns.owner)).trim(),
             used,
             vacant,
             licenses: used + vacant,
-            monthlyCost: toNumber(pick(row, 'ราคา', 'ค่าใช้จ่ายต่อเดือน (บาท)', 'Monthly Cost', 'Price')),
-            price: toNumber(pick(row, 'ราคา', 'ค่าใช้จ่ายต่อเดือน (บาท)', 'Monthly Cost', 'Price')),
-            paymentChannel: String(pick(row, 'ช่องทางชำระ', 'ช่องทางชำระเงิน', 'Payment Channel')).trim(),
-            paymentDate: String(pick(row, 'วันที่ชำระ', 'วันที่/รอบชำระเงิน', 'Payment Date')).trim(),
-            expiringDate: String(pick(row, 'วันหมดสัญญา', 'วันหมดอายุ', 'Expiry Date')).trim(),
-            registeredEmail: String(pick(row, 'อีเมลสมัคร', 'อีเมลที่สมัคร', 'Registered Email', 'Email')).trim(),
-            currentUsers: String(pick(row, 'ผู้ใช้งานปัจจุบัน', 'Current Users')).trim(),
+            monthlyCost,
+            price: monthlyCost,
+            paymentChannel: String(valueAt(row, columns.paymentChannel)).trim(),
+            paymentDate: String(valueAt(row, columns.paymentDate)).trim(),
+            expiringDate: String(valueAt(row, columns.expiryDate)).trim(),
+            registeredEmail: String(valueAt(row, columns.email)).trim(),
+            currentUsers: String(valueAt(row, columns.users)).trim(),
             status: 'ใช้งาน',
             isLicenseRecord: true,
           };
