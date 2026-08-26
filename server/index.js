@@ -492,6 +492,7 @@ async function initDb() {
           licenses_in_use NUMERIC(10, 2) NOT NULL,
           licenses_vacant NUMERIC(10, 2) NOT NULL,
           software_cost NUMERIC(12, 2) NOT NULL,
+          software_annual_cost NUMERIC(12, 2) NOT NULL DEFAULT 0,
           software_expiring INTEGER NOT NULL,
           backup_success NUMERIC(5, 2) NOT NULL,
           security_incidents INTEGER NOT NULL,
@@ -506,6 +507,11 @@ async function initDb() {
           ongoing_projects JSONB NOT NULL,
           recommendations JSONB NOT NULL
         )
+      `);
+
+      await client.query(`
+        ALTER TABLE monthly_data
+        ADD COLUMN IF NOT EXISTS software_annual_cost NUMERIC(12, 2) NOT NULL DEFAULT 0
       `);
 
       await client.query(`
@@ -677,6 +683,7 @@ app.get('/api/db-state', async (req, res) => {
         licensesInUse: Number(row.licenses_in_use),
         licensesVacant: Number(row.licenses_vacant),
         softwareCost: Number(row.software_cost),
+        softwareAnnualCost: Number(row.software_annual_cost || 0),
         softwareExpiring: Number(row.software_expiring),
         backupSuccess: Number(row.backup_success),
         securityIncidents: Number(row.security_incidents),
@@ -1562,11 +1569,11 @@ app.post('/api/sync-all', requireRole('admin'), async (req, res) => {
         INSERT INTO monthly_data (
           month_key, month_name, total_assets, asset_value, assets_expiring, assets_broken, assets_lost, assets_vacant,
           tickets_count, sla_percent, response_time, resolution_time, csat, total_software, licenses_in_use, licenses_vacant,
-          software_cost, software_expiring, backup_success, security_incidents, antivirus_coverage, mfa_coverage,
+          software_cost, software_annual_cost, software_expiring, backup_success, security_incidents, antivirus_coverage, mfa_coverage,
           repair_count, repair_cost, top_broken_devices, dept_costs, software_expiring_details, assets_expiring_details,
           ongoing_projects, recommendations
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31
         )
       `, [
         monthKey,
@@ -1586,6 +1593,7 @@ app.post('/api/sync-all', requireRole('admin'), async (req, res) => {
         finiteNumber(monthData.licensesInUse),
         finiteNumber(monthData.licensesVacant),
         finiteNumber(monthData.softwareCost),
+        finiteNumber(monthData.softwareAnnualCost),
         integerNumber(monthData.softwareExpiring),
         finiteNumber(monthData.backupSuccess),
         integerNumber(monthData.securityIncidents),
