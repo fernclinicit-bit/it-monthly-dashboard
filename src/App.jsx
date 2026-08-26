@@ -1676,6 +1676,7 @@ const initialDashboardData = {
     licensesInUse: 0,
     licensesVacant: 0,
     softwareCost: 0,
+    softwareAnnualCost: 0,
     softwareExpiring: 0,
     backupSuccess: 0,
     securityIncidents: 0,
@@ -3521,6 +3522,7 @@ function Dashboard({ currentUser, onLogout }) {
   const calculatedLicensesInUse = detailedLicensesInUse;
   const calculatedLicensesVacant = detailedLicensesVacant;
   const calculatedSoftwareCost = Number(activeData?.softwareCost || 0);
+  const calculatedSoftwareAnnualCost = Number(activeData?.softwareAnnualCost || 0);
   const calculatedTotalSoftware = Number(activeData?.totalSoftware || 0);
 
   const resetSoftwareForm = () => {
@@ -3893,6 +3895,7 @@ function Dashboard({ currentUser, onLogout }) {
     { key: 'licensesInUse', header: 'License ใช้งาน', example: 2450 },
     { key: 'licensesVacant', header: 'License ว่าง', example: 350 },
     { key: 'softwareCost', header: 'ค่าใช้จ่าย Software (บาท/เดือน)', example: 1280000 },
+    { key: 'softwareAnnualCost', header: 'ค่าใช้จ่าย Software (บาท/ปี)', example: 2500000 },
     { key: 'softwareExpiring', header: 'โปรแกรมใกล้หมดอายุ', example: 3 },
     // Security
     { key: 'backupSuccess', header: 'Backup สำเร็จ (%)', example: 99.98 },
@@ -4321,6 +4324,7 @@ function Dashboard({ currentUser, onLogout }) {
                 licensesInUse: 0,
                 licensesVacant: 0,
                 softwareCost: 0,
+                softwareAnnualCost: 0,
                 softwareExpiring: 2,
                 backupSuccess: 99.9,
                 securityIncidents: 0,
@@ -4532,15 +4536,17 @@ function Dashboard({ currentUser, onLogout }) {
           const dashSheet = wb.Sheets[wb.SheetNames[0]];
           if (!dashSheet) throw new Error('ไม่พบ Sheet แรก (Dashboard)');
           const allRows = XLSX.utils.sheet_to_json(dashSheet, { header: 1 });
+          const dashboardHeaders = (allRows[0] || []).map((header) => String(header ?? '').trim());
+          const dashboardHeaderIndex = new Map(dashboardHeaders.map((header, index) => [header, index]));
+          const monthNameIndex = dashboardHeaderIndex.get(FIELD_MAP.find((field) => field.key === 'monthName').header) ?? 0;
+          const monthKeyIndex = dashboardHeaderIndex.get(FIELD_MAP.find((field) => field.key === 'monthKey').header) ?? 1;
           // Skip header row (index 0), data starts from row 1
           const dataRows = allRows.slice(1).filter(r => r && r.length > 1);
           if (dataRows.length === 0) throw new Error('ไม่พบข้อมูลใน Sheet Dashboard');
 
-          // Column order matches FIELD_MAP: 
-          // 0=monthName, 1=monthKey, 2=totalAssets, 3=assetValue, ...
           dataRows.forEach(cols => {
-            const monthName = String(cols[0] || '').trim();
-            const monthKey = String(cols[1] || '').trim();
+            const monthName = String(cols[monthNameIndex] || '').trim();
+            const monthKey = String(cols[monthKeyIndex] || '').trim();
 
             if (!monthKey || !monthName) return;
 
@@ -4554,10 +4560,11 @@ function Dashboard({ currentUser, onLogout }) {
               assetsExpiringDetails: []
             };
 
-            // Map remaining columns by index (starting from index 2)
-            FIELD_MAP.forEach((field, idx) => {
+            // Match by header name so older templates remain compatible when new fields are added.
+            FIELD_MAP.forEach((field) => {
               if (field.key === 'monthKey' || field.key === 'monthName') return;
-              const rawVal = cols[idx];
+              const columnIndex = dashboardHeaderIndex.get(field.header);
+              const rawVal = columnIndex === undefined ? undefined : cols[columnIndex];
               monthData[field.key] = rawVal !== undefined && rawVal !== '' ? Number(rawVal) : 0;
             });
 
@@ -4710,6 +4717,7 @@ function Dashboard({ currentUser, onLogout }) {
       licensesInUse: activeData.licensesInUse,
       licensesVacant: activeData.licensesVacant,
       softwareCost: activeData.softwareCost,
+      softwareAnnualCost: activeData.softwareAnnualCost,
       softwareExpiring: activeData.softwareExpiring,
       // Security
       backupSuccess: activeData.backupSuccess,
@@ -4749,6 +4757,7 @@ function Dashboard({ currentUser, onLogout }) {
         licensesInUse: Number(formInputs.licensesInUse),
         licensesVacant: Number(formInputs.licensesVacant),
         softwareCost: Number(formInputs.softwareCost),
+        softwareAnnualCost: Number(formInputs.softwareAnnualCost),
         softwareExpiring: Number(formInputs.softwareExpiring),
 
         backupSuccess: Number(formInputs.backupSuccess),
@@ -5300,6 +5309,10 @@ function Dashboard({ currentUser, onLogout }) {
               <div className="metric-item full-width">
                 <div className="metric-label">ค่าใช้จ่ายซอฟต์แวร์รวมรายเดือน</div>
                 <div className="metric-value">{formatThaiBaht(calculatedSoftwareCost)}</div>
+              </div>
+              <div className="metric-item full-width">
+                <div className="metric-label">ค่าใช้จ่ายซอฟต์แวร์รวมรายปี</div>
+                <div className="metric-value">{formatThaiBaht(calculatedSoftwareAnnualCost)}</div>
               </div>
             </div>
             <div className="card-chart-container">
@@ -6013,6 +6026,15 @@ function Dashboard({ currentUser, onLogout }) {
                         value={formInputs.softwareCost ?? ''} 
                         onChange={(e) => setFormInputs(p => ({ ...p, softwareCost: e.target.value }))}
                         required 
+                      />
+                    </div>
+                    <div className="form-group full-width">
+                      <label>ค่าใช้จ่ายซอฟต์แวร์รวมรายปี (บาท)</label>
+                      <input
+                        type="number"
+                        value={formInputs.softwareAnnualCost ?? ''}
+                        onChange={(e) => setFormInputs(p => ({ ...p, softwareAnnualCost: e.target.value }))}
+                        required
                       />
                     </div>
                   </div>
@@ -6873,6 +6895,10 @@ function Dashboard({ currentUser, onLogout }) {
                           <div className="console-field">
                             <span className="console-label">ค่าซอฟต์แวร์รายเดือน (บาท)</span>
                             <input type="number" value={consoleMonthData.softwareCost || 0} onChange={e => handleKpiChange('softwareCost', Number(e.target.value))} className="console-input" />
+                          </div>
+                          <div className="console-field">
+                            <span className="console-label">ค่าซอฟต์แวร์รายปี (บาท)</span>
+                            <input type="number" value={consoleMonthData.softwareAnnualCost || 0} onChange={e => handleKpiChange('softwareAnnualCost', Number(e.target.value))} className="console-input" />
                           </div>
                         </div>
                       </div>
