@@ -1901,6 +1901,7 @@ function Dashboard({ currentUser, onLogout }) {
   const [softwarePaymentDate, setSoftwarePaymentDate] = useState('');
   const [softwareRegisteredEmail, setSoftwareRegisteredEmail] = useState('');
   const [softwareCurrentUsers, setSoftwareCurrentUsers] = useState('');
+  const softwareExcelInputRef = useRef(null);
 
   // Lark Form states
   const [larkFormType, setLarkFormType] = useState('ticket'); // 'ticket' | 'asset'
@@ -3513,21 +3514,13 @@ function Dashboard({ currentUser, onLogout }) {
     return modelExpiryDate >= today && modelExpiryDate <= nearExpiryLimit;
   }).length;
 
-  const softwareDetails = activeData?.softwareExpiringDetails || [];
-  const configuredSoftwareLicenses = softwareDetails.filter((item) => item.isLicenseRecord);
-  const hasConfiguredSoftwareLicenses = configuredSoftwareLicenses.length > 0;
-  const calculatedLicensesInUse = hasConfiguredSoftwareLicenses
-    ? configuredSoftwareLicenses.reduce((sum, item) => sum + Number(item.used || 0), 0)
-    : Number(activeData?.licensesInUse || 0);
-  const calculatedLicensesVacant = hasConfiguredSoftwareLicenses
-    ? configuredSoftwareLicenses.reduce((sum, item) => sum + Number(item.vacant || 0), 0)
-    : Number(activeData?.licensesVacant || 0);
-  const calculatedSoftwareCost = hasConfiguredSoftwareLicenses
-    ? configuredSoftwareLicenses.reduce((sum, item) => sum + Number(item.monthlyCost || 0), 0)
-    : Number(activeData?.softwareCost || 0);
-  const calculatedTotalSoftware = hasConfiguredSoftwareLicenses
-    ? configuredSoftwareLicenses.length
-    : Number(activeData?.totalSoftware || 0);
+  // The monthly KPI editor is the source of truth for the dashboard summary.
+  // License registry rows remain available in the details modal, but must not
+  // override the values an administrator saved for the selected month.
+  const calculatedLicensesInUse = Number(activeData?.licensesInUse || 0);
+  const calculatedLicensesVacant = Number(activeData?.licensesVacant || 0);
+  const calculatedSoftwareCost = Number(activeData?.softwareCost || 0);
+  const calculatedTotalSoftware = Number(activeData?.totalSoftware || 0);
 
   const resetSoftwareForm = () => {
     setEditingSoftwareIndex(null);
@@ -3604,6 +3597,74 @@ function Dashboard({ currentUser, onLogout }) {
       };
     });
     resetSoftwareForm();
+  };
+
+  const importSoftwareLicensesFromExcel = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      try {
+        const workbook = XLSX.read(loadEvent.target.result, { type: 'array' });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        if (!worksheet) throw new Error('ไม่พบแผ่นงานในไฟล์ Excel');
+
+        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
+        const pick = (row, ...headers) => {
+          for (const header of headers) {
+            if (row[header] !== undefined && row[header] !== '') return row[header];
+          }
+          return '';
+        };
+        const toNumber = (value) => Number(String(value ?? '').replace(/[^0-9.-]/g, '')) || 0;
+
+        const importedLicenses = rows.map((row) => {
+          const name = String(pick(row, 'ชื่อซอฟต์แวร์/โปรแกรม', 'ชื่อซอฟต์แวร์', 'Software', 'Software Name', 'Name')).trim();
+          const used = toNumber(pick(row, 'ใช้งาน', 'License ใช้งาน', 'License Used', 'Used'));
+          const vacant = toNumber(pick(row, 'ว่าง', 'License ว่าง', 'License Vacant', 'Vacant'));
+          return {
+            name,
+            owner: String(pick(row, 'Owner', 'Owner / แผนก', 'แผนก')).trim(),
+            used,
+            vacant,
+            licenses: used + vacant,
+            monthlyCost: toNumber(pick(row, 'ราคา', 'ค่าใช้จ่ายต่อเดือน (บาท)', 'Monthly Cost', 'Price')),
+            price: toNumber(pick(row, 'ราคา', 'ค่าใช้จ่ายต่อเดือน (บาท)', 'Monthly Cost', 'Price')),
+            paymentChannel: String(pick(row, 'ช่องทางชำระ', 'ช่องทางชำระเงิน', 'Payment Channel')).trim(),
+            paymentDate: String(pick(row, 'วันที่ชำระ', 'วันที่/รอบชำระเงิน', 'Payment Date')).trim(),
+            expiringDate: String(pick(row, 'วันหมดสัญญา', 'วันหมดอายุ', 'Expiry Date')).trim(),
+            registeredEmail: String(pick(row, 'อีเมลสมัคร', 'อีเมลที่สมัคร', 'Registered Email', 'Email')).trim(),
+            currentUsers: String(pick(row, 'ผู้ใช้งานปัจจุบัน', 'Current Users')).trim(),
+            status: 'ใช้งาน',
+            isLicenseRecord: true,
+          };
+        }).filter((item) => item.name);
+
+        if (importedLicenses.length === 0) {
+          throw new Error('ไม่พบคอลัมน์ชื่อซอฟต์แวร์/โปรแกรม หรือไม่มีข้อมูลรายการ');
+        }
+
+        setData((previous) => {
+          const monthData = previous[currentMonth] || { ...initialDashboardData['2026-07'] };
+          const existingRows = [...(monthData.softwareExpiringDetails || [])];
+          const importedByName = new Map(importedLicenses.map((item) => [item.name.toLocaleLowerCase('th-TH'), item]));
+          const mergedRows = existingRows
+            .filter((item) => !importedByName.has(String(item.name || '').trim().toLocaleLowerCase('th-TH')))
+            .concat(importedLicenses);
+          return {
+            ...previous,
+            [currentMonth]: { ...monthData, softwareExpiringDetails: mergedRows },
+          };
+        });
+        alert(`นำเข้า License สำเร็จ ${importedLicenses.length} รายการ`);
+      } catch (error) {
+        alert(`นำเข้าไฟล์ Excel ไม่สำเร็จ: ${error.message}`);
+      } finally {
+        event.target.value = '';
+      }
+    };
+    reader.readAsArrayBuffer(file);
   };
 
   // Helper currency formatter
@@ -4578,6 +4639,7 @@ function Dashboard({ currentUser, onLogout }) {
 
         setData(newData);
         setCurrentMonth(monthKeys[0]);
+        setConsoleMonth(monthKeys[0]);
         setImportStatus({ type: 'success', message: `นำเข้าสำเร็จ! พบข้อมูล ${monthKeys.length} เดือน` });
         setTimeout(() => setImportStatus(null), 4000);
       } catch (err) {
@@ -6111,6 +6173,22 @@ function Dashboard({ currentUser, onLogout }) {
                   </div>
                 </div>
                 <div className="software-license-actions">
+                  <input
+                    ref={softwareExcelInputRef}
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={importSoftwareLicensesFromExcel}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-details"
+                    onClick={() => softwareExcelInputRef.current?.click()}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <Upload size={16} />
+                    อัปโหลดไฟล์ Excel
+                  </button>
                   {editingSoftwareIndex !== null && <button type="button" className="btn-details" onClick={resetSoftwareForm}>ยกเลิก</button>}
                   <button type="submit" className="btn-save">{editingSoftwareIndex === null ? 'เพิ่ม License' : 'บันทึกการแก้ไข'}</button>
                 </div>
