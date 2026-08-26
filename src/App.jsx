@@ -3514,16 +3514,14 @@ function Dashboard({ currentUser, onLogout }) {
     return modelExpiryDate >= today && modelExpiryDate <= nearExpiryLimit;
   }).length;
 
-  // The monthly KPI editor is the source of truth for the dashboard summary.
-  // License registry rows remain available in the details modal, but must not
-  // override the values an administrator saved for the selected month.
-  const calculatedLicensesInUse = Number(activeData?.licensesInUse || 0);
-  const calculatedLicensesVacant = Number(activeData?.licensesVacant || 0);
-  const calculatedSoftwareCost = Number(activeData?.softwareCost || 0);
-  const calculatedTotalSoftware = Number(activeData?.totalSoftware || 0);
   const detailedSoftwareLicenses = (activeData?.softwareExpiringDetails || []).filter((item) => item.isLicenseRecord);
   const detailedLicensesInUse = detailedSoftwareLicenses.reduce((sum, item) => sum + Number(item.used || 0), 0);
   const detailedLicensesVacant = detailedSoftwareLicenses.reduce((sum, item) => sum + Number(item.vacant || 0), 0);
+  // Usage and vacancy are actual totals from every row in the License registry.
+  const calculatedLicensesInUse = detailedLicensesInUse;
+  const calculatedLicensesVacant = detailedLicensesVacant;
+  const calculatedSoftwareCost = Number(activeData?.softwareCost || 0);
+  const calculatedTotalSoftware = Number(activeData?.totalSoftware || 0);
 
   const resetSoftwareForm = () => {
     setEditingSoftwareIndex(null);
@@ -6150,20 +6148,19 @@ function Dashboard({ currentUser, onLogout }) {
             <div className="modal-body">
               <div className="metrics-row" style={{ marginBottom: '16px' }}>
                 <div className="metric-item">
-                  <div className="metric-label">License ใช้งานตาม KPI</div>
+                  <div className="metric-label">License ใช้งานจริง</div>
                   <div className="metric-value highlight-primary">{calculatedLicensesInUse.toLocaleString()} Core/User</div>
-                  <small style={{ color: 'var(--text-muted)' }}>แจกแจงในทะเบียน {detailedLicensesInUse.toLocaleString()}</small>
+                  <small style={{ color: 'var(--text-muted)' }}>รวมจากรายการซอฟต์แวร์ทั้งหมด</small>
                 </div>
                 <div className="metric-item">
-                  <div className="metric-label">License ว่างตาม KPI</div>
+                  <div className="metric-label">License ว่างจริง</div>
                   <div className="metric-value highlight-secondary">{calculatedLicensesVacant.toLocaleString()} Core/User</div>
-                  <small style={{ color: 'var(--text-muted)' }}>แจกแจงในทะเบียน {detailedLicensesVacant.toLocaleString()}</small>
+                  <small style={{ color: 'var(--text-muted)' }}>รวมจากรายการซอฟต์แวร์ทั้งหมด</small>
                 </div>
                 <div className="metric-item">
-                  <div className="metric-label">ยังไม่ได้ระบุรายละเอียด</div>
-                  <div className="metric-value highlight-danger">
-                    ใช้งาน {Math.max(0, calculatedLicensesInUse - detailedLicensesInUse).toLocaleString()} / ว่าง {Math.max(0, calculatedLicensesVacant - detailedLicensesVacant).toLocaleString()}
-                  </div>
+                  <div className="metric-label">License รวมทั้งหมด</div>
+                  <div className="metric-value">{(calculatedLicensesInUse + calculatedLicensesVacant).toLocaleString()} Core/User</div>
+                  <small style={{ color: 'var(--text-muted)' }}>{detailedSoftwareLicenses.length.toLocaleString()} โปรแกรมในทะเบียน</small>
                 </div>
               </div>
               <form onSubmit={saveSoftwareLicense} className="software-license-form">
