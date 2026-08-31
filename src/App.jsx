@@ -1947,9 +1947,15 @@ function Dashboard({ currentUser, onLogout }) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return undefined;
     const context = gsap.context(() => {
-      gsap.timeline({ defaults: { ease: 'power3.out' } })
-        .fromTo('.sidebar', { opacity: 0, x: -34 }, { opacity: 1, x: 0, duration: 0.72, clearProps: 'transform' })
-        .fromTo('.dashboard-header', { opacity: 0, y: -22 }, { opacity: 1, y: 0, duration: 0.58 }, '-=0.4')
+      const compactNavigation = window.matchMedia('(max-width: 1100px)').matches;
+      const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      if (!compactNavigation) {
+        timeline.fromTo('.sidebar', { opacity: 0, x: -34 }, { opacity: 1, x: 0, duration: 0.72, clearProps: 'transform' });
+      } else {
+        gsap.set('.sidebar', { clearProps: 'all' });
+      }
+      timeline
+        .fromTo('.dashboard-header', { opacity: 0, y: -22 }, { opacity: 1, y: 0, duration: 0.58 }, compactNavigation ? 0 : '-=0.4')
         .fromTo('.dashboard-grid > .card', { opacity: 0, y: 30, scale: 0.975 }, {
           opacity: 1,
           y: 0,
