@@ -2005,7 +2005,10 @@ function Dashboard({ currentUser, onLogout }) {
   }, [activeModal]);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    if (
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      window.matchMedia('(max-width: 1100px)').matches
+    ) return undefined;
     const frame = window.requestAnimationFrame(() => {
       gsap.fromTo('.sidebar .control-group .sidebar-btn', { opacity: 0, y: -8 }, {
         opacity: 1,

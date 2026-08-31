@@ -3544,6 +3544,35 @@ body.modal-open { overflow: hidden; }
         max-width: 100%;
         box-sizing: border-box;
     }
+
+    /* iOS Safari performs poorly when expanding a blurred panel containing
+       several animated controls. Use immediate, lightweight interactions. */
+    .sidebar.mobile-active {
+        background: #101d46;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .sidebar.mobile-active .control-group > div:first-child,
+    .sidebar.mobile-active .sidebar-btn,
+    .sidebar.mobile-active .sidebar-form-btn {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        transition-duration: .08s !important;
+    }
+
+    .sidebar.mobile-active .sidebar-btn:hover,
+    .sidebar.mobile-active .sidebar-form-btn:hover,
+    .sidebar.mobile-active .sidebar-btn:active,
+    .sidebar.mobile-active .sidebar-form-btn:active {
+        transform: none !important;
+        filter: none;
+    }
+
+    .mobile-menu-backdrop {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
 }
 
 @media screen and (max-width: 700px) {
