@@ -33,6 +33,10 @@ import {
 
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 const IOS_DEVICE_MONITOR_BASE = 'https://ios-device-monitor-46w9.onrender.com';
+const THAI_MONTH_LABELS = [
+  'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+  'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+];
 
 // Initial blank data - use Excel import to load real data
 const initialAssetsData = [
@@ -1788,8 +1792,6 @@ const AssetTagPicker = ({ value, onChange, options, single = false, onClose }) =
   );
 };
 
-const seedSoftwareLicenses = [];
-
 const isValidDashboardData = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const monthKeys = Object.keys(value);
@@ -1946,7 +1948,7 @@ function Dashboard({ currentUser, onLogout }) {
     if (reduceMotion) return undefined;
     const context = gsap.context(() => {
       gsap.timeline({ defaults: { ease: 'power3.out' } })
-        .fromTo('.sidebar', { opacity: 0, x: -34 }, { opacity: 1, x: 0, duration: 0.72 })
+        .fromTo('.sidebar', { opacity: 0, x: -34 }, { opacity: 1, x: 0, duration: 0.72, clearProps: 'transform' })
         .fromTo('.dashboard-header', { opacity: 0, y: -22 }, { opacity: 1, y: 0, duration: 0.58 }, '-=0.4')
         .fromTo('.dashboard-grid > .card', { opacity: 0, y: 30, scale: 0.975 }, {
           opacity: 1,
@@ -1977,6 +1979,23 @@ function Dashboard({ currentUser, onLogout }) {
       });
     });
     return () => window.cancelAnimationFrame(frame);
+  }, [activeModal]);
+
+  useEffect(() => {
+    if (!mobileSidebarOpen) return undefined;
+    document.body.classList.add('mobile-menu-open');
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setMobileSidebarOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.classList.remove('mobile-menu-open');
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [mobileSidebarOpen]);
+
+  useEffect(() => {
+    if (activeModal) setMobileSidebarOpen(false);
   }, [activeModal]);
 
   useEffect(() => {
@@ -2201,8 +2220,7 @@ function Dashboard({ currentUser, onLogout }) {
   const syncQueueRef = useRef(Promise.resolve());
   const latestDataRef = useRef(data);
   const latestAssetsRef = useRef(assetsList);
-  const softwareSeededRef = useRef(false);
-
+  const autoMonthKeyRef = useRef('');
   useEffect(() => {
     latestDataRef.current = data;
     latestAssetsRef.current = assetsList;
@@ -2499,6 +2517,60 @@ function Dashboard({ currentUser, onLogout }) {
     }, 1000);
     return () => clearTimeout(timer);
   }, [data, assetsList, isLoaded, syncStateToDb]);
+
+  // Create and select the current Bangkok month automatically. Rechecking
+  // hourly also handles dashboards that remain open across a month boundary.
+  useEffect(() => {
+    if (!isLoaded) return undefined;
+
+    const ensureCurrentMonth = () => {
+      const dateParts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+      }).formatToParts(new Date());
+      const year = Number(dateParts.find((part) => part.type === 'year')?.value);
+      const month = Number(dateParts.find((part) => part.type === 'month')?.value);
+      if (!year || !month) return;
+
+      const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+      if (autoMonthKeyRef.current === monthKey) return;
+      autoMonthKeyRef.current = monthKey;
+      setCurrentMonth(monthKey);
+      setConsoleMonth(monthKey);
+
+      setData((previous) => {
+        if (previous[monthKey]) return previous;
+        const previousMonthKey = Object.keys(previous)
+          .filter((key) => key < monthKey)
+          .sort((left, right) => right.localeCompare(left))[0];
+        const baseData = previousMonthKey
+          ? previous[previousMonthKey]
+          : { ...initialDashboardData['2026-07'] };
+        const monthData = {
+          ...baseData,
+          monthName: `${THAI_MONTH_LABELS[month - 1]} ${year + 543}`,
+          totalAssets: latestAssetsRef.current.length,
+          ticketsCount: 0,
+          slaPercent: 0,
+          responseTime: 0,
+          resolutionTime: 0,
+          csat: 5,
+          repairCount: 0,
+          repairCost: 0,
+          securityIncidents: 0,
+          topBrokenDevices: [],
+          deptCosts: {},
+          ticketsList: [],
+        };
+        return { ...previous, [monthKey]: monthData };
+      });
+    };
+
+    ensureCurrentMonth();
+    const interval = window.setInterval(ensureCurrentMonth, 60 * 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, [isLoaded]);
   
   // New Month creation states
   const [newMonthKey, setNewMonthKey] = useState('');
@@ -3521,7 +3593,7 @@ function Dashboard({ currentUser, onLogout }) {
   const isAnnualSoftwareCost = (item) => {
     const paymentSchedule = String(item.paymentDate || item.billingCycle || '').trim().toLocaleLowerCase('th-TH');
     if (/รายเดือน|monthly|month/.test(paymentSchedule)) return false;
-    return /รายปี|annual|yearly|year/.test(paymentSchedule) || /\d{1,4}[\/\-.]\d{1,2}[\/\-.]\d{1,4}/.test(paymentSchedule);
+    return /รายปี|annual|yearly|year/.test(paymentSchedule) || /\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}/.test(paymentSchedule);
   };
   const detailedMonthlySoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
     sum + (isAnnualSoftwareCost(item) ? 0 : Number(item.monthlyCost ?? item.price ?? 0)), 0);
@@ -4846,7 +4918,7 @@ function Dashboard({ currentUser, onLogout }) {
   return (
     <>
       {/* SIDEBAR NAVIGATION CONTROL PANEL */}
-      <aside className={`sidebar no-print ${mobileSidebarOpen ? 'mobile-active' : ''}`}>
+      <aside id="dashboard-sidebar" className={`sidebar no-print ${mobileSidebarOpen ? 'mobile-active' : ''}`}>
         <div className="logo-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <img className="fern-brand-logo" src={fernAesthetiqueLogo} alt="Fern Aesthetique" />
           <button 
@@ -5059,6 +5131,14 @@ function Dashboard({ currentUser, onLogout }) {
         </div>
       </aside>
 
+      <button
+        type="button"
+        className={`mobile-menu-backdrop no-print ${mobileSidebarOpen ? 'active' : ''}`}
+        onClick={() => setMobileSidebarOpen(false)}
+        aria-label="ปิดเมนู"
+        tabIndex={mobileSidebarOpen ? 0 : -1}
+      />
+
       {/* DASHBOARD GRID CONTENT */}
       <main className="dashboard-container">
         <header className="dashboard-header">
@@ -5066,6 +5146,9 @@ function Dashboard({ currentUser, onLogout }) {
             <button 
               onClick={() => setMobileSidebarOpen(true)} 
               className="mobile-menu-toggle"
+              aria-label="เปิดเมนู"
+              aria-controls="dashboard-sidebar"
+              aria-expanded={mobileSidebarOpen}
               style={{ display: 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
             >
               <Menu size={24} />
