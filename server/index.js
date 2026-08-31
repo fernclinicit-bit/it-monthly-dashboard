@@ -828,7 +828,9 @@ app.post('/api/tickets', requireRole('staff'), async (req, res) => {
         [String(assetSerial).trim()]
       );
       if (assetResult.rowCount === 0) {
-        throw new Error(`ไม่พบหมายเลขเครื่อง ${String(assetSerial).trim()} ในทะเบียนทรัพย์สิน`);
+        const assetError = new Error(`ไม่พบหมายเลขเครื่อง ${String(assetSerial).trim()} ในทะเบียนทรัพย์สิน`);
+        assetError.statusCode = 400;
+        throw assetError;
       }
       linkedAssetSn = Number(assetResult.rows[0].sn);
       await client.query('UPDATE tickets SET asset_sn = $1 WHERE sn = $2', [linkedAssetSn, nextSn]);
@@ -871,9 +873,10 @@ app.post('/api/tickets', requireRole('staff'), async (req, res) => {
     if (client) {
       try { await client.query('ROLLBACK'); } catch (rbErr) { console.error('RB Err:', rbErr.message); }
     }
-    console.error('Error creating IT request ticket:', err);
-    const maskedUrl = dbUrl ? dbUrl.replace(/:[^:@]+@/, ':***@') : 'NOT_SET';
-    res.status(500).json({ error: String(err.stack || err.message) + '\n\nDB_URL: ' + maskedUrl + '\nIS_INTERNAL: ' + String(isRenderInternal) });
+    const statusCode = Number.isInteger(err.statusCode) ? err.statusCode : 500;
+    if (statusCode >= 500) console.error('Error creating IT request ticket:', err);
+    else console.warn('Rejected IT request ticket:', err.message);
+    res.status(statusCode).json({ error: statusCode >= 500 ? 'สร้างใบแจ้งปัญหาไม่สำเร็จ' : err.message });
   } finally {
     if (client) {
       try { await client.end(); } catch (closeError) { console.error('Failed to close database client:', closeError); }
@@ -1241,8 +1244,8 @@ app.patch('/api/asset-requests/:id', requireRole('staff'), async (req, res) => {
     if (current.rows[0].assigned_asset_sn && ['approved', 'issued', 'overdue', 'return_requested'].includes(current.rows[0].status)) {
       await client.query(`
         UPDATE assets
-        SET user_name = $1,
-            position = $2,
+        SET user_name = $1::text,
+            position = $2::text,
             details = details || jsonb_build_object('user', $1::text, 'position', $2::text)
         WHERE sn = $3
       `, [requester.trim(), department.trim(), current.rows[0].assigned_asset_sn]);
