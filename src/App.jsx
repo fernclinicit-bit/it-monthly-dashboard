@@ -1846,6 +1846,14 @@ const repairThaiTextDeep = (value) => {
   return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairThaiTextDeep(item)]));
 };
 
+const normalizeAssetStatus = (value) => {
+  const status = String(value || '').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+  if (!status) return 'ใช้งาน';
+  if (['พร้อมใช้', 'พร้อมใช้งาน', 'ว่าง/พร้อมใช้'].includes(status)) return 'ว่าง';
+  if (['เสีย', 'รอซ่อมแซม'].includes(status)) return 'รอซ่อม';
+  return status;
+};
+
 function Dashboard({ currentUser, onLogout }) {
   const navigate = useNavigate();
   const isAdmin = currentUser?.role === 'admin';
@@ -2696,9 +2704,9 @@ function Dashboard({ currentUser, onLogout }) {
     const calculatedResponseTime = durationCount > 0 ? Math.max(5, Math.round(resolutionTimeHours * 12)) : 0;
     const calculatedCsat = durationCount > 0 ? Number((4.5 + (calculatedSla / 100) * 0.4).toFixed(1)) : 0;
 
-    const brokenAssetsCount = assets.filter(a => ['รอซ่อม', 'ชำรุด'].includes(a.status)).length;
-    const lostAssetsCount = assets.filter(a => a.status === 'สูญหาย').length;
-    const vacantAssetsCount = assets.filter(a => a.status === 'ว่าง').length;
+    const brokenAssetsCount = assets.filter(a => ['รอซ่อม', 'ชำรุด'].includes(normalizeAssetStatus(a.status))).length;
+    const lostAssetsCount = assets.filter(a => normalizeAssetStatus(a.status) === 'สูญหาย').length;
+    const vacantAssetsCount = assets.filter(a => normalizeAssetStatus(a.status) === 'ว่าง').length;
 
     const topBrokenDevices = Object.entries(deviceCounts)
       .map(([name, count]) => ({ name, count }))
@@ -2744,6 +2752,13 @@ function Dashboard({ currentUser, onLogout }) {
         const monthData = nextData[monthKey];
         const tickets = monthData.ticketsList || [];
         const newMetrics = recalculateMonthlyMetrics(monthKey, tickets, assetsList);
+        // Asset KPIs can be entered manually in the KPI editor. Asset workflow
+        // endpoints update these values in the database when the registry changes,
+        // so a background assetsList refresh must not overwrite saved KPI values.
+        delete newMetrics.totalAssets;
+        delete newMetrics.assetsBroken;
+        delete newMetrics.assetsLost;
+        delete newMetrics.assetsVacant;
         
         let changed = false;
         for (const k of Object.keys(newMetrics)) {
@@ -2928,7 +2943,7 @@ function Dashboard({ currentUser, onLogout }) {
         itemType: newAssetItemType,
         additionalEquipment: newAssetAdditionalEquipment,
         deviceSerial: newAssetSerial || '-',
-        status: newAssetStatus,
+        status: normalizeAssetStatus(newAssetStatus),
         notes: newAssetNotes,
         submittedOn: newAssetSubmittedOn,
         respondent: newAssetRespondent,
@@ -2990,7 +3005,7 @@ function Dashboard({ currentUser, onLogout }) {
         itemType: newAssetItemType,
         additionalEquipment: newAssetAdditionalEquipment,
         deviceSerial: newAssetSerial || '-',
-        status: newAssetStatus,
+        status: normalizeAssetStatus(newAssetStatus),
         notes: newAssetNotes,
         submittedOn: newAssetSubmittedOn,
         respondent: newAssetRespondent,
@@ -3416,7 +3431,7 @@ function Dashboard({ currentUser, onLogout }) {
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
-          status: newAssetStatus,
+          status: normalizeAssetStatus(newAssetStatus),
           notes: newAssetNotes,
           submittedOn: newAssetSubmittedOn,
           respondent: newAssetRespondent,
@@ -3437,7 +3452,7 @@ function Dashboard({ currentUser, onLogout }) {
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
-          status: newAssetStatus,
+          status: normalizeAssetStatus(newAssetStatus),
           notes: newAssetNotes,
           submittedOn: newAssetSubmittedOn,
           respondent: newAssetRespondent,
@@ -3457,9 +3472,9 @@ function Dashboard({ currentUser, onLogout }) {
           [consoleMonth]: {
             ...data[consoleMonth],
             totalAssets: assetsToSave.length,
-            assetsBroken: assetsToSave.filter(asset => ['รอซ่อม', 'ชำรุด'].includes(asset.status)).length,
-            assetsLost: assetsToSave.filter(asset => asset.status === 'สูญหาย').length,
-            assetsVacant: assetsToSave.filter(asset => asset.status === 'ว่าง').length
+            assetsBroken: assetsToSave.filter(asset => ['รอซ่อม', 'ชำรุด'].includes(normalizeAssetStatus(asset.status))).length,
+            assetsLost: assetsToSave.filter(asset => normalizeAssetStatus(asset.status) === 'สูญหาย').length,
+            assetsVacant: assetsToSave.filter(asset => normalizeAssetStatus(asset.status) === 'ว่าง').length
           }
         };
       }
@@ -3557,12 +3572,14 @@ function Dashboard({ currentUser, onLogout }) {
     count: primaryAssetEntries.filter((entry) => entry.category.label === category.label).length,
   }));
 
-  const warehouseTotalCount = primaryAssetEntries.length;
-  const vacantStockEntries = primaryAssetEntries.filter(({ asset }) => asset.status === 'ว่าง');
-  const vacantStockCount = vacantStockEntries.length;
-  const warehouseBrokenCount = primaryAssetEntries.filter(({ asset }) => ['รอซ่อม', 'ชำรุด'].includes(asset.status)).length;
-  const warehouseLostCount = primaryAssetEntries.filter(({ asset }) => asset.status === 'สูญหาย').length;
-  const vacantStockBreakdown = Array.from(vacantStockEntries.reduce((groups, entry) => {
+  // Status cards represent the complete registry, including printers, CCTV,
+  // accessories and any future categories—not only the five headline types.
+  const warehouseTotalCount = assetsList.length;
+  const vacantStockCount = assetsList.filter((asset) => normalizeAssetStatus(asset.status) === 'ว่าง').length;
+  const warehouseBrokenCount = assetsList.filter((asset) => ['รอซ่อม', 'ชำรุด'].includes(normalizeAssetStatus(asset.status))).length;
+  const warehouseLostCount = assetsList.filter((asset) => normalizeAssetStatus(asset.status) === 'สูญหาย').length;
+  const primaryVacantStockEntries = primaryAssetEntries.filter(({ asset }) => normalizeAssetStatus(asset.status) === 'ว่าง');
+  const vacantStockBreakdown = Array.from(primaryVacantStockEntries.reduce((groups, entry) => {
     const label = entry.category.label;
     groups.set(label, (groups.get(label) || 0) + 1);
     return groups;
@@ -4255,7 +4272,7 @@ function Dashboard({ currentUser, onLogout }) {
               position: row['ตำแหน่ง'] || '-',
               itemType: row['รายการอุปกรณ์หลัก'] || 'อุปกรณ์เสริม/อื่นๆ',
               deviceSerial: row['หมายเลขอุปกรณ์ (เช่น  Ipad 016)'] || '-',
-              status: row['สถานะ'] || 'ใช้งาน',
+              status: normalizeAssetStatus(row['สถานะ']),
               notes: row['หมายเหตุ'] || '',
               submittedOn: row['Submitted on'] || '',
               respondent: row['Respondents'] || '',
@@ -4307,8 +4324,9 @@ function Dashboard({ currentUser, onLogout }) {
             calculatedAssetValue += CATEGORY_VALUES[cat] || 1500;
           });
 
-          const brokenInventory = parsedAssets.filter(a => ['รอซ่อม', 'ชำรุด'].includes(a.status)).length;
-          const lostInventory = parsedAssets.filter(a => a.status === 'สูญหาย').length;
+          const brokenInventory = parsedAssets.filter(a => ['รอซ่อม', 'ชำรุด'].includes(normalizeAssetStatus(a.status))).length;
+          const lostInventory = parsedAssets.filter(a => normalizeAssetStatus(a.status) === 'สูญหาย').length;
+          const vacantInventory = parsedAssets.filter(a => normalizeAssetStatus(a.status) === 'ว่าง').length;
 
           // Update data metrics
           setData(prev => {
@@ -4318,8 +4336,9 @@ function Dashboard({ currentUser, onLogout }) {
                 ...updated[monthKey],
                 totalAssets: parsedAssets.length,
                 assetValue: calculatedAssetValue,
-                assetsBroken: brokenInventory + (updated[monthKey].assetsBroken || 0),
-                assetsLost: lostInventory + (updated[monthKey].assetsLost || 0)
+                assetsBroken: brokenInventory,
+                assetsLost: lostInventory,
+                assetsVacant: vacantInventory
               };
             });
             return updated;

@@ -207,6 +207,14 @@ function repairThaiTextDeep(value) {
   return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairThaiTextDeep(item)]));
 }
 
+function normalizeAssetStatus(value) {
+  const status = String(value || '').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+  if (!status) return 'ใช้งาน';
+  if (['พร้อมใช้', 'พร้อมใช้งาน', 'ว่าง/พร้อมใช้'].includes(status)) return 'ว่าง';
+  if (['เสีย', 'รอซ่อมแซม'].includes(status)) return 'รอซ่อม';
+  return status;
+}
+
 let storedThaiRepairComplete = false;
 let storedThaiRepairPromise;
 async function ensureStoredThaiTextIsReadable(queryable) {
@@ -409,9 +417,9 @@ async function refreshOperationalCounters(client) {
   await client.query(`
     UPDATE monthly_data m
     SET total_assets = (SELECT COUNT(*) FROM assets),
-        assets_broken = (SELECT COUNT(*) FROM assets WHERE status IN ('รอซ่อม', 'ชำรุด')),
-        assets_lost = (SELECT COUNT(*) FROM assets WHERE status = 'สูญหาย'),
-        assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง'),
+        assets_broken = (SELECT COUNT(*) FROM assets WHERE BTRIM(status) IN ('รอซ่อม', 'รอซ่อมแซม', 'ชำรุด', 'เสีย')),
+        assets_lost = (SELECT COUNT(*) FROM assets WHERE BTRIM(status) = 'สูญหาย'),
+        assets_vacant = (SELECT COUNT(*) FROM assets WHERE BTRIM(status) IN ('ว่าง', 'พร้อมใช้', 'พร้อมใช้งาน', 'ว่าง/พร้อมใช้')),
         tickets_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key),
         repair_count = (SELECT COUNT(*) FROM tickets t WHERE t.month_key = m.month_key)
   `);
@@ -731,7 +739,7 @@ app.get('/api/db-state', async (req, res) => {
       position: row.position,
       itemType: row.item_type,
       deviceSerial: row.device_serial,
-      status: row.status,
+      status: normalizeAssetStatus(row.status),
       notes: row.notes || ''
     }));
 
@@ -953,6 +961,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
   if (!Number.isInteger(sn) || sn <= 0 || !itemType || !status) {
     return res.status(400).json({ error: 'ข้อมูลทรัพย์สินไม่ถูกต้อง' });
   }
+  const normalizedStatus = normalizeAssetStatus(status);
 
   let client;
   try {
@@ -982,7 +991,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
       itemType,
       additionalEquipment: additionalEquipment || '',
       deviceSerial: deviceSerial || '-',
-      status,
+      status: normalizedStatus,
       notes: notes || '',
       ...optionalDetails
     };
@@ -998,7 +1007,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
       position || '-',
       itemType,
       deviceSerial || '-',
-      status,
+      normalizedStatus,
       notes || '',
       JSON.stringify(details),
       sn
@@ -1007,7 +1016,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
     // The checkout workflow is authoritative for the assignee during full
     // snapshot synchronization. Keep its identity fields in step with a
     // direct registry edit so the next sync cannot restore stale values.
-    if (['ใช้งาน', 'จอง'].includes(status)) {
+    if (['ใช้งาน', 'จอง'].includes(normalizedStatus)) {
       await client.query(`
         UPDATE asset_requests
         SET requester = $1,
@@ -1024,7 +1033,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
       ]);
     }
 
-    if (['ว่าง', 'รอซ่อม', 'ชำรุด', 'สูญหาย'].includes(status)) {
+    if (['ว่าง', 'รอซ่อม', 'ชำรุด', 'สูญหาย'].includes(normalizedStatus)) {
       const activeRequests = await client.query(`
         SELECT id, history FROM asset_requests
         WHERE assigned_asset_sn = $1 AND status IN ('approved', 'issued', 'overdue', 'return_requested')
@@ -1035,7 +1044,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
           status: 'returned',
           at: new Date().toISOString(),
           by: 'IT Asset Registry',
-          note: `เปลี่ยนสถานะทรัพย์สินเป็น ${status} จากหน้าทะเบียน`
+          note: `เปลี่ยนสถานะทรัพย์สินเป็น ${normalizedStatus} จากหน้าทะเบียน`
         };
         await client.query(`
           UPDATE asset_requests
@@ -1046,7 +1055,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
               updated_at = NOW()
           WHERE id = $3
         `, [
-          ['รอซ่อม', 'ชำรุด'].includes(status) ? 'ชำรุด' : status === 'สูญหาย' ? 'สูญหาย' : 'ปกติ',
+          ['รอซ่อม', 'ชำรุด'].includes(normalizedStatus) ? 'ชำรุด' : normalizedStatus === 'สูญหาย' ? 'สูญหาย' : 'ปกติ',
           JSON.stringify([...(request.history || []), event]),
           request.id
         ]);
@@ -1058,9 +1067,9 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
     await client.query(`
       UPDATE monthly_data
       SET total_assets = (SELECT COUNT(*) FROM assets),
-          assets_broken = (SELECT COUNT(*) FROM assets WHERE status IN ('รอซ่อม', 'ชำรุด')),
-          assets_lost = (SELECT COUNT(*) FROM assets WHERE status = 'สูญหาย'),
-          assets_vacant = (SELECT COUNT(*) FROM assets WHERE status = 'ว่าง')
+          assets_broken = (SELECT COUNT(*) FROM assets WHERE BTRIM(status) IN ('รอซ่อม', 'รอซ่อมแซม', 'ชำรุด', 'เสีย')),
+          assets_lost = (SELECT COUNT(*) FROM assets WHERE BTRIM(status) = 'สูญหาย'),
+          assets_vacant = (SELECT COUNT(*) FROM assets WHERE BTRIM(status) IN ('ว่าง', 'พร้อมใช้', 'พร้อมใช้งาน', 'ว่าง/พร้อมใช้'))
     `);
 
     await client.query('COMMIT');
@@ -1068,7 +1077,7 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
     res.json({
       success: true,
       sn,
-      status,
+      status: normalizedStatus,
       asset: {
         ...(updatedRow.details || {}),
         sn: Number(updatedRow.sn),
@@ -1462,7 +1471,7 @@ app.get('/api/inventory-data', (req, res) => {
       deviceSerial: row['หมายเลขอุปกรณ์ (เช่น  Ipad 016)'] || '-',
       additionalSerial: row['หมายเลขอุปกรณ์ เพิ่มเติม  (เช่น  สาย อะเเดปเตอร์ ipad-011))'],
       returnDueDate: formatDate(row['กำหนดคืนอุปกรณ์']),
-      status: row['สถานะ'] || 'ใช้งาน',
+      status: normalizeAssetStatus(row['สถานะ']),
       notes: row['หมายเหตุ'],
       inspectionDate: formatDate(row['วันที่ตรวจสอบ']),
       purchaseDate: formatDate(row['วันที่ซื้อ']),
