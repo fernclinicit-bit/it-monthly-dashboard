@@ -1854,6 +1854,20 @@ const normalizeAssetStatus = (value) => {
   return status;
 };
 
+const THAI_KEYBOARD_TO_ENGLISH = {
+  'ๆ': 'q', 'ไ': 'w', 'ำ': 'e', 'พ': 'r', 'ะ': 't', 'ั': 'y', 'ี': 'u', 'ร': 'i', 'น': 'o', 'ย': 'p',
+  'ฟ': 'a', 'ห': 's', 'ก': 'd', 'ด': 'f', 'เ': 'g', '้': 'h', '่': 'j', 'า': 'k', 'ส': 'l',
+  'ผ': 'z', 'ป': 'x', 'แ': 'c', 'อ': 'v', 'ิ': 'b', 'ื': 'n', 'ท': 'm',
+};
+
+const normalizeAssetLookup = (value, convertThaiKeyboard = false) => {
+  let text = String(value || '').normalize('NFKC').trim().toLowerCase();
+  if (convertThaiKeyboard) {
+    text = Array.from(text, (character) => THAI_KEYBOARD_TO_ENGLISH[character] || character).join('');
+  }
+  return text.replace(/\s+/g, '');
+};
+
 function Dashboard({ currentUser, onLogout }) {
   const navigate = useNavigate();
   const isAdmin = currentUser?.role === 'admin';
@@ -2175,13 +2189,27 @@ function Dashboard({ currentUser, onLogout }) {
   const runAssetRequestAction = async (request, action) => {
     const payload = { action };
     if (action === 'approve') {
-      const vacantAssets = assetsList.filter(asset => asset.status === 'ว่าง');
+      const vacantAssets = assetsList.filter(asset => normalizeAssetStatus(asset.status) === 'ว่าง');
       if (vacantAssets.length === 0) return alert('ไม่มีอุปกรณ์สถานะว่างสำหรับอนุมัติ');
       const choices = vacantAssets.slice(0, 30).map(asset => `${asset.sn}: ${asset.itemType} (${asset.deviceSerial})`).join('\n');
-      const selected = window.prompt(`กรอกลำดับอุปกรณ์ที่ต้องการจอง\n\n${choices}`);
+      const remainingMessage = vacantAssets.length > 30
+        ? `\n...และอีก ${vacantAssets.length - 30} เครื่อง สามารถพิมพ์ Serial ได้โดยตรง`
+        : '';
+      const selected = window.prompt(`กรอกลำดับหรือ Serial อุปกรณ์ที่ต้องการจอง\nเช่น 29 หรือ iPhone-004 (รองรับกรณีคีย์บอร์ดไทย)\n\n${choices}${remainingMessage}`);
       if (selected === null) return;
-      if (!vacantAssets.some(asset => Number(asset.sn) === Number(selected))) return alert('ลำดับอุปกรณ์ไม่ถูกต้องหรือเครื่องไม่ว่าง');
-      payload.assetSn = Number(selected);
+      const lookupTerms = new Set([
+        normalizeAssetLookup(selected),
+        normalizeAssetLookup(selected, true),
+      ]);
+      const selectedAsset = assetsList.find((asset) => (
+        lookupTerms.has(normalizeAssetLookup(asset.sn)) ||
+        lookupTerms.has(normalizeAssetLookup(asset.deviceSerial))
+      ));
+      if (!selectedAsset) return alert('ไม่พบลำดับหรือ Serial นี้ในทะเบียนอุปกรณ์');
+      if (normalizeAssetStatus(selectedAsset.status) !== 'ว่าง') {
+        return alert(`พบ ${selectedAsset.deviceSerial || selectedAsset.sn} แต่สถานะปัจจุบันคือ “${selectedAsset.status}” ยังไม่พร้อมจอง`);
+      }
+      payload.assetSn = Number(selectedAsset.sn);
       payload.reviewer = window.prompt('ชื่อผู้อนุมัติ / เจ้าหน้าที่ IT') || 'IT';
     } else if (action === 'reject') {
       const note = window.prompt('ระบุเหตุผลที่ไม่อนุมัติ');
