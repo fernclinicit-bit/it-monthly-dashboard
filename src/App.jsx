@@ -3671,6 +3671,10 @@ function Dashboard({ currentUser, onLogout }) {
         (softwareBillingFilter === 'yearly' && annual);
       return matchesSearch && matchesBilling;
     });
+  const filteredSoftwareTotalCost = filteredSoftwareLicenses.reduce(
+    (sum, { item }) => sum + Number(item.monthlyCost ?? item.price ?? 0),
+    0,
+  );
   const detailedMonthlySoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
     sum + (isAnnualSoftwareCost(item) ? 0 : Number(item.monthlyCost ?? item.price ?? 0)), 0);
   const detailedAnnualSoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
@@ -6358,6 +6362,13 @@ function Dashboard({ currentUser, onLogout }) {
                       </tr>
                     )}
                   </tbody>
+                  <tfoot>
+                    <tr className="software-total-row">
+                      <td colSpan="5">รวมราคา ({filteredSoftwareLicenses.length.toLocaleString()} รายการ)</td>
+                      <td>{formatThaiBaht(filteredSoftwareTotalCost)}</td>
+                      <td colSpan="6"></td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
             </div>
