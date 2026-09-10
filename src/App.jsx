@@ -6362,13 +6362,6 @@ function Dashboard({ currentUser, onLogout }) {
                       </tr>
                     )}
                   </tbody>
-                  <tfoot>
-                    <tr className="software-total-row">
-                      <td colSpan="5">รวมราคา ({filteredSoftwareLicenses.length.toLocaleString()} รายการ)</td>
-                      <td>{formatThaiBaht(filteredSoftwareTotalCost)}</td>
-                      <td colSpan="6"></td>
-                    </tr>
-                  </tfoot>
                 </table>
               </div>
             </div>
@@ -6496,6 +6489,9 @@ function Dashboard({ currentUser, onLogout }) {
                 <span className="software-filter-result">
                   แสดง {filteredSoftwareLicenses.length.toLocaleString()} จาก {(activeData.softwareExpiringDetails || []).length.toLocaleString()} รายการ
                 </span>
+                <span className="software-price-total">
+                  รวมราคา <strong>{formatThaiBaht(filteredSoftwareTotalCost)}</strong>
+                </span>
               </div>
               <div style={{ overflowX: 'auto' }}>
                 <table className="details-table">
@@ -6548,6 +6544,13 @@ function Dashboard({ currentUser, onLogout }) {
                       </tr>
                     )}
                   </tbody>
+                  <tfoot>
+                    <tr className="software-total-row">
+                      <td colSpan="5">รวมราคา ({filteredSoftwareLicenses.length.toLocaleString()} รายการ)</td>
+                      <td>{formatThaiBaht(filteredSoftwareTotalCost)}</td>
+                      <td colSpan="6"></td>
+                    </tr>
+                  </tfoot>
                 </table>
               </div>
             </div>
