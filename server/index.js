@@ -475,6 +475,21 @@ async function reconcileAssetRequestWorkflow(client) {
   `);
 }
 
+async function normalizeVacantAssetOwnership(client) {
+  await client.query(`
+    UPDATE assets
+    SET user_name = 'ส่วนกลาง',
+        position = '-',
+        details = details || jsonb_build_object(
+          'status', 'ว่าง',
+          'user', 'ส่วนกลาง',
+          'position', '-'
+        )
+    WHERE BTRIM(status) IN ('ว่าง', 'พร้อมใช้', 'พร้อมใช้งาน', 'ว่าง/พร้อมใช้')
+      AND (user_name IS DISTINCT FROM 'ส่วนกลาง' OR position IS DISTINCT FROM '-')
+  `);
+}
+
 async function initDb() {
   try {
     const client = await pool.connect();
@@ -627,9 +642,11 @@ async function initDb() {
         UPDATE assets a
         SET status = CASE WHEN r.status = 'approved' THEN 'จอง' ELSE 'ใช้งาน' END,
             user_name = r.requester,
+            position = COALESCE(NULLIF(r.department, ''), '-'),
             details = a.details || jsonb_build_object(
               'status', CASE WHEN r.status = 'approved' THEN 'จอง' ELSE 'ใช้งาน' END,
-              'user', r.requester
+              'user', r.requester,
+              'position', COALESCE(NULLIF(r.department, ''), '-')
             )
         FROM asset_requests r
         WHERE r.assigned_asset_sn = a.sn
@@ -652,6 +669,8 @@ async function initDb() {
         WHERE r.status IN ('approved', 'issued', 'overdue', 'return_requested')
           AND NOT EXISTS (SELECT 1 FROM assets a WHERE a.sn = r.assigned_asset_sn)
       `);
+
+      await normalizeVacantAssetOwnership(client);
 
       await refreshOperationalCounters(client);
       console.log('Tables initialized successfully.');
@@ -962,6 +981,8 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
     return res.status(400).json({ error: 'ข้อมูลทรัพย์สินไม่ถูกต้อง' });
   }
   const normalizedStatus = normalizeAssetStatus(status);
+  const normalizedUser = normalizedStatus === 'ว่าง' ? 'ส่วนกลาง' : (user || 'ส่วนกลาง');
+  const normalizedPosition = normalizedStatus === 'ว่าง' ? '-' : (position || '-');
 
   let client;
   try {
@@ -986,8 +1007,8 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
     }).filter(([, value]) => value !== undefined));
     const details = {
       ...(assetResult.rows[0].details || {}),
-      user: user || 'ส่วนกลาง',
-      position: position || '-',
+      user: normalizedUser,
+      position: normalizedPosition,
       itemType,
       additionalEquipment: additionalEquipment || '',
       deviceSerial: deviceSerial || '-',
@@ -1003,8 +1024,8 @@ app.patch('/api/assets/:sn', requireRole('admin'), async (req, res) => {
       RETURNING *
     `, [
       date === undefined ? (assetResult.rows[0].date || '') : date,
-      user || 'ส่วนกลาง',
-      position || '-',
+      normalizedUser,
+      normalizedPosition,
       itemType,
       deviceSerial || '-',
       normalizedStatus,
@@ -1362,7 +1383,12 @@ app.patch('/api/asset-requests/:id/action', requireRole('staff'), async (req, re
         UPDATE assets
         SET status = $1::text,
             user_name = CASE WHEN $1::text = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2::text END,
-            details = details || jsonb_build_object('status', $1::text, 'user', CASE WHEN $1::text = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2::text END)
+            position = CASE WHEN $1::text = 'ว่าง' THEN '-' ELSE position END,
+            details = details || jsonb_build_object(
+              'status', $1::text,
+              'user', CASE WHEN $1::text = 'ว่าง' THEN 'ส่วนกลาง' ELSE $2::text END,
+              'position', CASE WHEN $1::text = 'ว่าง' THEN '-' ELSE position END
+            )
         WHERE sn = $3
       `, [assetStatus, request.requester, assignedSn]);
     }
@@ -1687,6 +1713,7 @@ app.post('/api/sync-all', requireRole('admin'), async (req, res) => {
     }
 
     await reconcileAssetRequestWorkflow(client);
+    await normalizeVacantAssetOwnership(client);
 
     // Preserve the values entered in the full dashboard editor. Operational
     // workflow endpoints recalculate their own counters when a ticket or asset

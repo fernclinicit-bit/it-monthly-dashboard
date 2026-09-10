@@ -2969,8 +2969,8 @@ function Dashboard({ currentUser, onLogout }) {
 
     if (editingAssetSn !== null) {
       const assetPatch = {
-        user: newAssetUser || 'ส่วนกลาง',
-        position: newAssetPosition || '-',
+        user: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? 'ส่วนกลาง' : (newAssetUser || 'ส่วนกลาง'),
+        position: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? '-' : (newAssetPosition || '-'),
         itemType: newAssetItemType,
         additionalEquipment: newAssetAdditionalEquipment,
         deviceSerial: newAssetSerial || '-',
@@ -3031,8 +3031,8 @@ function Dashboard({ currentUser, onLogout }) {
       // Create mode
       const newAsset = {
         sn: assetsList.length > 0 ? Math.max(...assetsList.map(a => Number(a.sn) || 0)) + 1 : 1,
-        user: newAssetUser || 'ส่วนกลาง',
-        position: newAssetPosition || '-',
+        user: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? 'ส่วนกลาง' : (newAssetUser || 'ส่วนกลาง'),
+        position: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? '-' : (newAssetPosition || '-'),
         itemType: newAssetItemType,
         additionalEquipment: newAssetAdditionalEquipment,
         deviceSerial: newAssetSerial || '-',
@@ -3457,8 +3457,8 @@ function Dashboard({ currentUser, onLogout }) {
       // before sending the complete dashboard snapshot.
       if (editingAssetSn !== null && newAssetItemType) {
         pendingAssetPatch = {
-          user: newAssetUser || 'ส่วนกลาง',
-          position: newAssetPosition || '-',
+          user: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? 'ส่วนกลาง' : (newAssetUser || 'ส่วนกลาง'),
+          position: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? '-' : (newAssetPosition || '-'),
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
@@ -3478,8 +3478,8 @@ function Dashboard({ currentUser, onLogout }) {
         };
         assetsToSave = assetsList.map(asset => Number(asset.sn) === Number(editingAssetSn) ? {
           ...asset,
-          user: newAssetUser || 'ส่วนกลาง',
-          position: newAssetPosition || '-',
+          user: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? 'ส่วนกลาง' : (newAssetUser || 'ส่วนกลาง'),
+          position: normalizeAssetStatus(newAssetStatus) === 'ว่าง' ? '-' : (newAssetPosition || '-'),
           itemType: newAssetItemType,
           additionalEquipment: newAssetAdditionalEquipment,
           deviceSerial: newAssetSerial || '-',
