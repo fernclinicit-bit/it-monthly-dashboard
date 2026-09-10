@@ -22,6 +22,7 @@ import {
   FileSpreadsheet,
   ChevronDown,
   ChevronRight,
+  Search,
   Menu,
   Laptop,
   FileCode,
@@ -1926,6 +1927,8 @@ function Dashboard({ currentUser, onLogout }) {
   const [softwarePaymentDate, setSoftwarePaymentDate] = useState('');
   const [softwareRegisteredEmail, setSoftwareRegisteredEmail] = useState('');
   const [softwareCurrentUsers, setSoftwareCurrentUsers] = useState('');
+  const [softwareSearch, setSoftwareSearch] = useState('');
+  const [softwareBillingFilter, setSoftwareBillingFilter] = useState('all');
   const softwareExcelInputRef = useRef(null);
 
   // Lark Form states
@@ -3649,6 +3652,25 @@ function Dashboard({ currentUser, onLogout }) {
     if (/รายเดือน|monthly|month/.test(paymentSchedule)) return false;
     return /รายปี|annual|yearly|year/.test(paymentSchedule) || /\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}/.test(paymentSchedule);
   };
+  const filteredSoftwareLicenses = (activeData?.softwareExpiringDetails || [])
+    .map((item, originalIndex) => ({ item, originalIndex }))
+    .filter(({ item }) => {
+      const normalizedSearch = softwareSearch.trim().toLocaleLowerCase('th-TH');
+      const matchesSearch = !normalizedSearch || [
+        item.name,
+        item.owner,
+        item.paymentChannel,
+        item.paymentDate,
+        item.expiringDate,
+        item.registeredEmail,
+        item.currentUsers,
+      ].some((value) => String(value || '').toLocaleLowerCase('th-TH').includes(normalizedSearch));
+      const annual = isAnnualSoftwareCost(item);
+      const matchesBilling = softwareBillingFilter === 'all' ||
+        (softwareBillingFilter === 'monthly' && !annual) ||
+        (softwareBillingFilter === 'yearly' && annual);
+      return matchesSearch && matchesBilling;
+    });
   const detailedMonthlySoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
     sum + (isAnnualSoftwareCost(item) ? 0 : Number(item.monthlyCost ?? item.price ?? 0)), 0);
   const detailedAnnualSoftwareCost = detailedSoftwareLicenses.reduce((sum, item) =>
@@ -6433,6 +6455,37 @@ function Dashboard({ currentUser, onLogout }) {
                   <button type="submit" className="btn-save">{editingSoftwareIndex === null ? 'เพิ่ม License' : 'บันทึกการแก้ไข'}</button>
                 </div>
               </form>
+              <div className="software-license-toolbar">
+                <label className="software-license-search">
+                  <Search size={17} aria-hidden="true" />
+                  <input
+                    type="search"
+                    value={softwareSearch}
+                    onChange={(event) => setSoftwareSearch(event.target.value)}
+                    placeholder="ค้นหาชื่อโปรแกรม, Owner, อีเมล, ช่องทางชำระ หรือผู้ใช้งาน"
+                    aria-label="ค้นหารายการ License"
+                  />
+                </label>
+                <div className="software-billing-filter" role="group" aria-label="กรองตามรอบชำระเงิน">
+                  {[
+                    ['all', 'ทั้งหมด'],
+                    ['monthly', 'รายเดือน'],
+                    ['yearly', 'รายปี'],
+                  ].map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={softwareBillingFilter === value ? 'active' : ''}
+                      onClick={() => setSoftwareBillingFilter(value)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <span className="software-filter-result">
+                  แสดง {filteredSoftwareLicenses.length.toLocaleString()} จาก {(activeData.softwareExpiringDetails || []).length.toLocaleString()} รายการ
+                </span>
+              </div>
               <div style={{ overflowX: 'auto' }}>
                 <table className="details-table">
                   <thead>
@@ -6452,9 +6505,9 @@ function Dashboard({ currentUser, onLogout }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {activeData.softwareExpiringDetails.length > 0 ? (
-                      activeData.softwareExpiringDetails.map((soft, idx) => (
-                        <tr key={idx}>
+                    {filteredSoftwareLicenses.length > 0 ? (
+                      filteredSoftwareLicenses.map(({ item: soft, originalIndex }) => (
+                        <tr key={originalIndex}>
                           <td><strong>{soft.name}</strong></td>
                           <td>{soft.owner || '-'}</td>
                           <td>{soft.used ?? '-'}</td>
@@ -6468,15 +6521,19 @@ function Dashboard({ currentUser, onLogout }) {
                           <td style={{ minWidth: '220px' }}>{soft.currentUsers || '-'}</td>
                           <td>
                             <div className="software-row-actions">
-                              <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, idx)}>แก้ไข</button>
-                              <button type="button" className="console-delete-btn" onClick={() => deleteSoftwareLicense(idx)}>ลบ</button>
+                              <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, originalIndex)}>แก้ไข</button>
+                              <button type="button" className="console-delete-btn" onClick={() => deleteSoftwareLicense(originalIndex)}>ลบ</button>
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="12" style={{ textAlign: 'center' }}>ยังไม่มีรายละเอียด License</td>
+                        <td colSpan="12" style={{ textAlign: 'center' }}>
+                          {(activeData.softwareExpiringDetails || []).length > 0
+                            ? 'ไม่พบรายการที่ตรงกับการค้นหาหรือตัวกรอง'
+                            : 'ยังไม่มีรายละเอียด License'}
+                        </td>
                       </tr>
                     )}
                   </tbody>
