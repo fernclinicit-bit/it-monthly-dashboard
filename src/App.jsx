@@ -5501,6 +5501,13 @@ function Dashboard({ currentUser, onLogout }) {
                 <span className="card-icon"><ShieldCheck size={18} style={{ color: 'var(--success)' }} /></span>
                 ความปลอดภัยข้อมูล (Security)
               </h3>
+              <button
+                type="button"
+                onClick={() => requireAdminAccess(openEditModal)}
+                className="btn-details"
+              >
+                รายละเอียด / แก้ไข
+              </button>
             </div>
             <div className="metrics-row">
               <div className="metric-item full-width">
