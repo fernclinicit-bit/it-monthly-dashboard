@@ -756,6 +756,25 @@ body {
     font-size: .95rem;
 }
 
+.vendor-contract-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 14px 0 10px;
+}
+
+.vendor-contract-summary span {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--text-muted);
+}
+
+.vendor-contract-summary strong {
+    color: #60a5fa;
+}
+
 .details-table .software-total-row td {
     padding-top: 12px;
     padding-bottom: 12px;

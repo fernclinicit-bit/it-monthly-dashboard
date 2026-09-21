@@ -1694,6 +1694,7 @@ const initialDashboardData = {
     softwareExpiringDetails: [],
     assetsExpiringDetails: [],
     ongoingProjects: [],
+    vendorContracts: [],
     recommendations: [],
     ticketsList: []
   }
@@ -1930,6 +1931,9 @@ function Dashboard({ currentUser, onLogout }) {
   const [softwareSearch, setSoftwareSearch] = useState('');
   const [softwareBillingFilter, setSoftwareBillingFilter] = useState('all');
   const softwareExcelInputRef = useRef(null);
+  const emptyVendorContract = { vendor: '', service: '', contractNo: '', startDate: '', endDate: '', billingCycle: 'รายเดือน', amount: '0', contact: '', status: 'ใช้งาน', notes: '' };
+  const [vendorContractForm, setVendorContractForm] = useState(emptyVendorContract);
+  const [editingVendorContractIndex, setEditingVendorContractIndex] = useState(null);
 
   // Lark Form states
   const [larkFormType, setLarkFormType] = useState('ticket'); // 'ticket' | 'asset'
@@ -2845,6 +2849,7 @@ function Dashboard({ currentUser, onLogout }) {
       softwareExpiringDetails: baseData.softwareExpiringDetails || [],
       assetsExpiringDetails: baseData.assetsExpiringDetails || [],
       ongoingProjects: baseData.ongoingProjects || [],
+      vendorContracts: baseData.vendorContracts || [],
       recommendations: baseData.recommendations || [],
       ticketsList: [] // DO NOT copy tickets to avoid duplicate SN conflict in DB
     };
@@ -4175,6 +4180,47 @@ function Dashboard({ currentUser, onLogout }) {
     XLSX.writeFile(wb, `Asset_Registry_Template.xlsx`);
   };
 
+  const resetVendorContractForm = () => {
+    setVendorContractForm(emptyVendorContract);
+    setEditingVendorContractIndex(null);
+  };
+
+  const saveVendorContract = (event) => {
+    event.preventDefault();
+    const contract = {
+      ...vendorContractForm,
+      amount: Number(vendorContractForm.amount || 0)
+    };
+    setData(previous => {
+      const monthData = previous[currentMonth] || {};
+      const contracts = [...(monthData.vendorContracts || [])];
+      if (editingVendorContractIndex === null) contracts.push(contract);
+      else contracts[editingVendorContractIndex] = contract;
+      return { ...previous, [currentMonth]: { ...monthData, vendorContracts: contracts } };
+    });
+    resetVendorContractForm();
+  };
+
+  const editVendorContract = (contract, index) => {
+    setVendorContractForm({ ...emptyVendorContract, ...contract, amount: String(contract.amount || 0) });
+    setEditingVendorContractIndex(index);
+  };
+
+  const deleteVendorContract = (index) => {
+    if (!window.confirm('ยืนยันการลบ Vendor Contract รายการนี้?')) return;
+    setData(previous => {
+      const monthData = previous[currentMonth] || {};
+      return {
+        ...previous,
+        [currentMonth]: {
+          ...monthData,
+          vendorContracts: (monthData.vendorContracts || []).filter((_, itemIndex) => itemIndex !== index)
+        }
+      };
+    });
+    if (editingVendorContractIndex === index) resetVendorContractForm();
+  };
+
   // Export current data to .xlsx
   const exportToXlsx = () => {
     const wb = XLSX.utils.book_new();
@@ -4262,6 +4308,67 @@ function Dashboard({ currentUser, onLogout }) {
     const expSwWs = XLSX.utils.aoa_to_sheet([expSwHeaders, ...expSwRows]);
     expSwWs['!cols'] = expSwHeaders.map(h => ({ wch: Math.max(h.length + 4, 22) }));
     XLSX.utils.book_append_sheet(wb, expSwWs, 'โปรแกรมใกล้หมดอายุ');
+
+    // Sheet 8: Employee equipment issue and return activity
+    const movementHeaders = ['เลขที่คำขอ', 'พนักงาน', 'แผนก', 'อุปกรณ์ที่ขอ', 'หมายเลขเครื่อง', 'วัตถุประสงค์', 'วันที่ขอเบิก', 'วันที่ส่งมอบ', 'กำหนดคืน', 'วันที่คืนจริง', 'สภาพตอนคืน', 'สถานะ', 'ผู้ตรวจสอบ', 'หมายเหตุ'];
+    const requestStatusLabels = { pending: 'รออนุมัติ', approved: 'อนุมัติแล้ว', issued: 'ส่งมอบแล้ว', overdue: 'เกินกำหนด', return_requested: 'รอ IT ตรวจรับ', returned: 'คืนแล้ว', rejected: 'ไม่อนุมัติ', need_info: 'รอข้อมูลเพิ่ม' };
+    const movementRows = assetRequests.map(request => [
+      request.id,
+      request.requester || '',
+      request.department || '',
+      request.item_type || '',
+      request.device_serial || request.assigned_asset_sn || '',
+      request.purpose || '',
+      request.requested_date ? String(request.requested_date).slice(0, 10) : '',
+      request.issue_date ? String(request.issue_date).slice(0, 10) : '',
+      request.due_date ? String(request.due_date).slice(0, 10) : '',
+      request.return_date ? String(request.return_date).slice(0, 10) : '',
+      request.return_condition || '',
+      requestStatusLabels[request.status] || request.status || '',
+      request.reviewer || '',
+      request.notes || ''
+    ]);
+    const movementWs = XLSX.utils.aoa_to_sheet([movementHeaders, ...movementRows]);
+    movementWs['!cols'] = movementHeaders.map((header, index) => ({ wch: index === 13 ? 35 : Math.max(header.length + 4, 16) }));
+    movementWs['!autofilter'] = { ref: `A1:N${Math.max(movementRows.length + 1, 1)}` };
+    XLSX.utils.book_append_sheet(wb, movementWs, 'พนักงานเบิก-คืนอุปกรณ์');
+
+    // Sheet 9: Company account usage derived from the software/license register
+    const accountHeaders = ['รหัสเดือน', 'ระบบ/โปรแกรม', 'บัญชี/อีเมลที่สมัคร', 'Owner', 'ผู้ใช้งานปัจจุบัน', 'License ใช้งาน', 'License ว่าง', 'สถานะ', 'วันหมดสัญญา'];
+    const accountRows = [];
+    Object.entries(data).forEach(([monthKey, monthData]) => {
+      (monthData.softwareExpiringDetails || []).forEach(account => {
+        accountRows.push([
+          monthKey,
+          account.name || '',
+          account.registeredEmail || '',
+          account.owner || '',
+          account.currentUsers || '',
+          Number(account.used || 0),
+          Number(account.vacant || 0),
+          account.status || '',
+          account.expiringDate || ''
+        ]);
+      });
+    });
+    const accountWs = XLSX.utils.aoa_to_sheet([accountHeaders, ...accountRows]);
+    accountWs['!cols'] = accountHeaders.map((header, index) => ({ wch: [1, 2, 4].includes(index) ? 28 : Math.max(header.length + 4, 16) }));
+    accountWs['!autofilter'] = { ref: `A1:I${Math.max(accountRows.length + 1, 1)}` };
+    XLSX.utils.book_append_sheet(wb, accountWs, 'การใช้งานบัญชีบริษัท');
+
+    // Sheet 10: Vendor contracts
+    const vendorHeaders = ['รหัสเดือน', 'Vendor', 'บริการ/ขอบเขตงาน', 'เลขที่สัญญา', 'วันเริ่มสัญญา', 'วันสิ้นสุดสัญญา', 'รอบชำระเงิน', 'มูลค่า (บาท)', 'ผู้ติดต่อ', 'สถานะ', 'หมายเหตุ'];
+    const vendorRows = [];
+    Object.entries(data).forEach(([monthKey, monthData]) => {
+      (monthData.vendorContracts || []).forEach(contract => vendorRows.push([
+        monthKey, contract.vendor || '', contract.service || '', contract.contractNo || '', contract.startDate || '', contract.endDate || '',
+        contract.billingCycle || '', Number(contract.amount || 0), contract.contact || '', contract.status || '', contract.notes || ''
+      ]));
+    });
+    const vendorWs = XLSX.utils.aoa_to_sheet([vendorHeaders, ...vendorRows]);
+    vendorWs['!cols'] = vendorHeaders.map((header, index) => ({ wch: [1, 2, 8, 10].includes(index) ? 26 : Math.max(header.length + 4, 16) }));
+    vendorWs['!autofilter'] = { ref: `A1:K${Math.max(vendorRows.length + 1, 1)}` };
+    XLSX.utils.book_append_sheet(wb, vendorWs, 'Vendor Contract');
 
     XLSX.writeFile(wb, `IT_Dashboard_Export_${new Date().toISOString().slice(0,10)}.xlsx`);
   };
@@ -5132,6 +5239,10 @@ function Dashboard({ currentUser, onLogout }) {
                 <ShieldCheck size={16} />
                 จัดการสิทธิ์ผู้ใช้งาน
               </button>
+              <button onClick={() => requireAdminAccess(() => setActiveModal('vendorContracts'))} className="sidebar-btn user-access-menu-btn">
+                <FileCode size={16} />
+                Vendor Contract
+              </button>
             </div>
           )}
         </div>}
@@ -5624,6 +5735,54 @@ function Dashboard({ currentUser, onLogout }) {
 
       {activeModal === 'userAccess' && (
         <UserAccessManager currentUser={currentUser} onClose={() => setActiveModal(null)} />
+      )}
+
+      {activeModal === 'vendorContracts' && (
+        <div className="modal-overlay active">
+          <div className="modal large dashboard-fullscreen-modal vendor-contract-modal">
+            <header className="modal-header">
+              <h3>ทะเบียน Vendor Contract ({activeData.monthName})</h3>
+              <button onClick={() => { resetVendorContractForm(); setActiveModal(null); }} className="modal-close"><X size={20} /></button>
+            </header>
+            <div className="modal-body">
+              <form onSubmit={saveVendorContract} className="software-license-form">
+                <div className="form-grid">
+                  <div className="form-group"><label>Vendor</label><input required value={vendorContractForm.vendor} onChange={event => setVendorContractForm(previous => ({ ...previous, vendor: event.target.value }))} /></div>
+                  <div className="form-group"><label>บริการ / ขอบเขตงาน</label><input required value={vendorContractForm.service} onChange={event => setVendorContractForm(previous => ({ ...previous, service: event.target.value }))} /></div>
+                  <div className="form-group"><label>เลขที่สัญญา</label><input value={vendorContractForm.contractNo} onChange={event => setVendorContractForm(previous => ({ ...previous, contractNo: event.target.value }))} /></div>
+                  <div className="form-group"><label>ผู้ติดต่อ</label><input value={vendorContractForm.contact} onChange={event => setVendorContractForm(previous => ({ ...previous, contact: event.target.value }))} /></div>
+                  <div className="form-group"><label>วันเริ่มสัญญา</label><input type="date" value={vendorContractForm.startDate} onChange={event => setVendorContractForm(previous => ({ ...previous, startDate: event.target.value }))} /></div>
+                  <div className="form-group"><label>วันสิ้นสุดสัญญา</label><input type="date" value={vendorContractForm.endDate} onChange={event => setVendorContractForm(previous => ({ ...previous, endDate: event.target.value }))} /></div>
+                  <div className="form-group"><label>รอบชำระเงิน</label><select value={vendorContractForm.billingCycle} onChange={event => setVendorContractForm(previous => ({ ...previous, billingCycle: event.target.value }))}><option>รายเดือน</option><option>รายไตรมาส</option><option>รายปี</option><option>ครั้งเดียว</option></select></div>
+                  <div className="form-group"><label>มูลค่า (บาท)</label><input type="number" min="0" value={vendorContractForm.amount} onChange={event => setVendorContractForm(previous => ({ ...previous, amount: event.target.value }))} /></div>
+                  <div className="form-group"><label>สถานะ</label><select value={vendorContractForm.status} onChange={event => setVendorContractForm(previous => ({ ...previous, status: event.target.value }))}><option>ใช้งาน</option><option>รอต่อสัญญา</option><option>สิ้นสุด</option><option>ยกเลิก</option></select></div>
+                  <div className="form-group"><label>หมายเหตุ</label><input value={vendorContractForm.notes} onChange={event => setVendorContractForm(previous => ({ ...previous, notes: event.target.value }))} /></div>
+                </div>
+                <div className="software-license-actions">
+                  {editingVendorContractIndex !== null && <button type="button" className="btn-details" onClick={resetVendorContractForm}>ยกเลิกการแก้ไข</button>}
+                  <button type="submit" className="btn-save">{editingVendorContractIndex === null ? 'เพิ่ม Vendor Contract' : 'บันทึกการแก้ไข'}</button>
+                </div>
+              </form>
+              <div className="vendor-contract-summary">
+                <span>ทั้งหมด <strong>{(activeData.vendorContracts || []).length.toLocaleString()}</strong> สัญญา</span>
+                <span>มูลค่ารวม <strong>{formatThaiBaht((activeData.vendorContracts || []).reduce((sum, contract) => sum + Number(contract.amount || 0), 0))}</strong></span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="details-table">
+                  <thead><tr><th>Vendor</th><th>บริการ</th><th>เลขที่สัญญา</th><th>ระยะสัญญา</th><th>รอบชำระ</th><th>มูลค่า</th><th>ผู้ติดต่อ</th><th>สถานะ</th><th>หมายเหตุ</th><th>จัดการ</th></tr></thead>
+                  <tbody>
+                    {(activeData.vendorContracts || []).length ? (activeData.vendorContracts || []).map((contract, index) => (
+                      <tr key={`${contract.vendor}-${contract.contractNo}-${index}`}>
+                        <td><strong>{contract.vendor}</strong></td><td>{contract.service}</td><td>{contract.contractNo || '-'}</td><td>{contract.startDate || '-'} ถึง {contract.endDate || '-'}</td><td>{contract.billingCycle || '-'}</td><td>{formatThaiBaht(contract.amount || 0)}</td><td>{contract.contact || '-'}</td><td>{contract.status || '-'}</td><td>{contract.notes || '-'}</td>
+                        <td><div className="software-row-actions"><button type="button" className="btn-details" onClick={() => editVendorContract(contract, index)}>แก้ไข</button><button type="button" className="console-delete-btn" onClick={() => deleteVendorContract(index)}>ลบ</button></div></td>
+                      </tr>
+                    )) : <tr><td colSpan="10" style={{ textAlign: 'center' }}>ยังไม่มี Vendor Contract ในเดือนนี้</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {activeModal === 'assetWorkflow' && (() => {

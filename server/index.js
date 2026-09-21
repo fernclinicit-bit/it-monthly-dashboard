@@ -528,6 +528,7 @@ async function initDb() {
           software_expiring_details JSONB NOT NULL,
           assets_expiring_details JSONB NOT NULL,
           ongoing_projects JSONB NOT NULL,
+          vendor_contracts JSONB NOT NULL DEFAULT '[]'::jsonb,
           recommendations JSONB NOT NULL
         )
       `);
@@ -535,6 +536,10 @@ async function initDb() {
       await client.query(`
         ALTER TABLE monthly_data
         ADD COLUMN IF NOT EXISTS software_annual_cost NUMERIC(12, 2) NOT NULL DEFAULT 0
+      `);
+      await client.query(`
+        ALTER TABLE monthly_data
+        ADD COLUMN IF NOT EXISTS vendor_contracts JSONB NOT NULL DEFAULT '[]'::jsonb
       `);
 
       await client.query(`
@@ -723,6 +728,7 @@ app.get('/api/db-state', async (req, res) => {
         softwareExpiringDetails: row.software_expiring_details || [],
         assetsExpiringDetails: row.assets_expiring_details || [],
         ongoingProjects: row.ongoing_projects || [],
+        vendorContracts: row.vendor_contracts || [],
         recommendations: row.recommendations || [],
         ticketsList: []
       };
@@ -1609,9 +1615,9 @@ app.post('/api/sync-all', requireRole('admin'), async (req, res) => {
           tickets_count, sla_percent, response_time, resolution_time, csat, total_software, licenses_in_use, licenses_vacant,
           software_cost, software_annual_cost, software_expiring, backup_success, security_incidents, antivirus_coverage, mfa_coverage,
           repair_count, repair_cost, top_broken_devices, dept_costs, software_expiring_details, assets_expiring_details,
-          ongoing_projects, recommendations
+          ongoing_projects, vendor_contracts, recommendations
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32
         )
       `, [
         monthKey,
@@ -1644,6 +1650,7 @@ app.post('/api/sync-all', requireRole('admin'), async (req, res) => {
         JSON.stringify(monthData.softwareExpiringDetails || []),
         JSON.stringify(monthData.assetsExpiringDetails || []),
         JSON.stringify(monthData.ongoingProjects || []),
+        JSON.stringify(monthData.vendorContracts || []),
         JSON.stringify(monthData.recommendations || [])
       ]);
 
