@@ -3821,7 +3821,28 @@ function Dashboard({ currentUser, onLogout }) {
         }
 
         const headers = tableRows[headerRowIndex].map(normalizeHeader);
-        const findColumn = (field) => headers.findIndex(header => matchesAlias(header, normalizedAliases[field]));
+        const findColumn = (field) => {
+          const fieldAliases = normalizedAliases[field];
+          let bestIndex = -1;
+          let bestScore = 0;
+
+          headers.forEach((header, index) => {
+            if (!header) return;
+            fieldAliases.forEach((alias) => {
+              let score = 0;
+              if (header === alias) score = 1000 + alias.length;
+              else if (header.length >= 3 && alias.length >= 3 && header.includes(alias)) score = 500 + alias.length;
+              else if (header.length >= 3 && alias.length >= 3 && alias.includes(header)) score = 100 + header.length;
+
+              if (score > bestScore) {
+                bestScore = score;
+                bestIndex = index;
+              }
+            });
+          });
+
+          return bestIndex;
+        };
         const columns = {
           name: findColumn('name'), owner: findColumn('owner'), used: findColumn('used'), vacant: findColumn('vacant'), licenses: findColumn('licenses'),
           cost: findColumn('cost'), paymentChannel: findColumn('paymentChannel'), paymentDate: findColumn('paymentDate'), expiryDate: findColumn('expiryDate'),
@@ -3876,12 +3897,14 @@ function Dashboard({ currentUser, onLogout }) {
         setData((previous) => {
           const monthData = previous[currentMonth] || { ...initialDashboardData['2026-07'] };
           const existingRows = [...(monthData.softwareExpiringDetails || [])];
-          const importedByName = new Map(importedLicenses.map((item) => [normalizeHeader(item.name), item]));
+          const importKey = (item) => `${normalizeHeader(item.name)}::${normalizeHeader(item.registeredEmail)}`;
+          const importedByKey = new Map(importedLicenses.map((item) => [importKey(item), item]));
           const mergedRows = existingRows
             .map((existing) => {
-              const imported = importedByName.get(normalizeHeader(existing.name));
+              const existingKey = importKey(existing);
+              const imported = importedByKey.get(existingKey);
               if (!imported) return existing;
-              importedByName.delete(normalizeHeader(existing.name));
+              importedByKey.delete(existingKey);
               const next = { ...existing, name: imported.name, isLicenseRecord: true };
               Object.entries(imported._importedColumns).forEach(([field, columnIndex]) => {
                 if (columnIndex < 0) return;
@@ -3897,7 +3920,7 @@ function Dashboard({ currentUser, onLogout }) {
               next.price = Number(next.monthlyCost || 0);
               return next;
             })
-            .concat(Array.from(importedByName.values()).map(({ _importedColumns, ...item }) => item));
+            .concat(Array.from(importedByKey.values()).map(({ _importedColumns, ...item }) => item));
           return {
             ...previous,
             [currentMonth]: { ...monthData, softwareExpiringDetails: mergedRows },
