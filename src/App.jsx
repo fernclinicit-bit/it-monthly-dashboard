@@ -1873,7 +1873,7 @@ const normalizeAssetLookup = (value, convertThaiKeyboard = false) => {
 function Dashboard({ currentUser, onLogout }) {
   const navigate = useNavigate();
   const isAdmin = currentUser?.role === 'admin';
-  const canRequestService = currentUser?.role === 'admin' || currentUser?.role === 'staff';
+  const canRequestService = isAdmin;
   const [data, setData] = useState(() => {
     const saved = localStorage.getItem('it_dashboard_data');
     if (!saved) return initialDashboardData;
@@ -5617,10 +5617,10 @@ function Dashboard({ currentUser, onLogout }) {
                 ซอฟต์แวร์และลิขสิทธิ์ (Software)
               </h3>
               <button 
-                onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                onClick={() => setActiveModal('expiringSoftware')}
                 className="btn-details"
               >
-                ดูรายละเอียด / แก้ไข
+                {isAdmin ? 'ดูรายละเอียด / แก้ไข' : 'ดูรายละเอียด'}
               </button>
             </div>
             <div className="metrics-row">
@@ -5636,8 +5636,8 @@ function Dashboard({ currentUser, onLogout }) {
                 className="metric-item"
                 role="button"
                 tabIndex={0}
-                onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
-                onKeyDown={(event) => event.key === 'Enter' && requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                onClick={() => setActiveModal('expiringSoftware')}
+                onKeyDown={(event) => event.key === 'Enter' && setActiveModal('expiringSoftware')}
                 style={{ cursor: 'pointer' }}
                 title="คลิกเพื่อดูรายละเอียด License ใช้งาน"
               >
@@ -5648,8 +5648,8 @@ function Dashboard({ currentUser, onLogout }) {
                 className="metric-item"
                 role="button"
                 tabIndex={0}
-                onClick={() => requireAdminAccess(() => setActiveModal('expiringSoftware'))}
-                onKeyDown={(event) => event.key === 'Enter' && requireAdminAccess(() => setActiveModal('expiringSoftware'))}
+                onClick={() => setActiveModal('expiringSoftware')}
+                onKeyDown={(event) => event.key === 'Enter' && setActiveModal('expiringSoftware')}
                 style={{ cursor: 'pointer' }}
                 title="คลิกเพื่อดูรายละเอียด License ว่าง"
               >
@@ -5679,10 +5679,10 @@ function Dashboard({ currentUser, onLogout }) {
               </h3>
               <button
                 type="button"
-                onClick={() => requireAdminAccess(openEditModal)}
+                onClick={() => isAdmin ? openEditModal() : setActiveModal('securityDetails')}
                 className="btn-details"
               >
-                รายละเอียด / แก้ไข
+                {isAdmin ? 'รายละเอียด / แก้ไข' : 'ดูรายละเอียด'}
               </button>
             </div>
             <div className="metrics-row">
@@ -5800,6 +5800,26 @@ function Dashboard({ currentUser, onLogout }) {
 
       {activeModal === 'userAccess' && (
         <UserAccessManager currentUser={currentUser} onClose={() => setActiveModal(null)} />
+      )}
+
+      {activeModal === 'securityDetails' && (
+        <div className="modal-overlay active">
+          <div className="modal large">
+            <header className="modal-header">
+              <h3>รายละเอียดความปลอดภัยข้อมูล ({activeData.monthName})</h3>
+              <button onClick={() => setActiveModal(null)} className="modal-close"><X size={20} /></button>
+            </header>
+            <div className="modal-body">
+              <div className="metrics-row">
+                <div className="metric-item"><div className="metric-label">Security Incident</div><div className={`metric-value ${activeData.securityIncidents > 0 ? 'highlight-danger' : 'highlight-success'}`}>{activeData.securityIncidents} ครั้ง</div></div>
+                <div className="metric-item"><div className="metric-label">Backup สำเร็จ</div><div className="metric-value highlight-primary">{activeData.backupSuccess}%</div></div>
+                <div className="metric-item"><div className="metric-label">Antivirus Coverage</div><div className="metric-value highlight-warning">{activeData.antivirusCoverage}%</div></div>
+                <div className="metric-item"><div className="metric-label">MFA Coverage</div><div className="metric-value highlight-success">{activeData.mfaCoverage}%</div></div>
+              </div>
+              <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>บัญชีนี้เป็นสิทธิ์อ่านอย่างเดียว สามารถดูข้อมูลได้ แต่ไม่สามารถแก้ไขข้อมูล Dashboard</p>
+            </div>
+          </div>
+        </div>
       )}
 
       {activeModal === 'vendorContracts' && (
@@ -6626,7 +6646,7 @@ function Dashboard({ currentUser, onLogout }) {
                   <small style={{ color: 'var(--text-muted)' }}>{detailedSoftwareLicenses.length.toLocaleString()} โปรแกรมในทะเบียน</small>
                 </div>
               </div>
-              <form onSubmit={saveSoftwareLicense} className="software-license-form">
+              {isAdmin && <form onSubmit={saveSoftwareLicense} className="software-license-form">
                 <div className="form-grid">
                   <div className="form-group">
                     <label>ชื่อซอฟต์แวร์/โปรแกรม</label>
@@ -6689,7 +6709,7 @@ function Dashboard({ currentUser, onLogout }) {
                   {editingSoftwareIndex !== null && <button type="button" className="btn-details" onClick={resetSoftwareForm}>ยกเลิก</button>}
                   <button type="submit" className="btn-save">{editingSoftwareIndex === null ? 'เพิ่ม License' : 'บันทึกการแก้ไข'}</button>
                 </div>
-              </form>
+              </form>}
               <div className="software-license-toolbar">
                 <label className="software-license-search">
                   <Search size={17} aria-hidden="true" />
@@ -6739,7 +6759,7 @@ function Dashboard({ currentUser, onLogout }) {
                       <th>วันหมดสัญญา</th>
                       <th>อีเมลสมัคร</th>
                       <th>ผู้ใช้งานปัจจุบัน</th>
-                      <th>จัดการ</th>
+                      {isAdmin && <th>จัดการ</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -6757,17 +6777,17 @@ function Dashboard({ currentUser, onLogout }) {
                           <td>{soft.expiringDate || '-'}</td>
                           <td>{soft.registeredEmail || '-'}</td>
                           <td style={{ minWidth: '220px' }}>{soft.currentUsers || '-'}</td>
-                          <td>
+                          {isAdmin && <td>
                             <div className="software-row-actions">
                               <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, originalIndex)}>แก้ไข</button>
                               <button type="button" className="console-delete-btn" onClick={() => deleteSoftwareLicense(originalIndex)}>ลบ</button>
                             </div>
-                          </td>
+                          </td>}
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="12" style={{ textAlign: 'center' }}>
+                        <td colSpan={isAdmin ? 12 : 11} style={{ textAlign: 'center' }}>
                           {(activeData.softwareExpiringDetails || []).length > 0
                             ? 'ไม่พบรายการที่ตรงกับการค้นหาหรือตัวกรอง'
                             : 'ยังไม่มีรายละเอียด License'}
@@ -6779,7 +6799,7 @@ function Dashboard({ currentUser, onLogout }) {
                     <tr className="software-total-row">
                       <td colSpan="5">รวมราคา ({filteredSoftwareLicenses.length.toLocaleString()} รายการ)</td>
                       <td>{formatThaiBaht(filteredSoftwareTotalCost)}</td>
-                      <td colSpan="6"></td>
+                      <td colSpan={isAdmin ? 6 : 5}></td>
                     </tr>
                   </tfoot>
                 </table>
@@ -8140,7 +8160,7 @@ export default function App() {
   if (!auth?.user) return <Login onLogin={setAuth} />;
 
   const dashboard = <Dashboard currentUser={auth.user} onLogout={logout} />;
-  const canRequestService = auth.user.role === 'admin' || auth.user.role === 'staff';
+  const canRequestService = auth.user.role === 'admin';
   return (
     <Routes>
       <Route path="/" element={dashboard} />

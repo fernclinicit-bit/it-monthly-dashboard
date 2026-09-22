@@ -807,7 +807,7 @@ app.get('/api/tickets/:sn/attachment', async (req, res) => {
   }
 });
 
-app.post('/api/tickets', requireRole('staff'), async (req, res) => {
+app.post('/api/tickets', requireRole('admin'), async (req, res) => {
   const { name, department, date, deviceType, issue, priority, assetSerial, email, anydesk, attachmentData, attachmentName } = req.body || {};
   if (!name || !department || !date || !deviceType || !issue) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลแจ้งปัญหาให้ครบถ้วน' });
@@ -1147,7 +1147,7 @@ app.get('/api/asset-requests', async (_req, res) => {
   }
 });
 
-app.post('/api/asset-requests', requireRole('staff'), async (req, res) => {
+app.post('/api/asset-requests', requireRole('admin'), async (req, res) => {
   const { requester, department, itemType, purpose, requestedDate, dueDate, notes } = req.body;
   if (!requester || !department || !itemType || !purpose || !requestedDate) {
     return res.status(400).json({ error: 'กรุณากรอกข้อมูลคำขอให้ครบ' });
@@ -1226,7 +1226,7 @@ app.get('/api/data-integrity/months', async (_req, res) => {
   }
 });
 
-app.patch('/api/asset-requests/:id', requireRole('staff'), async (req, res) => {
+app.patch('/api/asset-requests/:id', requireRole('admin'), async (req, res) => {
   const id = Number(req.params.id);
   const { requester, department, itemType, purpose, dueDate, notes } = req.body;
   if (!Number.isInteger(id)) {
@@ -1297,7 +1297,7 @@ app.patch('/api/asset-requests/:id', requireRole('staff'), async (req, res) => {
   }
 });
 
-app.patch('/api/asset-requests/:id/action', requireRole('staff'), async (req, res) => {
+app.patch('/api/asset-requests/:id/action', requireRole('admin'), async (req, res) => {
   const id = Number(req.params.id);
   const { action, reviewer, assetSn, condition, note, requesterIdentity } = req.body;
   const allowedActions = ['approve', 'reject', 'issue', 'request_return', 'return'];
