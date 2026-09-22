@@ -3775,94 +3775,136 @@ function Dashboard({ currentUser, onLogout }) {
     const reader = new FileReader();
     reader.onload = (loadEvent) => {
       try {
-        const workbook = XLSX.read(loadEvent.target.result, { type: 'array' });
+        const workbook = XLSX.read(loadEvent.target.result, { type: 'array', cellDates: true });
         const normalizeHeader = (value) => String(value ?? '')
           .normalize('NFKC')
           .toLocaleLowerCase('th-TH')
           .replace(/[^\p{L}\p{N}]+/gu, '');
-        const nameAliases = ['ชื่อซอฟต์แวร์โปรแกรม', 'ชื่อซอฟต์แวร์', 'ชื่อโปรแกรม', 'softwareprogram', 'softwarename', 'software', 'programname'];
-        const matchesAlias = (header, aliases) => aliases.some((alias) => header === alias || header.includes(alias) || alias.includes(header));
+        const aliases = {
+          name: ['ชื่อซอฟต์แวร์โปรแกรม', 'ชื่อซอฟต์แวร์', 'ชื่อโปรแกรม', 'โปรแกรม', 'ระบบ', 'softwareprogram', 'softwarename', 'software', 'programname', 'program', 'application', 'appname', 'service'],
+          owner: ['owner', 'ownerแผนก', 'เจ้าของ', 'ผู้รับผิดชอบ', 'แผนก', 'department', 'vendor', 'ผู้ให้บริการ'],
+          used: ['ใช้งาน', 'licenseใช้งาน', 'จำนวนใช้งาน', 'licenseused', 'used', 'activeusers', 'จำนวนผู้ใช้'],
+          vacant: ['ว่าง', 'licenseว่าง', 'จำนวนว่าง', 'licensevacant', 'vacant', 'available', 'unused'],
+          licenses: ['licenseรวม', 'จำนวนlicense', 'จำนวนสิทธิ์', 'จำนวนบัญชี', 'licenses', 'quantity', 'qty', 'seats'],
+          cost: ['ราคา', 'ค่าใช้จ่ายต่อเดือนบาท', 'ค่าบริการรายเดือน', 'ค่าใช้จ่าย', 'มูลค่า', 'monthlycost', 'cost', 'price', 'amount', 'fee'],
+          paymentChannel: ['ช่องทางชำระ', 'ช่องทางชำระเงิน', 'วิธีชำระ', 'paymentchannel', 'paymentmethod', 'paymentvia'],
+          paymentDate: ['วันที่ชำระ', 'วันที่รอบชำระเงิน', 'รอบชำระเงิน', 'ความถี่ชำระ', 'billingcycle', 'paymentdate', 'paymentcycle', 'frequency'],
+          expiryDate: ['วันหมดสัญญา', 'วันหมดอายุ', 'วันต่ออายุ', 'ครบกำหนด', 'expirydate', 'expirationdate', 'renewaldate', 'duedate', 'enddate'],
+          email: ['อีเมลสมัคร', 'อีเมลที่สมัคร', 'อีเมล', 'บัญชี', 'registeredemail', 'email', 'account', 'username'],
+          users: ['ผู้ใช้งานปัจจุบัน', 'รายชื่อผู้ใช้งาน', 'ผู้ใช้งาน', 'currentusers', 'users', 'assignee', 'assignedto'],
+          status: ['สถานะ', 'status', 'contractstatus', 'licensestatus'],
+        };
+        const normalizedAliases = Object.fromEntries(Object.entries(aliases).map(([key, values]) => [key, values.map(normalizeHeader)]));
+        const matchesAlias = (header, values) => Boolean(header) && values.some((alias) => header === alias || (header.length >= 3 && alias.length >= 3 && (header.includes(alias) || alias.includes(header))));
         let tableRows = null;
         let headerRowIndex = -1;
+        let selectedSheetName = '';
+        let bestHeaderScore = 0;
 
         for (const sheetName of workbook.SheetNames) {
-          const candidateRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: '', raw: false });
-          const candidateHeaderIndex = candidateRows.findIndex((row) =>
-            row.some((cell) => {
-              const normalized = normalizeHeader(cell);
-              return normalized.length >= 3 && matchesAlias(normalized, nameAliases);
-            })
-          );
-          if (candidateHeaderIndex !== -1) {
+          const candidateRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: '', raw: true });
+          candidateRows.slice(0, 50).forEach((row, rowIndex) => {
+            const normalizedRow = row.map(normalizeHeader);
+            const hasName = normalizedRow.some(header => matchesAlias(header, normalizedAliases.name));
+            if (!hasName) return;
+            const score = Object.values(normalizedAliases).reduce((total, fieldAliases) => total + (normalizedRow.some(header => matchesAlias(header, fieldAliases)) ? 1 : 0), 0);
+            if (score <= bestHeaderScore) return;
+            bestHeaderScore = score;
             tableRows = candidateRows;
-            headerRowIndex = candidateHeaderIndex;
-            break;
-          }
+            headerRowIndex = rowIndex;
+            selectedSheetName = sheetName;
+          });
         }
 
         if (!tableRows || headerRowIndex === -1) {
-          throw new Error('ไม่พบหัวคอลัมน์ชื่อซอฟต์แวร์/โปรแกรม กรุณาตรวจสอบแถวหัวตาราง');
+          throw new Error('ไม่พบคอลัมน์ Program/ชื่อโปรแกรม กรุณาตรวจสอบว่าไฟล์มีแถวหัวตารางและข้อมูลอย่างน้อย 1 รายการ');
         }
 
         const headers = tableRows[headerRowIndex].map(normalizeHeader);
-        const findColumn = (...aliases) => headers.findIndex((header) =>
-          header.length >= 2 && matchesAlias(header, aliases.map(normalizeHeader))
-        );
+        const findColumn = (field) => headers.findIndex(header => matchesAlias(header, normalizedAliases[field]));
         const columns = {
-          name: findColumn(...nameAliases),
-          owner: findColumn('Owner', 'Owner / แผนก', 'เจ้าของ', 'แผนก'),
-          used: findColumn('ใช้งาน', 'License ใช้งาน', 'จำนวนใช้งาน', 'License Used', 'Used'),
-          vacant: findColumn('ว่าง', 'License ว่าง', 'จำนวนว่าง', 'License Vacant', 'Vacant', 'Available'),
-          cost: findColumn('ราคา', 'ค่าใช้จ่ายต่อเดือน (บาท)', 'ค่าบริการรายเดือน', 'Monthly Cost', 'Price'),
-          paymentChannel: findColumn('ช่องทางชำระ', 'ช่องทางชำระเงิน', 'Payment Channel', 'Payment Method'),
-          paymentDate: findColumn('วันที่ชำระ', 'วันที่/รอบชำระเงิน', 'Payment Date', 'Billing Cycle'),
-          expiryDate: findColumn('วันหมดสัญญา', 'วันหมดอายุ', 'Expiry Date', 'Expiration Date'),
-          email: findColumn('อีเมลสมัคร', 'อีเมลที่สมัคร', 'Registered Email', 'Email'),
-          users: findColumn('ผู้ใช้งานปัจจุบัน', 'รายชื่อผู้ใช้งาน', 'Current Users', 'Users'),
+          name: findColumn('name'), owner: findColumn('owner'), used: findColumn('used'), vacant: findColumn('vacant'), licenses: findColumn('licenses'),
+          cost: findColumn('cost'), paymentChannel: findColumn('paymentChannel'), paymentDate: findColumn('paymentDate'), expiryDate: findColumn('expiryDate'),
+          email: findColumn('email'), users: findColumn('users'), status: findColumn('status'),
         };
         const valueAt = (row, columnIndex) => columnIndex >= 0 ? row[columnIndex] : '';
-        const toNumber = (value) => Number(String(value ?? '').replace(/[^0-9.-]/g, '')) || 0;
+        const hasValue = (value) => value !== '' && value !== null && value !== undefined;
+        const toNumber = (value) => {
+          if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+          const cleaned = String(value ?? '').replace(/,/g, '').replace(/[^0-9.-]/g, '');
+          return Number(cleaned) || 0;
+        };
+        const toDateText = (value) => {
+          if (!hasValue(value)) return '';
+          if (value instanceof Date && !Number.isNaN(value.getTime())) return value.toISOString().slice(0, 10);
+          if (typeof value === 'number') {
+            const parsed = XLSX.SSF.parse_date_code(value);
+            if (parsed) return `${parsed.y}-${String(parsed.m).padStart(2, '0')}-${String(parsed.d).padStart(2, '0')}`;
+          }
+          return String(value).trim();
+        };
 
         const importedLicenses = tableRows.slice(headerRowIndex + 1).map((row) => {
           const name = String(valueAt(row, columns.name)).trim();
           const used = toNumber(valueAt(row, columns.used));
           const vacant = toNumber(valueAt(row, columns.vacant));
+          const totalLicenses = toNumber(valueAt(row, columns.licenses));
           const monthlyCost = toNumber(valueAt(row, columns.cost));
           return {
             name,
             owner: String(valueAt(row, columns.owner)).trim(),
-            used,
+            used: columns.used >= 0 ? used : totalLicenses,
             vacant,
-            licenses: used + vacant,
+            licenses: columns.used >= 0 || columns.vacant >= 0 ? used + vacant : totalLicenses,
             monthlyCost,
             price: monthlyCost,
             paymentChannel: String(valueAt(row, columns.paymentChannel)).trim(),
             paymentDate: String(valueAt(row, columns.paymentDate)).trim(),
-            expiringDate: String(valueAt(row, columns.expiryDate)).trim(),
+            expiringDate: toDateText(valueAt(row, columns.expiryDate)),
             registeredEmail: String(valueAt(row, columns.email)).trim(),
             currentUsers: String(valueAt(row, columns.users)).trim(),
-            status: 'ใช้งาน',
+            status: String(valueAt(row, columns.status)).trim() || 'ใช้งาน',
             isLicenseRecord: true,
+            _importedColumns: columns,
           };
-        }).filter((item) => item.name);
+        }).filter((item) => item.name && !/^(รวม|total|subtotal|grandtotal)$/i.test(normalizeHeader(item.name)));
 
         if (importedLicenses.length === 0) {
-          throw new Error('ไม่พบคอลัมน์ชื่อซอฟต์แวร์/โปรแกรม หรือไม่มีข้อมูลรายการ');
+          throw new Error(`พบหัวตารางในชีต “${selectedSheetName}” แต่ไม่มีข้อมูลใต้คอลัมน์ Program/ชื่อโปรแกรม`);
         }
 
         setData((previous) => {
           const monthData = previous[currentMonth] || { ...initialDashboardData['2026-07'] };
           const existingRows = [...(monthData.softwareExpiringDetails || [])];
-          const importedByName = new Map(importedLicenses.map((item) => [item.name.toLocaleLowerCase('th-TH'), item]));
+          const importedByName = new Map(importedLicenses.map((item) => [normalizeHeader(item.name), item]));
           const mergedRows = existingRows
-            .filter((item) => !importedByName.has(String(item.name || '').trim().toLocaleLowerCase('th-TH')))
-            .concat(importedLicenses);
+            .map((existing) => {
+              const imported = importedByName.get(normalizeHeader(existing.name));
+              if (!imported) return existing;
+              importedByName.delete(normalizeHeader(existing.name));
+              const next = { ...existing, name: imported.name, isLicenseRecord: true };
+              Object.entries(imported._importedColumns).forEach(([field, columnIndex]) => {
+                if (columnIndex < 0) return;
+                const targetField = { cost: 'monthlyCost', expiryDate: 'expiringDate', email: 'registeredEmail', users: 'currentUsers' }[field] || field;
+                if (targetField === 'licenses') return;
+                next[targetField] = imported[targetField];
+              });
+              if (imported._importedColumns.licenses >= 0 && imported._importedColumns.used < 0) {
+                next.used = imported.used;
+                if (imported._importedColumns.vacant < 0) next.vacant = 0;
+              }
+              next.licenses = Number(next.used || 0) + Number(next.vacant || 0);
+              next.price = Number(next.monthlyCost || 0);
+              return next;
+            })
+            .concat(Array.from(importedByName.values()).map(({ _importedColumns, ...item }) => item));
           return {
             ...previous,
             [currentMonth]: { ...monthData, softwareExpiringDetails: mergedRows },
           };
         });
-        alert(`นำเข้า License สำเร็จ ${importedLicenses.length} รายการ`);
+        const recognizedFields = Object.entries(columns).filter(([, index]) => index >= 0).map(([field]) => field).length;
+        alert(`นำเข้า License สำเร็จ ${importedLicenses.length} รายการ จากชีต “${selectedSheetName}” (จับคู่ได้ ${recognizedFields} คอลัมน์)`);
       } catch (error) {
         alert(`นำเข้าไฟล์ Excel ไม่สำเร็จ: ${error.message}`);
       } finally {
