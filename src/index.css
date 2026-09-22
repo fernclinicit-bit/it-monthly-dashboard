@@ -775,6 +775,44 @@ body {
     color: #60a5fa;
 }
 
+.vendor-contract-modal .form-group label {
+    color: #e5eefc;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.vendor-contract-modal .form-group input,
+.vendor-contract-modal .form-group select {
+    min-height: 42px;
+    border: 1px solid #93c5fd;
+}
+
+.vendor-contract-modal .software-license-actions .btn-save,
+.vendor-contract-modal .software-license-actions .btn-details {
+    min-height: 40px;
+    padding: 8px 18px;
+    border-radius: 7px;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.vendor-contract-modal .details-table th {
+    background: #1e3a6d;
+    color: #f8fafc;
+    font-weight: 700;
+}
+
+.vendor-contract-modal .details-table td {
+    color: #e5eefc;
+}
+
+.vendor-contract-modal .software-row-actions button {
+    min-height: 34px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
 .details-table .software-total-row td {
     padding-top: 12px;
     padding-bottom: 12px;
