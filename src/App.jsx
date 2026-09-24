@@ -5178,7 +5178,7 @@ function Dashboard({ currentUser, onLogout }) {
           <button 
             onClick={() => setMobileSidebarOpen(false)} 
             className="mobile-menu-close"
-            style={{ display: 'none', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
           >
             <X size={20} />
           </button>
@@ -5407,7 +5407,7 @@ function Dashboard({ currentUser, onLogout }) {
               aria-label="เปิดเมนู"
               aria-controls="dashboard-sidebar"
               aria-expanded={mobileSidebarOpen}
-              style={{ display: 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
+              style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
             >
               <Menu size={24} />
             </button>
@@ -5450,7 +5450,7 @@ function Dashboard({ currentUser, onLogout }) {
                   aria-label="ซิงค์ Device Monitor ตอนนี้"
                   onClick={() => setExternalDevicesRefreshKey(previous => previous + 1)}
                   disabled={isFetchingDevices}
-                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '30px', padding: 0, borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-primary)', cursor: isFetchingDevices ? 'wait' : 'pointer' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', minWidth: '36px', minHeight: '36px', padding: 0, borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-primary)', cursor: isFetchingDevices ? 'wait' : 'pointer' }}
                 >
                   <RotateCcw size={14} className={isFetchingDevices ? 'device-sync-spinning' : ''} />
                 </button>
@@ -5724,7 +5724,7 @@ function Dashboard({ currentUser, onLogout }) {
                 <div className="metric-value">{formatThaiBaht(activeData.repairCost)}</div>
               </div>
             </div>
-            <div className="card-chart-container" style={{ height: '100px' }}>
+            <div className="card-chart-container">
               <canvas ref={repairCanvasRef}></canvas>
             </div>
             <div className="repair-list-summary">
@@ -6776,7 +6776,7 @@ function Dashboard({ currentUser, onLogout }) {
                           <td>{soft.paymentDate || '-'}</td>
                           <td>{soft.expiringDate || '-'}</td>
                           <td>{soft.registeredEmail || '-'}</td>
-                          <td style={{ minWidth: '220px' }}>{soft.currentUsers || '-'}</td>
+                          <td style={{ minWidth: '160px' }}>{soft.currentUsers || '-'}</td>
                           {isAdmin && <td>
                             <div className="software-row-actions">
                               <button type="button" className="btn-details" onClick={() => editSoftwareLicense(soft, originalIndex)}>แก้ไข</button>
@@ -7030,7 +7030,7 @@ function Dashboard({ currentUser, onLogout }) {
                   borderRadius: '8px',
                   border: '1px solid rgba(255, 255, 255, 0.08)'
                 }}>
-                  <div style={{ flex: '1', minWidth: '200px' }}>
+                  <div style={{ flex: '1 1 200px', minWidth: 0 }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>ค้นหาอุปกรณ์ / ชื่อผู้เบิก / หมายเลขเครื่อง</label>
                     <input 
                       type="text"
@@ -7047,7 +7047,7 @@ function Dashboard({ currentUser, onLogout }) {
                       }}
                     />
                   </div>
-                  <div style={{ width: '200px' }}>
+                  <div style={{ flex: '0 1 200px', minWidth: 0 }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามประเภท</label>
                     <select
                       value={assetTypeFilter}
@@ -7067,7 +7067,7 @@ function Dashboard({ currentUser, onLogout }) {
                       ))}
                     </select>
                   </div>
-                  <div style={{ width: '200px' }}>
+                  <div style={{ flex: '0 1 200px', minWidth: 0 }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามแผนก/ตำแหน่ง</label>
                     <select
                       value={assetDeptFilter}
@@ -7087,7 +7087,7 @@ function Dashboard({ currentUser, onLogout }) {
                       ))}
                     </select>
                   </div>
-                  <div style={{ width: '150px' }}>
+                  <div style={{ flex: '0 1 150px', minWidth: 0 }}>
                     <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>กรองตามสถานะ</label>
                     <select
                       value={assetStatusFilter}
@@ -7413,7 +7413,7 @@ function Dashboard({ currentUser, onLogout }) {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div className="console-projects-grid">
                       <div>
                         <h5 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>โครงการที่ดำเนินการอยู่ (Ongoing Projects)</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
@@ -7562,7 +7562,7 @@ function Dashboard({ currentUser, onLogout }) {
                       {editingAssetSn !== null ? (
                         <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
                           <button type="button" onClick={handleAddAsset} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
-                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
+                          <button type="button" onClick={handleCancelEditAsset} className="sidebar-btn" style={{ minWidth: '100px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                         </div>
                       ) : null}
                     </div>
@@ -7774,7 +7774,7 @@ function Dashboard({ currentUser, onLogout }) {
                         {editingTicketSn !== null ? (
                           <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button type="button" onClick={handleAddTicket} className="btn-save" style={{ flex: '1', height: '36px' }}>บันทึกการแก้ไข</button>
-                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ width: '120px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
+                            <button type="button" onClick={handleCancelEditTicket} className="sidebar-btn" style={{ minWidth: '100px', height: '36px', margin: 0, padding: '0 10px', backgroundColor: '#4b5563', color: 'white' }}>ยกเลิก</button>
                           </div>
                         ) : (
                           <button type="button" onClick={handleAddTicket} className="btn-save" style={{ gridColumn: '1 / -1', marginTop: '8px', height: '36px' }}>บันทึกเคสแจ้งซ่อม</button>
@@ -7939,7 +7939,7 @@ function Dashboard({ currentUser, onLogout }) {
                           <input type="text" className="lark-input" placeholder="ตัวอย่าง: สมเกียรติ ยิ่งดี" value={larkTicketComplainant} onChange={e => setLarkTicketComplainant(e.target.value)} required={larkTicketRole === 'user'} />
                         </div>
 
-                        <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="lark-field-group lark-form-row-grid">
                           <div>
                             <label>อีเมลผู้แจ้ง</label>
                             <input type="email" className="lark-input" placeholder="user@domain.com" value={larkTicketEmail} onChange={e => setLarkTicketEmail(e.target.value)} />
@@ -8027,7 +8027,7 @@ function Dashboard({ currentUser, onLogout }) {
                                 <div>⚠️ <strong>ปัญหาที่พบ:</strong> {selectedTicket.issue}</div>
                               </div>
 
-                              <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                              <div className="lark-field-group lark-form-row-grid">
                                 <div>
                                   <label>ผู้ดำเนินงาน (ช่าง IT) <span>*</span></label>
                                   <input type="text" className="lark-input" placeholder="เช่น ช่างก้องภพ (IT)" value={larkTicketResponder} onChange={e => setLarkTicketResponder(e.target.value)} required={larkTicketRole === 'it'} />
@@ -8043,7 +8043,7 @@ function Dashboard({ currentUser, onLogout }) {
                                 <input type="text" className="lark-input" placeholder="ตัวอย่าง: เปลี่ยนสาย LAN ใหม่, รีสตาร์ทการตั้งค่าเครือข่าย" value={larkTicketCause} onChange={e => setLarkTicketCause(e.target.value)} />
                               </div>
 
-                              <div className="lark-field-group" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                              <div className="lark-field-group lark-form-row-grid">
                                 <div>
                                   <label>อัพเดตสถานะใบงาน</label>
                                   <select className="lark-input" value={larkTicketStatus} onChange={e => setLarkTicketStatus(e.target.value)}>

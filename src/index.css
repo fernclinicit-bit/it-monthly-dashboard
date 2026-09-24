@@ -191,7 +191,7 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 0 0 3px rgba(239,68,68,.2), 0 7px 18px rgba(127,29,29,.38);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .notification-panel {
         position: fixed;
         top: 76px;
@@ -426,7 +426,7 @@ body {
 /* Dashboard Main Grid Layout */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     gap: 20px;
     align-items: stretch;
 }
@@ -1168,7 +1168,7 @@ body {
     background: #111827;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .dashboard-fullscreen-modal {
         width: 100vw;
         height: 100vh;
@@ -1318,7 +1318,7 @@ body {
 .asset-tag-5 { background: #cffafe; }
 
 /* Responsive Overrides */
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
     body {
         flex-direction: column;
     }
@@ -2658,7 +2658,7 @@ body {
 .workflow-role-switch button { border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; }
 .workflow-role-switch button.active { color: #fff; background: #7c3aed; }
 .workflow-subtitle { margin: 4px 0 0; color: var(--text-muted); font-size: 0.82rem; }
-.workflow-body { display: grid; grid-template-columns: minmax(320px, 0.72fr) minmax(650px, 1.7fr); gap: 18px; align-items: start; }
+.workflow-body { display: grid; grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.7fr); gap: 18px; align-items: start; }
 .workflow-body.workflow-role-it { grid-template-columns: 1fr; }
 .workflow-request-form, .workflow-list-section { background: rgba(255,255,255,0.025); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; }
 .workflow-section-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
@@ -3214,7 +3214,7 @@ body.modal-open { overflow: hidden; }
 
     .details-table tbody tr:hover { background: rgba(96,165,250,.08); }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1100px) {
         .sidebar {
             margin: 0;
             height: 100dvh;
@@ -3223,7 +3223,7 @@ body.modal-open { overflow: hidden; }
         .dashboard-container { max-width: 100vw; }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
         .dashboard-container { padding: 12px; }
         .dashboard-header { border-radius: 17px; padding: 12px; }
         .card { border-radius: 19px; }
@@ -3856,5 +3856,141 @@ body.modal-open { overflow: hidden; }
 @media screen and (max-width: 600px) {
     .asset-workflow-modal .workflow-table tr {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ============================================================
+   RESPONSIVE FIX: New utility classes & consolidated fixes
+   ============================================================ */
+
+/* Console projects/recommendations 2-col grid (replaces inline style) */
+.console-projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Lark form 2-col row grid (replaces inline style) */
+.lark-form-row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Asset filter bar responsive wrapper */
+.asset-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+.asset-filter-item {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+.asset-filter-item-sm {
+    flex: 0 1 150px;
+    min-width: 0;
+}
+
+/* Fix: negative margin on return registry filters */
+.return-registry-filters {
+    margin-top: 0;
+}
+
+/* Fix: chart container fluid height */
+.card-chart-container {
+    height: clamp(90px, 14vh, 140px);
+}
+
+/* Fix: gauge circle fluid size */
+.gauge-circle {
+    width: clamp(44px, 6vw, 60px);
+    height: clamp(44px, 6vw, 60px);
+}
+
+/* Fix: attachment thumbnail responsive */
+.ticket-attachment-link img {
+    width: clamp(48px, 8vw, 72px);
+    height: auto;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+}
+
+/* ---- Tablet (768px - 1100px) ---- */
+@media screen and (max-width: 1100px) {
+    .console-projects-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .lark-form-row-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .asset-filter-item,
+    .asset-filter-item-sm {
+        flex: 1 1 100%;
+    }
+    /* Fix: ensure modals fill viewport on tablet */
+    .lark-form-container {
+        width: min(95vw, 650px);
+    }
+}
+
+/* ---- Mobile (< 768px) ---- */
+@media screen and (max-width: 767px) {
+    .console-projects-grid,
+    .lark-form-row-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .asset-filter-item,
+    .asset-filter-item-sm {
+        flex: 1 1 100%;
+    }
+    /* Fix: 3-col asset breakdown on small screens */
+    .main-assets-breakdown {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+    /* Fix: app bug metrics on narrow screens */
+    .app-bug-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .app-bug-modal-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* Fix: software table min-width */
+    .software-license-modal .details-table {
+        min-width: 900px;
+    }
+    /* Fix: details table default min-width */
+    .details-table:not(.lark-registry-table):not(.return-registry-table) {
+        min-width: 580px;
+    }
+    /* Fix: Lark form container mobile */
+    .lark-form-container {
+        width: 100vw;
+        max-width: 100vw;
+        max-height: 100dvh;
+        margin: 0;
+        border-radius: 0;
+    }
+}
+
+/* ---- Extra small (< 390px) ---- */
+@media screen and (max-width: 390px) {
+    .main-assets-breakdown {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .app-bug-metrics,
+    .app-bug-modal-summary {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .card {
+        padding: 12px;
+    }
+    .card-header h3 {
+        font-size: 0.85rem;
     }
 }
