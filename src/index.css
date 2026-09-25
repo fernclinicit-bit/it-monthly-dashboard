@@ -3994,3 +3994,150 @@ body.modal-open { overflow: hidden; }
         font-size: 0.85rem;
     }
 }
+
+/* ============================================================
+   RESPONSIVE FIX Round 2: Mobile/Tablet comprehensive fixes
+   ============================================================ */
+
+/* Mobile logout button - hidden on desktop, shown on mobile */
+.mobile-logout-btn {
+    display: none;
+    background: none;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    min-width: 40px;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.mobile-logout-btn:hover,
+.mobile-logout-btn:active {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+/* Hamburger & close buttons - hidden on desktop */
+.mobile-menu-toggle,
+.mobile-menu-close {
+    display: none;
+}
+
+/* Console section top bar utility class */
+.console-section-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Console KPI grid */
+.console-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 16px;
+}
+
+/* Sticky modal headers on mobile */
+@media screen and (max-width: 1100px) {
+    .mobile-logout-btn {
+        display: flex;
+    }
+    .mobile-menu-toggle {
+        display: flex !important;
+    }
+    .sidebar.mobile-active .mobile-menu-close {
+        display: flex !important;
+    }
+    
+    /* Make modal headers sticky for scrollable content */
+    .modal-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: inherit;
+        backdrop-filter: blur(20px);
+    }
+    .dashboard-fullscreen-modal .modal-header {
+        background: #0d1422;
+    }
+    .modal.large .modal-header {
+        background: rgba(15, 23, 42, 0.95);
+    }
+}
+
+/* Touch momentum scrolling for all table scroll wrappers */
+div[style*="overflowX"],
+div[style*="overflow-x"],
+.workflow-table-wrap,
+.console-table-scroll,
+.asset-list-table-wrap,
+.return-registry-table-wrap {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+/* UserAccessManager fullscreen for 561-767px range */
+@media screen and (max-width: 767px) {
+    .user-access-modal {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/* Fix Lark form tablet sizing conflict */
+@media screen and (max-width: 1100px) {
+    .modal-overlay > .lark-form-container {
+        width: min(95vw, 650px) !important;
+        height: auto !important;
+        max-height: 95dvh !important;
+        border-radius: 16px !important;
+        margin: auto !important;
+    }
+}
+@media screen and (max-width: 767px) {
+    .modal-overlay > .lark-form-container {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/* Fix lark-registry class name - support both names */
+.lark-registry-scroll {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* Console KPI grid mobile collapse */
+@media screen and (max-width: 767px) {
+    .console-kpi-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .console-section-topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 390px) {
+    .console-kpi-grid {
+        gap: 10px;
+    }
+}

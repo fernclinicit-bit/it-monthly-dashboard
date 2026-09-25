@@ -5253,7 +5253,7 @@ function Dashboard({ currentUser, onLogout }) {
         {isAdmin && <div className="control-group">
           <div 
             onClick={() => setSidebarExpanded(prev => ({ ...prev, mgmt: !prev.mgmt }))}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
           >
             <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>🛠️ การจัดการข้อมูล</label>
             {sidebarExpanded.mgmt ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
@@ -5316,7 +5316,7 @@ function Dashboard({ currentUser, onLogout }) {
         {isAdmin && <div className="control-group">
           <div 
             onClick={() => setSidebarExpanded(prev => ({ ...prev, excel: !prev.excel }))}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
           >
             <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>📊 ฐานข้อมูล Excel (.xlsx)</label>
             {sidebarExpanded.excel ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
@@ -5351,7 +5351,8 @@ function Dashboard({ currentUser, onLogout }) {
                   fontWeight: '500',
                   backgroundColor: importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
                   color: importStatus.type === 'success' ? 'var(--success)' : 'var(--danger)',
-                  border: `1px solid ${importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+                  border: `1px solid ${importStatus.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                  wordBreak: 'break-word'
                 }}>
                   {importStatus.type === 'success' ? <CheckCircle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} /> : <AlertTriangle size={13} style={{ marginRight: '6px', verticalAlign: 'text-bottom' }} />}
                   {importStatus.message}
@@ -5365,7 +5366,7 @@ function Dashboard({ currentUser, onLogout }) {
         <div className="control-group" style={{ marginTop: '10px' }}>
           <div 
             onClick={() => setSidebarExpanded(prev => ({ ...prev, export: !prev.export }))}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px' }}
           >
             <label className="control-label" style={{ margin: 0, cursor: 'pointer' }}>📄 ส่งออกเอกสาร</label>
             {sidebarExpanded.export ? <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} /> : <ChevronRight size={14} style={{ color: 'var(--text-muted)' }} />}
@@ -5426,6 +5427,7 @@ function Dashboard({ currentUser, onLogout }) {
               <span>ระบบรายงานพร้อมทำงาน</span>
             </div>
           </div>
+          <button onClick={onLogout} className="mobile-logout-btn" title="ออกจากระบบ"><X size={18} /></button>
         </header>
 
         <section className="dashboard-grid">
@@ -7278,7 +7280,7 @@ function Dashboard({ currentUser, onLogout }) {
                 {/* TAB 2: EDIT KPIS */}
                 {consoleTab === 'kpis' && (
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                    <div className="console-section-topbar">
                       <h4 style={{ margin: 0, fontSize: '1.15rem' }}>📈 ปรับเปลี่ยนค่าตัวชี้วัด KPIs ประจำเดือน</h4>
                       <div>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะแก้ไข:</span>
@@ -7290,7 +7292,7 @@ function Dashboard({ currentUser, onLogout }) {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                    <div className="console-kpi-grid">
                       <div className="console-card">
                         <h5 style={{ margin: '0 0 12px 0', color: 'var(--primary)' }}>💻 ทรัพย์สิน IT</h5>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -7401,7 +7403,7 @@ function Dashboard({ currentUser, onLogout }) {
                 {/* TAB 3: PROJECTS & RECOMMENDATIONS */}
                 {consoleTab === 'projects' && (
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                    <div className="console-section-topbar">
                       <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🗒️ จัดการโครงการ & ข้อเสนอแนะสำหรับพัฒนา</h4>
                       <div>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือน:</span>
@@ -7718,7 +7720,7 @@ function Dashboard({ currentUser, onLogout }) {
                   const tickets = consoleMonthData.ticketsList || [];
                   return (
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                      <div className="console-section-topbar">
                         <h4 style={{ margin: 0, fontSize: '1.15rem' }}>🚨 ประวัติรับเคสแจ้งซ่อม Support - {editingTicketSn !== null ? <span style={{ color: 'var(--warning)' }}>โหมดแก้ไขรหัส #{editingTicketSn}</span> : <span>โหมดเพิ่มข้อมูล</span>}</h4>
                         <div>
                           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '8px' }}>เลือกเดือนที่จะจัดการ:</span>
@@ -7884,7 +7886,7 @@ function Dashboard({ currentUser, onLogout }) {
     {activeModal === 'larkForm' && (() => {
       const tickets = data[currentMonth]?.ticketsList || [];
       return (
-        <div className="modal-overlay active" style={{ backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)', zIndex: 1100 }}>
+        <div className="modal-overlay active" style={{ backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)' }}>
           <div className="lark-form-container">
             <header className="lark-form-header">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

@@ -112,11 +112,11 @@ const ClinicDashboard = () => {
     }
   };
 
-  if (loading) return <div style={{ color: 'white', padding: '20px' }}>กำลังโหลดข้อมูล...</div>;
-  if (error) return <div style={{ color: 'red', padding: '20px' }}>เกิดข้อผิดพลาด: {error}</div>;
+  if (loading) return <div style={{ color: 'white', padding: 'clamp(12px, 3vw, 20px)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}><p>กำลังโหลดข้อมูล...</p><a href="/" style={{ color: '#60a5fa', textDecoration: 'underline' }}>กลับหน้าหลัก</a></div>;
+  if (error) return <div style={{ color: '#ef4444', padding: 'clamp(12px, 3vw, 20px)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}><p>เกิดข้อผิดพลาด: {error}</p><a href="/" style={{ color: '#60a5fa', textDecoration: 'underline' }}>กลับหน้าหลัก</a></div>;
 
   return (
-    <div style={{ backgroundColor: '#111827', minHeight: '100vh', color: 'white', padding: '20px' }}>
+    <div style={{ backgroundColor: '#111827', minHeight: '100vh', color: 'white', padding: 'clamp(12px, 3vw, 20px)' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
@@ -128,14 +128,14 @@ const ClinicDashboard = () => {
       </header>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '20px', marginBottom: '20px' }}>
         <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '12px', backgroundColor: 'rgba(59, 130, 246, 0.2)', borderRadius: '50%', color: '#3b82f6' }}>
             <Users size={24} />
           </div>
           <div>
             <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>จำนวนลูกค้าทั้งหมด (Leads)</p>
-            <h3 style={{ margin: 0, fontSize: '24px', color: '#f3f4f6' }}>{totalLeads} คน</h3>
+            <h3 style={{ margin: 0, fontSize: 'clamp(18px, 4vw, 24px)', color: '#f3f4f6' }}>{totalLeads} คน</h3>
           </div>
         </div>
         <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -144,7 +144,7 @@ const ClinicDashboard = () => {
           </div>
           <div>
             <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>ยอดจองรวม (Booking)</p>
-            <h3 style={{ margin: 0, fontSize: '24px', color: '#f3f4f6' }}>฿{totalBookings.toLocaleString()}</h3>
+            <h3 style={{ margin: 0, fontSize: 'clamp(18px, 4vw, 24px)', color: '#f3f4f6' }}>฿{totalBookings.toLocaleString()}</h3>
           </div>
         </div>
         <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -153,18 +153,18 @@ const ClinicDashboard = () => {
           </div>
           <div>
             <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>ยอดโอนจริง (Transfer)</p>
-            <h3 style={{ margin: 0, fontSize: '24px', color: '#f3f4f6' }}>฿{totalTransfers.toLocaleString()}</h3>
+            <h3 style={{ margin: 0, fontSize: 'clamp(18px, 4vw, 24px)', color: '#f3f4f6' }}>฿{totalTransfers.toLocaleString()}</h3>
           </div>
         </div>
       </div>
 
       {/* Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px', marginBottom: '20px' }}>
         <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px' }}>
           <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <PieChart size={18} color="#3b82f6" /> สัดส่วนลูกค้าตามช่องทาง
           </h3>
-          <div style={{ height: '250px' }}>
+          <div style={{ height: 'clamp(180px, 30vh, 250px)' }}>
             <Pie data={channelChartData} options={chartOptions} />
           </div>
         </div>
@@ -173,7 +173,7 @@ const ClinicDashboard = () => {
           <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Activity size={18} color="#10b981" /> ความสนใจของลูกค้า
           </h3>
-          <div style={{ height: '250px' }}>
+          <div style={{ height: 'clamp(180px, 30vh, 250px)' }}>
             <Bar data={interestChartData} options={barChartOptions} />
           </div>
         </div>
@@ -182,7 +182,7 @@ const ClinicDashboard = () => {
           <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <TrendingUp size={18} color="#f59e0b" /> สถานะการติดตาม
           </h3>
-          <div style={{ height: '250px' }}>
+          <div style={{ height: 'clamp(180px, 30vh, 250px)' }}>
             <Doughnut data={statusChartData} options={chartOptions} />
           </div>
         </div>
@@ -191,15 +191,15 @@ const ClinicDashboard = () => {
       {/* Data Table */}
       <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '12px', overflowX: 'auto' }}>
         <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#e5e7eb' }}>ตารางข้อมูลลูกค้าล่าสุด</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #374151', color: '#9ca3af' }}>
-              <th style={{ padding: '12px 8px' }}>ชื่อลูกค้า</th>
-              <th style={{ padding: '12px 8px' }}>ช่องทาง</th>
-              <th style={{ padding: '12px 8px' }}>ความสนใจ</th>
-              <th style={{ padding: '12px 8px' }}>สถานะ</th>
-              <th style={{ padding: '12px 8px' }}>ยอดจอง</th>
-              <th style={{ padding: '12px 8px' }}>เจ้าของงาน</th>
+              <th style={{ padding: '12px 8px', whiteSpace: 'nowrap' }}>ชื่อลูกค้า</th>
+              <th style={{ padding: '12px 8px', whiteSpace: 'nowrap' }}>ช่องทาง</th>
+              <th style={{ padding: '12px 8px', whiteSpace: 'nowrap' }}>ความสนใจ</th>
+              <th style={{ padding: '12px 8px', whiteSpace: 'nowrap' }}>สถานะ</th>
+              <th style={{ padding: '12px 8px', whiteSpace: 'nowrap' }}>ยอดจอง</th>
+              <th style={{ padding: '12px 8px', whiteSpace: 'nowrap' }}>เจ้าของงาน</th>
             </tr>
           </thead>
           <tbody>
