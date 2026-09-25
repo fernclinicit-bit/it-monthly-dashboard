@@ -94,7 +94,7 @@ const LarkForm = () => {
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 60000);
     try {
-      const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://it-monthly-dashboard-new.onrender.com');
+      const API_BASE = import.meta.env.VITE_API_BASE || (window.location.hostname === 'localhost' ? 'http://localhost:5000' : '');
 
       const response = await authFetch(`${API_BASE}/api/tickets`, {
         method: 'POST',
@@ -115,7 +115,8 @@ const LarkForm = () => {
         const fallbackMessage = response.status === 404
           ? 'ระบบรับแจ้ง Ticket กำลังเริ่มทำงาน กรุณารอสักครู่แล้วลองส่งอีกครั้ง'
           : `บันทึกคำร้องไม่สำเร็จ (รหัส ${response.status})`;
-        throw new Error(result.error || responseText || fallbackMessage);
+        const errorMessage = result.error || result.message || (typeof responseText === 'string' && !responseText.startsWith('{') ? responseText : '') || fallbackMessage;
+        throw new Error(errorMessage);
       }
       
       setSubmitted(true);
