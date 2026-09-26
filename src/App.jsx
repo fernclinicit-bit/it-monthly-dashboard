@@ -1934,6 +1934,9 @@ function Dashboard({ currentUser, onLogout }) {
   const emptyVendorContract = { vendor: '', service: '', contractNo: '', startDate: '', endDate: '', billingCycle: 'รายเดือน', amount: '0', contact: '', status: 'ใช้งาน', notes: '' };
   const [vendorContractForm, setVendorContractForm] = useState(emptyVendorContract);
   const [editingVendorContractIndex, setEditingVendorContractIndex] = useState(null);
+  const emptyProjectForm = { title: '', desc: '', projectType: 'ระบบงาน', owner: '', status: 'กำลังดำเนินการ', progress: '0', hoursSaved: '0', startDate: '', targetDate: '' };
+  const [projectForm, setProjectForm] = useState(emptyProjectForm);
+  const [editingProjectIndex, setEditingProjectIndex] = useState(null);
 
   // Lark Form states
   const [larkFormType, setLarkFormType] = useState('ticket'); // 'ticket' | 'asset'
@@ -3449,6 +3452,16 @@ function Dashboard({ currentUser, onLogout }) {
     softwareExpiringDetails: activeDataSource?.softwareExpiringDetails || [],
     ticketsList: activeDataSource?.ticketsList || [],
   }), [activeDataSource, fallbackMonthKey]);
+  const structuredProjects = activeData.ongoingProjects.filter(project => project.projectType);
+  const improvementMetrics = structuredProjects.length > 0 ? {
+    automationsDone: structuredProjects.filter(project => project.projectType === 'Automation' && project.status === 'เสร็จสิ้น').length,
+    aiApps: structuredProjects.filter(project => project.projectType === 'AI' && project.status !== 'ยกเลิก').length,
+    hoursSaved: structuredProjects.reduce((sum, project) => sum + Number(project.hoursSaved || 0), 0),
+  } : {
+    automationsDone: Number(activeData.automationsDone || 0),
+    aiApps: Number(activeData.aiApps || 0),
+    hoursSaved: Number(activeData.hoursSaved || 0),
+  };
 
   const saveConsoleChanges = async () => {
     setConsoleSaving(true);
@@ -4286,6 +4299,59 @@ function Dashboard({ currentUser, onLogout }) {
     if (editingVendorContractIndex === index) resetVendorContractForm();
   };
 
+  const resetProjectForm = () => {
+    setProjectForm(emptyProjectForm);
+    setEditingProjectIndex(null);
+  };
+
+  const withProjectMetrics = (monthData, projects) => {
+    const structured = projects.filter(project => project.projectType);
+    return {
+      ...monthData,
+      ongoingProjects: projects,
+      automationsDone: structured.filter(project => project.projectType === 'Automation' && project.status === 'เสร็จสิ้น').length,
+      aiApps: structured.filter(project => project.projectType === 'AI' && project.status !== 'ยกเลิก').length,
+      hoursSaved: structured.reduce((sum, project) => sum + Number(project.hoursSaved || 0), 0),
+    };
+  };
+
+  const saveProject = (event) => {
+    event.preventDefault();
+    const project = {
+      ...projectForm,
+      progress: Math.min(100, Math.max(0, Number(projectForm.progress || 0))),
+      hoursSaved: Math.max(0, Number(projectForm.hoursSaved || 0)),
+    };
+    setData(previous => {
+      const monthData = previous[currentMonth] || {};
+      const projects = [...(monthData.ongoingProjects || [])];
+      if (editingProjectIndex === null) projects.push(project);
+      else projects[editingProjectIndex] = project;
+      return { ...previous, [currentMonth]: withProjectMetrics(monthData, projects) };
+    });
+    resetProjectForm();
+  };
+
+  const editProject = (project, index) => {
+    setProjectForm({
+      ...emptyProjectForm,
+      ...project,
+      progress: String(project.progress || 0),
+      hoursSaved: String(project.hoursSaved || 0),
+    });
+    setEditingProjectIndex(index);
+  };
+
+  const deleteProject = (index) => {
+    if (!window.confirm('ยืนยันการลบโปรเจกต์รายการนี้?')) return;
+    setData(previous => {
+      const monthData = previous[currentMonth] || {};
+      const projects = (monthData.ongoingProjects || []).filter((_, itemIndex) => itemIndex !== index);
+      return { ...previous, [currentMonth]: withProjectMetrics(monthData, projects) };
+    });
+    if (editingProjectIndex === index) resetProjectForm();
+  };
+
   // Export current data to .xlsx
   const exportToXlsx = () => {
     const wb = XLSX.utils.book_new();
@@ -4327,11 +4393,11 @@ function Dashboard({ currentUser, onLogout }) {
     XLSX.utils.book_append_sheet(wb, deptWs, 'ค่าใช้จ่ายต่อแผนก');
 
     // Sheet 4: Ongoing projects (all months)
-    const projHeaders = ['รหัสเดือน', 'ชื่อโครงการ', 'รายละเอียดความคืบหน้า'];
+    const projHeaders = ['รหัสเดือน', 'ชื่อโครงการ', 'ประเภท', 'ผู้รับผิดชอบ', 'สถานะ', 'ความคืบหน้า (%)', 'ประหยัดเวลา (ชั่วโมง/เดือน)', 'วันที่เริ่ม', 'วันที่เป้าหมาย', 'รายละเอียด'];
     const projRows = [];
     Object.entries(data).forEach(([monthKey, d]) => {
       (d.ongoingProjects || []).forEach(proj => {
-        projRows.push([monthKey, proj.title, proj.desc]);
+        projRows.push([monthKey, proj.title, proj.projectType || '', proj.owner || '', proj.status || '', Number(proj.progress || 0), Number(proj.hoursSaved || 0), proj.startDate || '', proj.targetDate || '', proj.desc]);
       });
     });
     const projWs = XLSX.utils.aoa_to_sheet([projHeaders, ...projRows]);
@@ -5308,6 +5374,10 @@ function Dashboard({ currentUser, onLogout }) {
                 <FileCode size={16} />
                 Vendor Contract
               </button>
+              <button onClick={() => requireAdminAccess(() => setActiveModal('projectRegistry'))} className="sidebar-btn user-access-menu-btn">
+                <Lightbulb size={16} />
+                ขึ้นระบบโปรเจกต์
+              </button>
             </div>
           )}
         </div>}
@@ -5756,15 +5826,15 @@ function Dashboard({ currentUser, onLogout }) {
             <div className="metrics-row">
               <div className="metric-item">
                 <div className="metric-label">Automation ที่ทำเสร็จ</div>
-                <div className="metric-value highlight-primary">{activeData.automationsDone} รายการ</div>
+                <div className="metric-value highlight-primary">{improvementMetrics.automationsDone} รายการ</div>
               </div>
               <div className="metric-item">
                 <div className="metric-label">AI ที่นำมาประยุกต์ใช้</div>
-                <div className="metric-value highlight-secondary">{activeData.aiApps} โมเดล</div>
+                <div className="metric-value highlight-secondary">{improvementMetrics.aiApps} โมเดล</div>
               </div>
               <div className="metric-item full-width">
                 <div className="metric-label">ประหยัดชั่วโมงการทำงาน</div>
-                <div className="metric-value highlight-success">{activeData.hoursSaved} ชั่วโมง/เดือน</div>
+                <div className="metric-value highlight-success">{improvementMetrics.hoursSaved.toLocaleString()} ชั่วโมง/เดือน</div>
               </div>
             </div>
             <div className="project-list">
@@ -5772,7 +5842,10 @@ function Dashboard({ currentUser, onLogout }) {
               {activeData.ongoingProjects.map((proj, idx) => (
                 <div key={idx} className="project-item">
                   <div className="project-item-title">{proj.title}</div>
-                  <div className="project-item-desc">{proj.desc}</div>
+                  <div className="project-item-desc">
+                    {proj.desc}
+                    {proj.projectType && ` • ${proj.projectType} • ${proj.status} • คืบหน้า ${Number(proj.progress || 0)}%`}
+                  </div>
                 </div>
               ))}
             </div>
@@ -5819,6 +5892,53 @@ function Dashboard({ currentUser, onLogout }) {
                 <div className="metric-item"><div className="metric-label">MFA Coverage</div><div className="metric-value highlight-success">{activeData.mfaCoverage}%</div></div>
               </div>
               <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>บัญชีนี้เป็นสิทธิ์อ่านอย่างเดียว สามารถดูข้อมูลได้ แต่ไม่สามารถแก้ไขข้อมูล Dashboard</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'projectRegistry' && (
+        <div className="modal-overlay active">
+          <div className="modal large dashboard-fullscreen-modal">
+            <header className="modal-header">
+              <h3>ขึ้นระบบโปรเจกต์ ({activeData.monthName})</h3>
+              <button onClick={() => { resetProjectForm(); setActiveModal(null); }} className="modal-close"><X size={20} /></button>
+            </header>
+            <div className="modal-body">
+              <form onSubmit={saveProject} className="software-license-form">
+                <div className="form-grid">
+                  <div className="form-group"><label>ชื่อโปรเจกต์</label><input required value={projectForm.title} onChange={event => setProjectForm(previous => ({ ...previous, title: event.target.value }))} /></div>
+                  <div className="form-group"><label>ประเภทโปรเจกต์</label><select value={projectForm.projectType} onChange={event => setProjectForm(previous => ({ ...previous, projectType: event.target.value }))}><option>ระบบงาน</option><option>Automation</option><option>AI</option><option>Infrastructure</option><option>Security</option><option>อื่นๆ</option></select></div>
+                  <div className="form-group"><label>ผู้รับผิดชอบ</label><input value={projectForm.owner} onChange={event => setProjectForm(previous => ({ ...previous, owner: event.target.value }))} /></div>
+                  <div className="form-group"><label>สถานะ</label><select value={projectForm.status} onChange={event => setProjectForm(previous => ({ ...previous, status: event.target.value }))}><option>วางแผน</option><option>กำลังดำเนินการ</option><option>ทดสอบระบบ</option><option>เสร็จสิ้น</option><option>พักโครงการ</option><option>ยกเลิก</option></select></div>
+                  <div className="form-group"><label>ความคืบหน้า (%)</label><input type="number" min="0" max="100" value={projectForm.progress} onChange={event => setProjectForm(previous => ({ ...previous, progress: event.target.value }))} /></div>
+                  <div className="form-group"><label>ประหยัดเวลาทำงาน (ชั่วโมง/เดือน)</label><input type="number" min="0" value={projectForm.hoursSaved} onChange={event => setProjectForm(previous => ({ ...previous, hoursSaved: event.target.value }))} /></div>
+                  <div className="form-group"><label>วันที่เริ่ม</label><input type="date" value={projectForm.startDate} onChange={event => setProjectForm(previous => ({ ...previous, startDate: event.target.value }))} /></div>
+                  <div className="form-group"><label>วันที่เป้าหมาย</label><input type="date" value={projectForm.targetDate} onChange={event => setProjectForm(previous => ({ ...previous, targetDate: event.target.value }))} /></div>
+                  <div className="form-group full-width"><label>รายละเอียดโปรเจกต์</label><textarea rows="3" required value={projectForm.desc} onChange={event => setProjectForm(previous => ({ ...previous, desc: event.target.value }))} /></div>
+                </div>
+                <div className="software-license-actions">
+                  {editingProjectIndex !== null && <button type="button" className="btn-details" onClick={resetProjectForm}>ยกเลิกการแก้ไข</button>}
+                  <button type="submit" className="btn-save">{editingProjectIndex === null ? 'เพิ่มโปรเจกต์' : 'บันทึกการแก้ไข'}</button>
+                </div>
+              </form>
+              <div className="vendor-contract-summary">
+                <span>ทั้งหมด <strong>{activeData.ongoingProjects.length.toLocaleString()}</strong> โปรเจกต์</span>
+                <span>ประหยัดเวลา <strong>{improvementMetrics.hoursSaved.toLocaleString()}</strong> ชั่วโมง/เดือน</span>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="details-table">
+                  <thead><tr><th>โปรเจกต์</th><th>ประเภท</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th><th>คืบหน้า</th><th>ประหยัดเวลา</th><th>ช่วงดำเนินการ</th><th>รายละเอียด</th><th>จัดการ</th></tr></thead>
+                  <tbody>
+                    {activeData.ongoingProjects.length ? activeData.ongoingProjects.map((project, index) => (
+                      <tr key={`${project.title}-${index}`}>
+                        <td><strong>{project.title}</strong></td><td>{project.projectType || '-'}</td><td>{project.owner || '-'}</td><td>{project.status || 'กำลังดำเนินการ'}</td><td>{Number(project.progress || 0)}%</td><td>{Number(project.hoursSaved || 0).toLocaleString()} ชม./เดือน</td><td>{project.startDate || '-'} ถึง {project.targetDate || '-'}</td><td>{project.desc || '-'}</td>
+                        <td><div className="software-row-actions"><button type="button" className="btn-details" onClick={() => editProject(project, index)}>แก้ไข</button><button type="button" className="console-delete-btn" onClick={() => deleteProject(index)}>ลบ</button></div></td>
+                      </tr>
+                    )) : <tr><td colSpan="9" style={{ textAlign: 'center' }}>ยังไม่มีข้อมูลโปรเจกต์ในเดือนนี้</td></tr>}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
