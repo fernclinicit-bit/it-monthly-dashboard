@@ -3455,7 +3455,7 @@ function Dashboard({ currentUser, onLogout }) {
   const structuredProjects = activeData.ongoingProjects.filter(project => project.projectType);
   const improvementMetrics = structuredProjects.length > 0 ? {
     automationsDone: structuredProjects.filter(project => project.projectType === 'Automation' && project.status === 'เสร็จสิ้น').length,
-    aiApps: structuredProjects.filter(project => project.projectType === 'AI' && project.status !== 'ยกเลิก').length,
+    aiApps: structuredProjects.filter(project => ['AI', 'AI & Infrastructure'].includes(project.projectType) && project.status !== 'ยกเลิก').length,
     hoursSaved: structuredProjects.reduce((sum, project) => sum + Number(project.hoursSaved || 0), 0),
   } : {
     automationsDone: Number(activeData.automationsDone || 0),
@@ -4310,7 +4310,7 @@ function Dashboard({ currentUser, onLogout }) {
       ...monthData,
       ongoingProjects: projects,
       automationsDone: structured.filter(project => project.projectType === 'Automation' && project.status === 'เสร็จสิ้น').length,
-      aiApps: structured.filter(project => project.projectType === 'AI' && project.status !== 'ยกเลิก').length,
+      aiApps: structured.filter(project => ['AI', 'AI & Infrastructure'].includes(project.projectType) && project.status !== 'ยกเลิก').length,
       hoursSaved: structured.reduce((sum, project) => sum + Number(project.hoursSaved || 0), 0),
     };
   };
@@ -5908,7 +5908,7 @@ function Dashboard({ currentUser, onLogout }) {
               <form onSubmit={saveProject} className="software-license-form">
                 <div className="form-grid">
                   <div className="form-group"><label>ชื่อโปรเจกต์</label><input required value={projectForm.title} onChange={event => setProjectForm(previous => ({ ...previous, title: event.target.value }))} /></div>
-                  <div className="form-group"><label>ประเภทโปรเจกต์</label><select value={projectForm.projectType} onChange={event => setProjectForm(previous => ({ ...previous, projectType: event.target.value }))}><option>ระบบงาน</option><option>Automation</option><option>AI</option><option>Infrastructure</option><option>Security</option><option>อื่นๆ</option></select></div>
+                  <div className="form-group"><label>ประเภทโปรเจกต์</label><select value={projectForm.projectType} onChange={event => setProjectForm(previous => ({ ...previous, projectType: event.target.value }))}><option>ระบบงาน</option><option>Automation</option><option>AI</option><option>Infrastructure</option><option>AI &amp; Infrastructure</option><option>Security</option><option>อื่นๆ</option></select></div>
                   <div className="form-group"><label>ผู้รับผิดชอบ</label><input value={projectForm.owner} onChange={event => setProjectForm(previous => ({ ...previous, owner: event.target.value }))} /></div>
                   <div className="form-group"><label>สถานะ</label><select value={projectForm.status} onChange={event => setProjectForm(previous => ({ ...previous, status: event.target.value }))}><option>วางแผน</option><option>กำลังดำเนินการ</option><option>ทดสอบระบบ</option><option>เสร็จสิ้น</option><option>พักโครงการ</option><option>ยกเลิก</option></select></div>
                   <div className="form-group"><label>ความคืบหน้า (%)</label><input type="number" min="0" max="100" value={projectForm.progress} onChange={event => setProjectForm(previous => ({ ...previous, progress: event.target.value }))} /></div>
