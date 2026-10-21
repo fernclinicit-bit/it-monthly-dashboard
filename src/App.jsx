@@ -6,6 +6,7 @@ import UserAccessManager from './pages/UserAccessManager';
 import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import { authFetch, canAdministerSystem, canEditOperationalData, clearAuth, getStoredAuth, ROLE_LABELS } from './auth';
 import { countPendingTicketClosures } from './utils/ticketMetrics';
+import { reconcileDeviceMonitorCoverage } from './utils/deviceMonitorMetrics';
 import Chart from 'chart.js/auto';
 import gsap from 'gsap';
 import * as XLSX from 'xlsx';
@@ -5688,6 +5689,7 @@ function Dashboard({ currentUser, onLogout }) {
   const monitoredActive = externalDevices.filter(d => d.status === 'active').length;
   const monitoredWarning = externalDevices.filter(d => d.status === 'active' && d.daysRemaining <= 7).length;
   const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
+  const deviceMonitorCoverage = reconcileDeviceMonitorCoverage(assetsList, externalDevices);
   const appBugReports = activeData.ticketsList.filter(ticket => {
     const searchableText = [ticket.issue, ticket.cause].filter(Boolean).join(' ');
     return /\[(?:dashboard bug|app bug|it dashboard)\]|it[- ]monthly[- ]dashboard|it-monthly-dashboard-new\.onrender\.com|บัค(?:ของ)?(?:ระบบ|แดชบอร์ด)|ปัญหา(?:ของ|บน)แดชบอร์ด/i.test(searchableText);
@@ -6068,6 +6070,15 @@ function Dashboard({ currentUser, onLogout }) {
                 <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
               </div>
             </div>
+            {deviceMonitorCoverage.notTrackedCount > 0 && (
+              <div className="device-monitor-reconciliation" role="status">
+                <span className="device-monitor-reconciliation__value">{deviceMonitorCoverage.notTrackedCount} อุปกรณ์</span>
+                <span>
+                  ไม่อยู่ใน Device Monitor: ชำรุด/สูญหาย {deviceMonitorCoverage.excludedByStatusCount}
+                  {' '}• ใช้งานแต่ไม่พบหมายเลขที่ตรงกัน {deviceMonitorCoverage.missingAssignedCount}
+                </span>
+              </div>
+            )}
             <section className="embedded-dashboard-section improvement-section" aria-labelledby="improvement-section-title">
               <div className="card-header embedded-section-header">
                 <h3 className="card-title" id="improvement-section-title">
@@ -6189,7 +6200,10 @@ function Dashboard({ currentUser, onLogout }) {
             <div className="card-header">
               <h3 className="card-title">
                 <span className="card-icon"><Ticket size={18} style={{ color: 'var(--violet)' }} /></span>
-                การสนับสนุนผู้ใช้ (Support)
+                <span className="card-title-copy">
+                  <span>การสนับสนุนผู้ใช้ (Support)</span>
+                  <span className="card-title-subtitle">E-Ticketing ผ่าน Lark</span>
+                </span>
               </h3>
               <button 
                 onClick={() => setActiveModal('ticketsList')} 

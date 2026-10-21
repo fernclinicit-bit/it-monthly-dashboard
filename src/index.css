@@ -485,12 +485,24 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
+.support-card > .metrics-row {
+    flex: 0 0 auto;
+}
+
+.support-card .repair-section {
+    flex: 1 1 52%;
+    min-height: 0;
+    margin-top: 2px;
+    padding-top: 20px;
+    border-top: 2px solid color-mix(in srgb, var(--warning) 72%, var(--border-color));
+}
+
 .embedded-section-header {
     padding-bottom: 12px;
 }
 
 .repair-section .embedded-section-header {
-    border-bottom-color: color-mix(in srgb, var(--warning) 40%, var(--border-color));
+    border-bottom-color: color-mix(in srgb, var(--warning) 62%, var(--border-color));
 }
 
 .security-section .embedded-section-header {
@@ -520,6 +532,38 @@ body {
     font-size: 1.1rem;
     font-weight: 600;
     color: white;
+}
+
+.card-title-copy {
+    display: inline-flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.card-title-subtitle {
+    color: color-mix(in srgb, var(--violet) 64%, white);
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.device-monitor-reconciliation {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 8px 10px;
+    border: 1px solid color-mix(in srgb, var(--warning) 45%, var(--border-color));
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: .72rem;
+    line-height: 1.35;
+}
+
+.device-monitor-reconciliation__value {
+    flex: 0 0 auto;
+    color: var(--warning);
+    font-weight: 700;
 }
 
 .card-icon {
