@@ -7,6 +7,7 @@ import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import { authFetch, canAdministerSystem, canEditOperationalData, clearAuth, getStoredAuth, ROLE_LABELS } from './auth';
 import { countPendingTicketClosures } from './utils/ticketMetrics';
 import { reconcileDeviceMonitorCoverage } from './utils/deviceMonitorMetrics';
+import { resolveEmbeddedReportUrl } from './utils/embeddedReport';
 import Chart from 'chart.js/auto';
 import gsap from 'gsap';
 import * as XLSX from 'xlsx';
@@ -36,6 +37,7 @@ import {
 
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 const IOS_DEVICE_MONITOR_BASE = 'https://ios-device-monitor-46w9.onrender.com';
+const PRINTER_USAGE_REPORT_URL = resolveEmbeddedReportUrl(import.meta.env.BASE_URL, 'reports/printer-usage.html');
 const THAI_MONTH_LABELS = [
   'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
   'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
@@ -6271,6 +6273,28 @@ function Dashboard({ currentUser, onLogout }) {
                   </div>
                 )}
               </div>
+              <section className="printer-report-embed" aria-labelledby="printer-report-title">
+                <div className="printer-report-embed__header">
+                  <div>
+                    <div className="metric-label">รายงานการใช้งานเครื่องพิมพ์</div>
+                    <strong id="printer-report-title">Printer &amp; Copier Usage Report</strong>
+                  </div>
+                  <a
+                    className="printer-report-embed__open"
+                    href={PRINTER_USAGE_REPORT_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    เปิดเต็มหน้า
+                  </a>
+                </div>
+                <iframe
+                  className="printer-report-embed__frame"
+                  src={PRINTER_USAGE_REPORT_URL}
+                  title="รายงานสถิติการใช้งานเครื่องพิมพ์และถ่ายเอกสาร"
+                  loading="lazy"
+                />
+              </section>
             </section>
           </article>
 
