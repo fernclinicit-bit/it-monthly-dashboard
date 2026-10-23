@@ -8,6 +8,7 @@ import { authFetch, canAdministerSystem, canEditOperationalData, clearAuth, getS
 import { countPendingTicketClosures } from './utils/ticketMetrics';
 import { reconcileDeviceMonitorCoverage } from './utils/deviceMonitorMetrics';
 import { resolveEmbeddedReportUrl } from './utils/embeddedReport';
+import { buildBulkAssetPatch } from './utils/assetBulkEdit';
 import { initialAssetsData, initialDashboardData, initialAssetRequests } from './data/seedData';
 import Chart from 'chart.js/auto';
 import gsap from 'gsap';
@@ -272,6 +273,10 @@ function Dashboard({ currentUser, onLogout }) {
   const [consoleSaveMessage, setConsoleSaveMessage] = useState('');
   const [consoleAssetSearch, setConsoleAssetSearch] = useState('');
   const [editingAssetTagField, setEditingAssetTagField] = useState(null);
+  const [selectedAssetSns, setSelectedAssetSns] = useState([]);
+  const [bulkAssetField, setBulkAssetField] = useState('additionalEquipment');
+  const [bulkAssetValue, setBulkAssetValue] = useState('');
+  const [bulkAssetSaving, setBulkAssetSaving] = useState(false);
   const [lineNotifyTokenInput, setLineNotifyTokenInput] = useState('');
   const [lineNotifyTestStatus, setLineNotifyTestStatus] = useState('');
   const [lineNotifyTesting, setLineNotifyTesting] = useState(false);
@@ -1533,6 +1538,49 @@ function Dashboard({ currentUser, onLogout }) {
     setNewAssetPriceSourceUrl('');
     setNewAssetPriceCheckedAt('');
     setEditingAssetTagField(null);
+  };
+
+  const handleBulkAssetUpdate = async () => {
+    const selectedSnSet = new Set(selectedAssetSns.map(Number));
+    const selectedAssets = assetsList.filter((asset) => selectedSnSet.has(Number(asset.sn)));
+    const value = bulkAssetValue.trim();
+    if (selectedAssets.length === 0 || !value) {
+      alert('กรุณาเลือกรายการและระบุข้อมูลที่ต้องการแก้ไข');
+      return;
+    }
+    if (!window.confirm(`ยืนยันแก้ไขทรัพย์สิน ${selectedAssets.length} รายการพร้อมกันหรือไม่?`)) return;
+
+    setBulkAssetSaving(true);
+    const updatedAssets = [];
+    const failedAssets = [];
+    for (const asset of selectedAssets) {
+      try {
+        const patch = buildBulkAssetPatch(asset, { field: bulkAssetField, value });
+        const response = await authFetch(`${API_BASE}/api/assets/${asset.sn}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patch)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.asset) throw new Error(result.error || 'บันทึกไม่สำเร็จ');
+        updatedAssets.push(repairThaiTextDeep(result.asset));
+      } catch (error) {
+        failedAssets.push({ sn: asset.sn, error: error.message });
+      }
+    }
+
+    if (updatedAssets.length > 0) {
+      const updatedBySn = new Map(updatedAssets.map((asset) => [Number(asset.sn), asset]));
+      setAssetsList((previous) => previous.map((asset) => updatedBySn.get(Number(asset.sn)) || asset));
+      setSelectedAssetSns((previous) => previous.filter((sn) => !updatedBySn.has(Number(sn))));
+      setBulkAssetValue('');
+    }
+    setBulkAssetSaving(false);
+    if (failedAssets.length > 0) {
+      alert(`แก้ไขสำเร็จ ${updatedAssets.length} รายการ และไม่สำเร็จ ${failedAssets.length} รายการ`);
+    } else {
+      alert(`แก้ไขข้อมูลพร้อมกันสำเร็จ ${updatedAssets.length} รายการ`);
+    }
   };
 
   const handleLoadEditAsset = (asset) => {
@@ -6884,10 +6932,46 @@ function Dashboard({ currentUser, onLogout }) {
                       <span>แสดง {consoleAssets.length} จาก {assetsList.length} รายการ · จัดกลุ่มตามแผนก</span>
                     </div>
 
+                    {selectedAssetSns.length > 0 && (
+                      <div className="asset-bulk-toolbar" role="region" aria-label="แก้ไขทรัพย์สินหลายรายการ">
+                        <strong>เลือกแล้ว {selectedAssetSns.length} รายการ</strong>
+                        <select value={bulkAssetField} onChange={(event) => { setBulkAssetField(event.target.value); setBulkAssetValue(''); }} aria-label="เลือกข้อมูลที่จะแก้ไข">
+                          <option value="additionalEquipment">เพิ่ม Tag อุปกรณ์เสริม</option>
+                          <option value="itemType">เปลี่ยน Tag อุปกรณ์หลัก</option>
+                          <option value="position">เปลี่ยนตำแหน่ง / แผนก</option>
+                          <option value="status">เปลี่ยนสถานะ</option>
+                          <option value="notes">เปลี่ยนหมายเหตุ</option>
+                        </select>
+                        {bulkAssetField === 'status' ? (
+                          <select value={bulkAssetValue} onChange={(event) => setBulkAssetValue(event.target.value)} aria-label="เลือกสถานะใหม่">
+                            <option value="">เลือกสถานะ</option>
+                            {['ใช้งาน', 'ว่าง', 'จอง', 'รอซ่อม', 'ชำรุด', 'สูญหาย'].map((status) => <option key={status} value={status}>{status}</option>)}
+                          </select>
+                        ) : (
+                          <input value={bulkAssetValue} onChange={(event) => setBulkAssetValue(event.target.value)} placeholder={bulkAssetField === 'additionalEquipment' ? 'พิมพ์ Tag ที่ต้องการเพิ่ม' : 'พิมพ์ข้อมูลใหม่'} />
+                        )}
+                        <button type="button" className="asset-bulk-apply" onClick={handleBulkAssetUpdate} disabled={bulkAssetSaving || !bulkAssetValue.trim()}>{bulkAssetSaving ? 'กำลังบันทึก...' : 'บันทึกรายการที่เลือก'}</button>
+                        <button type="button" className="asset-bulk-clear" onClick={() => setSelectedAssetSns([])} disabled={bulkAssetSaving}>ยกเลิกการเลือก</button>
+                      </div>
+                    )}
+
                     <div className="console-table-scroll lark-registry-scroll">
                       <table className="details-table lark-registry-table">
                         <thead>
                           <tr>
+                            <th className="asset-select-column">
+                              <input
+                                type="checkbox"
+                                aria-label="เลือกทรัพย์สินทั้งหมดที่กำลังแสดง"
+                                checked={consoleAssets.length > 0 && consoleAssets.every((asset) => selectedAssetSns.includes(Number(asset.sn)))}
+                                onChange={(event) => {
+                                  const visibleSns = consoleAssets.map((asset) => Number(asset.sn));
+                                  setSelectedAssetSns((previous) => event.target.checked
+                                    ? [...new Set([...previous, ...visibleSns])]
+                                    : previous.filter((sn) => !visibleSns.includes(Number(sn))));
+                                }}
+                              />
+                            </th>
                             <th>Number</th>
                             <th>Submitted on</th>
                             <th>Respondents</th>
@@ -6922,13 +7006,23 @@ function Dashboard({ currentUser, onLogout }) {
                             <Fragment key={asset.sn ?? idx}>
                               {showGroup && (
                                 <tr className="lark-group-row">
-                                  <td colSpan="24">
+                                  <td colSpan="25">
                                     <span>{asset.position || 'ไม่ระบุแผนก'}</span>
                                     <small>{consoleAssets.filter((row) => String(row.position || '-') === String(asset.position || '-')).length} รายการ</small>
                                   </td>
                                 </tr>
                               )}
                             <tr>
+                              <td className="asset-select-column">
+                                <input
+                                  type="checkbox"
+                                  aria-label={`เลือกทรัพย์สินหมายเลข ${asset.sn}`}
+                                  checked={selectedAssetSns.includes(Number(asset.sn))}
+                                  onChange={(event) => setSelectedAssetSns((previous) => event.target.checked
+                                    ? [...new Set([...previous, Number(asset.sn)])]
+                                    : previous.filter((sn) => Number(sn) !== Number(asset.sn)))}
+                                />
+                              </td>
                               <td>{idx + 1}</td>
                               <td>{asset.submittedOn || '-'}</td>
                               <td>{asset.respondent || '-'}</td>
