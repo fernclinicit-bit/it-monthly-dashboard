@@ -4074,12 +4074,9 @@ function Dashboard({ currentUser, onLogout }) {
     );
   };
 
-  const monitoredTotal = externalDevices.length;
   // Active includes devices that are also close to their due date. The warning
   // metric is a subset of Active, matching the Device Monitor source dashboard.
-  const monitoredActive = externalDevices.filter(d => d.status === 'active').length;
   const monitoredWarning = externalDevices.filter(d => d.status === 'active' && d.daysRemaining <= 7).length;
-  const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
   const deviceMonitorCoverage = reconcileDeviceMonitorCoverage(assetsList, externalDevices);
   const appBugReports = activeData.ticketsList.filter(ticket => {
     const searchableText = [ticket.issue, ticket.cause].filter(Boolean).join(' ');
@@ -4433,8 +4430,8 @@ function Dashboard({ currentUser, onLogout }) {
                 style={{ cursor: 'pointer' }}
                 onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
-                <div className="metric-label">กำลังติดตามรวม</div>
-                <div className="metric-value highlight-primary">{monitoredTotal} เครื่อง</div>
+                <div className="metric-label">อุปกรณ์ที่ควรติดตาม</div>
+                <div className="metric-value highlight-primary">{deviceMonitorCoverage.expectedTrackingCount} เครื่อง</div>
               </div>
               <div 
                 className="metric-item"
@@ -4442,7 +4439,7 @@ function Dashboard({ currentUser, onLogout }) {
                 onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
                 <div className="metric-label">ตรวจสอบแล้ว (Active)</div>
-                <div className="metric-value highlight-success">{monitoredActive} เครื่อง</div>
+                <div className="metric-value highlight-success">{deviceMonitorCoverage.monitoredActiveCount} เครื่อง</div>
               </div>
               <div 
                 className="metric-item"
@@ -4457,8 +4454,8 @@ function Dashboard({ currentUser, onLogout }) {
                 style={{ cursor: 'pointer' }}
                 onClick={() => window.open(IOS_DEVICE_MONITOR_BASE, '_blank')}
               >
-                <div className="metric-label">ค้างการตรวจสอบ (Action Required)</div>
-                <div className="metric-value highlight-danger">{monitoredUnverified} เครื่อง</div>
+                <div className="metric-label">ต้องดำเนินการ (รวมเครื่องที่ยังไม่เชื่อม)</div>
+                <div className="metric-value highlight-danger">{deviceMonitorCoverage.actionRequiredCount} เครื่อง</div>
               </div>
             </div>
             {deviceMonitorCoverage.notTrackedCount > 0 && (

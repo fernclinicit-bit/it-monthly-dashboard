@@ -11,11 +11,15 @@ test('separates returned inventory from assigned assets missing in Device Monito
     { status: 'สูญหาย', deviceSerial: 'IP-003' },
     { status: 'ว่าง', deviceSerial: 'NB-004' }
   ];
-  const monitored = [{ deviceNumber: 'nb-001' }];
+  const monitored = [{ deviceNumber: 'nb-001', status: 'active' }];
 
   assert.deepEqual(reconcileDeviceMonitorCoverage(assets, monitored), {
     assignedCount: 2,
+    expectedTrackingCount: 2,
     monitoredCount: 1,
+    monitoredActiveCount: 1,
+    monitoredActionRequiredCount: 0,
+    actionRequiredCount: 1,
     missingAssignedCount: 1,
     excludedByStatusCount: 2,
     notTrackedCount: 3,
@@ -29,4 +33,25 @@ test('normalizes punctuation and casing when matching device serials', () => {
   const monitored = [{ deviceNumber: 'macbookair029' }];
 
   assert.equal(reconcileDeviceMonitorCoverage(assets, monitored).missingAssignedCount, 0);
+});
+
+
+test('reconciles the tracking headline with active and action-required devices', () => {
+  const assets = [
+    { status: 'ใช้งาน', deviceSerial: 'NB-001' },
+    { status: 'ใช้งาน', deviceSerial: 'NB-002' },
+    { status: 'ใช้งาน', deviceSerial: 'NB-003' },
+    { status: 'ว่าง', deviceSerial: 'NB-004' }
+  ];
+  const monitored = [
+    { deviceNumber: 'NB-001', status: 'active' },
+    { deviceNumber: 'NB-002', status: 'unverified' }
+  ];
+
+  const coverage = reconcileDeviceMonitorCoverage(assets, monitored);
+
+  assert.equal(coverage.expectedTrackingCount, 3);
+  assert.equal(coverage.monitoredActiveCount, 1);
+  assert.equal(coverage.actionRequiredCount, 2);
+  assert.equal(coverage.monitoredActiveCount + coverage.actionRequiredCount, coverage.expectedTrackingCount);
 });
