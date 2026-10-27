@@ -7,6 +7,7 @@ import fernAesthetiqueLogo from './assets/fern-aesthetique-logo.png';
 import { authFetch, canAdministerSystem, canEditOperationalData, clearAuth, getStoredAuth, ROLE_LABELS } from './auth';
 import { countPendingTicketClosures } from './utils/ticketMetrics';
 import { reconcileDeviceMonitorCoverage } from './utils/deviceMonitorMetrics';
+import { buildVacantStockBreakdown } from './utils/assetInventoryMetrics';
 import { resolveEmbeddedReportUrl } from './utils/embeddedReport';
 import { buildBulkAssetPatch } from './utils/assetBulkEdit';
 import { initialAssetsData, initialDashboardData, initialAssetRequests } from './data/seedData';
@@ -2166,14 +2167,7 @@ function Dashboard({ currentUser, onLogout }) {
   const warehouseLostCount = assetsList.filter((asset) => normalizeAssetStatus(asset.status) === 'สูญหาย').length;
   const pricedAssets = assetsList.filter((asset) => Number(asset.marketPrice) > 0 && normalizeAssetStatus(asset.status) !== 'สูญหาย');
   const calculatedAssetValue = pricedAssets.reduce((sum, asset) => sum + Number(asset.marketPrice || 0), 0);
-  const vacantStockBreakdown = Array.from(assetsList
-    .filter((asset) => normalizeAssetStatus(asset.status) === 'ว่าง')
-    .reduce((groups, asset) => {
-      const label = getRegistryAssetCategory(asset.itemType);
-      groups.set(label, (groups.get(label) || 0) + 1);
-      return groups;
-    }, new Map()), ([label, count]) => ({ label, count }))
-    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'th'));
+  const vacantStockBreakdown = buildVacantStockBreakdown(assetsList, getRegistryAssetCategory);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -4538,7 +4532,7 @@ function Dashboard({ currentUser, onLogout }) {
                     <div className="metric-value highlight-success">{vacantStockCount} เครื่อง</div>
                     <div className="vacant-assets-breakdown">
                       {vacantStockBreakdown.length > 0 ? vacantStockBreakdown.map((asset) => (
-                        <span key={asset.label}>{asset.label} <strong>{asset.count}</strong></span>
+                        <span key={asset.label}>{asset.displayLabel} <strong>{asset.count} เครื่อง</strong></span>
                       )) : (
                         <span>ไม่มีเครื่องว่าง</span>
                       )}
