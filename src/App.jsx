@@ -4068,6 +4068,9 @@ function Dashboard({ currentUser, onLogout }) {
     );
   };
 
+  const monitoredTotal = externalDevices.length;
+  const monitoredActive = externalDevices.filter(d => d.status === 'active').length;
+  const monitoredUnverified = externalDevices.filter(d => d.status !== 'active').length;
   // Active includes devices that are also close to their due date. The warning
   // metric is a subset of Active, matching the Device Monitor source dashboard.
   const monitoredWarning = externalDevices.filter(d => d.status === 'active' && d.daysRemaining <= 7).length;
