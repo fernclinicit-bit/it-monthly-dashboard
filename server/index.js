@@ -824,6 +824,31 @@ async function initDb() {
   }
 }
 
+// Read-only authoritative registry for Device Monitor's pre-send validation.
+app.get('/internal/device-registry', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  if (!IOS_DASHBOARD_SYNC_TOKEN || req.get('x-integration-token') !== IOS_DASHBOARD_SYNC_TOKEN) {
+    return res.status(401).json({ error: 'Integration token is invalid or not configured.' });
+  }
+  try {
+    const result = await pool.query('SELECT sn, user_name, device_serial, status, position, item_type FROM assets ORDER BY sn ASC');
+    res.json({
+      generatedAt: new Date().toISOString(),
+      assets: result.rows.map(row => ({
+        sourceId: row.sn,
+        userName: row.user_name || '',
+        deviceNumber: row.device_serial || '',
+        status: normalizeAssetStatus(row.status),
+        position: row.position || '',
+        itemType: row.item_type || ''
+      }))
+    });
+  } catch (error) {
+    console.error('Device registry read failed:', error.message);
+    res.status(503).json({ error: 'Authoritative registry is unavailable.' });
+  }
+});
+
 app.get('/api/db-state', async (req, res) => {
   try {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
