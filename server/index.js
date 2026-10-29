@@ -10,6 +10,9 @@ import * as fs from 'fs';
 import { isAllowedLarkWebhook, sendLarkText } from './licenseExpiryReminder.js';
 import { runLicenseExpiryReminder } from './runLicenseExpiryReminder.js';
 import { ROLE_LEVEL, requireRole } from './roleAccess.js';
+import { loadSecurityConfig } from './securityConfig.js';
+import { createHealthReport } from './healthContract.js';
+import { classifyCommand, redactAuditDetails, validateApprovalDecision } from './commandGovernance.js';
 XLSX.set_fs(fs);
 
 dotenv.config();
@@ -20,46 +23,31 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH ||
-  '1e630fe2c4c6fecd9f5181b3bd43242407c8efa7e6e7db16204dc447257224db';
-
-const AUTH_TOKEN_SECRET = process.env.AUTH_TOKEN_SECRET ||
-  crypto.createHash('sha256').update(`it-dashboard:${ADMIN_PASSWORD_HASH}`).digest('hex');
+const SECURITY_CONFIG = loadSecurityConfig();
+const AUTH_TOKEN_SECRET = SECURITY_CONFIG.tokenSecret;
 const AUTH_TOKEN_TTL_SECONDS = 8 * 60 * 60;
+
+async function sendHealth(_req, res) {
+  const startedAt = Date.now();
+  let database = { status: 'ok' };
+  try {
+    await pool.query('SELECT 1');
+    database.latencyMs = Date.now() - startedAt;
+  } catch {
+    database = { status: 'error' };
+  }
+  const report = createHealthReport({ service: 'it-monthly-dashboard', version: '0.0.0', checks: { database } });
+  res.status(report.status === 'ok' ? 200 : 503).json(report);
+}
+
+app.get('/api/health', sendHealth);
+app.get('/health', sendHealth);
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(String(password || '')).digest('hex');
 }
 
-function loadAuthUsers() {
-  if (process.env.AUTH_USERS_JSON) {
-    try {
-      const parsed = JSON.parse(process.env.AUTH_USERS_JSON);
-      if (Array.isArray(parsed) && parsed.length) {
-        return parsed.map((user) => ({
-          username: String(user.username || '').trim().toLocaleLowerCase('en-US'),
-          name: String(user.name || user.username || '').trim(),
-          role: ROLE_LEVEL[user.role] ? user.role : 'viewer',
-          passwordHash: String(user.passwordHash || hashPassword(user.password || ''))
-        })).filter((user) => user.username && /^[a-f0-9]{64}$/i.test(user.passwordHash));
-      }
-    } catch (error) {
-      console.error('AUTH_USERS_JSON is invalid:', error.message);
-    }
-  }
-  return [
-    { username: 'itadmin', name: 'ผู้ดูแล IT', role: 'admin', passwordHash: ADMIN_PASSWORD_HASH },
-    { username: 'staff', name: 'ผู้ใช้งานทั่วไป', role: 'staff', passwordHash: hashPassword(process.env.STAFF_PASSWORD || 'staff2569') },
-    { username: 'viewer', name: 'ผู้ดูรายงาน', role: 'viewer', passwordHash: hashPassword(process.env.VIEWER_PASSWORD || 'viewer2569') },
-    { username: 'demo_guest', name: 'ผู้เข้าชมเดโม (Demo Guest)', role: 'admin', passwordHash: hashPassword('demo') }
-  ];
-}
-
-const DEFAULT_AUTH_USERS = loadAuthUsers();
+const DEFAULT_AUTH_USERS = SECURITY_CONFIG.users;
 
 function publicAuthUser(user) {
   return {
@@ -325,18 +313,7 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.post('/api/auth/demo', async (_req, res) => {
-  let demoUser = await findAuthUser('demo_guest');
-  if (!demoUser) {
-    demoUser = {
-      username: 'demo_guest',
-      name: 'ผู้เข้าชมเดโม (Demo Guest)',
-      role: 'admin',
-      active: true,
-      authVersion: 'default'
-    };
-  }
-  const publicUser = publicAuthUser(demoUser);
-  res.json({ token: signAuthToken(demoUser), user: publicUser, expiresIn: AUTH_TOKEN_TTL_SECONDS });
+  res.status(404).json({ message: 'Demo access is disabled' });
 });
 
 app.get('/api/auth/me', requireAuth, (req, res) => {
@@ -344,6 +321,85 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 });
 
 app.use('/api', requireAuth);
+
+async function writeAuditEvent({ actor, eventType, system, action, target = '', status, approvalId = null, details = {} }) {
+  await pool.query(`
+    INSERT INTO audit_events (actor, event_type, system_name, action_name, target, status, approval_id, details)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
+  `, [actor, eventType, system, action, target, status, approvalId, JSON.stringify(redactAuditDetails(details))]);
+}
+
+app.get('/api/audit-events', requireRole('admin'), asyncRoute(async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 500);
+  const result = await pool.query(`
+    SELECT id, actor, event_type AS "eventType", system_name AS system, action_name AS action,
+      target, status, approval_id AS "approvalId", details, created_at AS "createdAt"
+    FROM audit_events ORDER BY created_at DESC LIMIT $1
+  `, [limit]);
+  res.json({ events: result.rows });
+}));
+
+app.get('/api/command-approvals', requireRole('admin'), asyncRoute(async (_req, res) => {
+  await pool.query(`UPDATE command_approvals SET status = 'expired' WHERE status = 'pending' AND expires_at <= NOW()`);
+  const result = await pool.query(`
+    SELECT id, command_type AS "commandType", system_name AS system, action_name AS action,
+      target, summary, requester, status, expires_at AS "expiresAt", approver,
+      decision_at AS "decisionAt", executed_at AS "executedAt", created_at AS "createdAt"
+    FROM command_approvals ORDER BY created_at DESC LIMIT 200
+  `);
+  res.json({ approvals: result.rows });
+}));
+
+app.post('/api/commands', requireRole('staff'), asyncRoute(async (req, res) => {
+  const system = String(req.body?.system || '').trim();
+  const action = String(req.body?.action || '').trim();
+  const target = String(req.body?.target || '').trim();
+  const summary = String(req.body?.summary || '').trim();
+  const commandType = classifyCommand(req.body?.method || 'POST');
+  if (!system || !action) return res.status(400).json({ message: 'system and action are required' });
+
+  if (commandType === 'read') {
+    await writeAuditEvent({ actor: req.user.username, eventType: 'read_command', system, action, target, status: 'executed', details: { summary } });
+    return res.status(200).json({ commandType, status: 'executed', approvalRequired: false });
+  }
+
+  const id = crypto.randomUUID();
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  await pool.query(`
+    INSERT INTO command_approvals (id, command_type, system_name, action_name, target, summary, requester, status, expires_at)
+    VALUES ($1, 'change', $2, $3, $4, $5, $6, 'pending', $7)
+  `, [id, system, action, target, summary, req.user.username, expiresAt]);
+  await writeAuditEvent({ actor: req.user.username, eventType: 'change_requested', system, action, target, status: 'pending', approvalId: id, details: { summary } });
+  res.status(202).json({ id, commandType, status: 'pending', approvalRequired: true, expiresAt });
+}));
+
+app.patch('/api/command-approvals/:id/decision', requireRole('admin'), asyncRoute(async (req, res) => {
+  const decision = String(req.body?.decision || '').toLowerCase();
+  if (!['approved', 'rejected'].includes(decision)) return res.status(400).json({ message: 'decision must be approved or rejected' });
+  const existing = await pool.query('SELECT * FROM command_approvals WHERE id = $1', [req.params.id]);
+  const command = existing.rows[0];
+  if (!command) return res.status(404).json({ message: 'Approval request not found' });
+  try {
+    validateApprovalDecision({ requester: command.requester, approver: req.user.username, status: command.status, expiresAt: command.expires_at });
+  } catch (error) {
+    return res.status(409).json({ message: error.message });
+  }
+  await pool.query(`UPDATE command_approvals SET status = $1, approver = $2, decision_at = NOW() WHERE id = $3`, [decision, req.user.username, req.params.id]);
+  await writeAuditEvent({ actor: req.user.username, eventType: `change_${decision}`, system: command.system_name, action: command.action_name, target: command.target, status: decision, approvalId: command.id });
+  res.json({ id: command.id, status: decision });
+}));
+
+app.post('/api/command-approvals/:id/execute', requireRole('admin'), asyncRoute(async (req, res) => {
+  const result = await pool.query(`
+    UPDATE command_approvals SET status = 'executed', executed_at = NOW()
+    WHERE id = $1 AND status = 'approved' AND executed_at IS NULL AND expires_at > NOW()
+    RETURNING *
+  `, [req.params.id]);
+  const command = result.rows[0];
+  if (!command) return res.status(409).json({ message: 'Command is not approved, has expired, or was already executed' });
+  await writeAuditEvent({ actor: req.user.username, eventType: 'change_execution_authorized', system: command.system_name, action: command.action_name, target: command.target, status: 'executed', approvalId: command.id });
+  res.json({ id: command.id, status: 'executed', executionAuthorized: true });
+}));
 
 app.get('/api/auth/users', requireRole('admin'), asyncRoute(async (_req, res) => {
   const result = await pool.query(`
@@ -661,6 +717,38 @@ async function initDb() {
           ON CONFLICT (username) DO NOTHING
         `, [user.username, user.name, user.role, user.passwordHash]);
       }
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS command_approvals (
+          id UUID PRIMARY KEY,
+          command_type VARCHAR(20) NOT NULL CHECK (command_type IN ('read', 'change')),
+          system_name VARCHAR(80) NOT NULL,
+          action_name VARCHAR(120) NOT NULL,
+          target TEXT NOT NULL DEFAULT '',
+          summary TEXT NOT NULL DEFAULT '',
+          requester VARCHAR(40) NOT NULL,
+          status VARCHAR(20) NOT NULL CHECK (status IN ('pending', 'approved', 'rejected', 'executed', 'expired')),
+          expires_at TIMESTAMPTZ NOT NULL,
+          approver VARCHAR(40),
+          decision_at TIMESTAMPTZ,
+          executed_at TIMESTAMPTZ,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `);
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS audit_events (
+          id BIGSERIAL PRIMARY KEY,
+          actor VARCHAR(40) NOT NULL,
+          event_type VARCHAR(60) NOT NULL,
+          system_name VARCHAR(80) NOT NULL,
+          action_name VARCHAR(120) NOT NULL,
+          target TEXT NOT NULL DEFAULT '',
+          status VARCHAR(20) NOT NULL,
+          approval_id UUID,
+          details JSONB NOT NULL DEFAULT '{}'::jsonb,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `);
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS assets (
